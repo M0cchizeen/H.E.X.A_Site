@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criação de Personagem</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root{ --bg:#151515; --panel:#1f1f1f; --accent-pink:#ff33cc; --accent-blue:#00d1ff; --text:#eaeaea }
+        *{box-sizing:border-box}
+        body{font-family:'Roboto Mono', monospace;margin:0;background:var(--bg);color:var(--text);padding:28px}
+        .sheet-container{max-width:1000px;margin:0 auto;background:var(--panel);padding:22px;border-radius:12px;border:2px solid rgba(255,255,255,0.03)}
+        h1{font-family:'Bebas Neue',sans-serif;color:var(--accent-blue);font-size:2.4rem;margin-bottom:12px}
+        label{display:block;margin-top:10px;color:var(--accent-pink);font-weight:700}
+        input[type="text"], input[type="number"], textarea, select{width:100%;padding:8px;border-radius:6px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.06);color:var(--text);margin-top:6px}
+        textarea{min-height:80px}
+        .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .section-title{font-family:'Bebas Neue';color:var(--accent-pink);margin-top:18px;margin-bottom:8px}
+        .protocols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+        .protocol-item{background:#0f0f0f;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);text-align:center}
+        .protocol-item span{display:block;color:var(--accent-blue);font-weight:700;margin-bottom:6px}
+        .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+        .btn{background:linear-gradient(90deg,var(--accent-blue),var(--accent-pink));color:#050505;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    </style>
 </head>
 <body>
     <h1>Criação de Personagem</h1>
@@ -47,11 +66,8 @@
         <label for="vitalidade">Vitalidade:</label>
         <input type="number" id="vitalidade" name="vitalidade" required>
 
-        <label for="carga-atual">Carga Operacional Atual:</label>
-        <input type="number" id="carga-atual" name="carga-atual" required>
-
-        <label for="carga-maxima">Carga Operacional Máxima:</label>
-        <input type="number" id="carga-maxima" name="carga-maxima" required>
+        <label for="carga-operacional">Carga Operacional:</label>
+        <input type="number" id="carga-operacional" name="carga-operacional" required>
 
         <label for="defesa">Defesa:</label>
         <input type="number" id="defesa" name="defesa" required>
@@ -62,20 +78,27 @@
 
         <p style="font-size:0.95rem; color:rgba(255,255,255,0.8);">Obs: Vitalidade e CO serão usados a partir dos campos da própria ficha ("Vitalidade" e "Carga Operacional"). A iniciativa é rolada no combate.</p>
 
-        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;"><input type="checkbox" id="saveRepo" name="saveRepo"> Salvar esta ficha no repositório</label>
+        <!-- A ficha será salva automaticamente no repositório -->
 
-        <h2>Implantes</h2>
+        <h2 class="section-title">Protocolos</h2>
+        <div id="protocol-list" class="protocols">
+            <!-- inputs serão gerados por JavaScript (0-3) -->
+        </div>
+
+        <h2 class="section-title">Implantes</h2>
         <textarea id="implantes" name="implantes" placeholder="Listagem de Implantes"></textarea>
 
-        <h2>Inventário</h2>
+        <h2 class="section-title">Inventário</h2>
         <textarea id="inventario" name="inventario" placeholder="Itens do Inventário"></textarea>
 
-        <h2>Habilidades de Arquétipo</h2>
+        <h2 class="section-title">Habilidades de Arquétipo</h2>
         <textarea id="habilidades" name="habilidades" placeholder="Descrição das Habilidades"></textarea>
 
-        <button type="submit">Salvar Personagem</button>
+        <div class="actions">
+            <button class="btn" type="submit">Salvar Personagem</button>
+        </div>
     </form>
 
-    <script src="../js/app.js"></script>
+    <script src="character_sheet/js/app.js"></script>
 </body>
 </html>

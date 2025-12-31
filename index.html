@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HEXA Supernova - Painel de Combate</title>
+    <title>HEXA - Painel de Combate</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         :root {
             --hexa-red: #FF3B30;
             --hexa-black: #0A0A0A;
-            --hexa-blue: #007AFF;
+            --hexa-blue: #11bcff;
             --hexa-yellow: #FFCC00;
             --hexa-white: #F0F0F0;
             --hexa-gray: #1A1A1A;
@@ -30,8 +30,8 @@
             background-color: var(--hexa-black);
             color: var(--hexa-white);
             font-family: 'Roboto Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(255, 59, 48, 0.1) 0%, transparent 20%),
                 radial-gradient(circle at 90% 80%, rgba(0, 122, 255, 0.1) 0%, transparent 20%);
@@ -132,7 +132,8 @@
             display: grid;
             grid-template-columns: 1fr 300px;
             grid-template-rows: 100px 1fr 120px;
-            height: 100vh;
+            min-height: 100vh;
+            height: auto;
             gap: 15px;
             padding: 20px;
         }
@@ -172,8 +173,8 @@
         }
 
         .logo-hexa {
-            color: var(--hexa-red);
-            text-shadow: 0 0 10px rgba(255, 59, 48, 0.7);
+            color: var(--hexa-blue);
+            text-shadow: 0 0 10px rgba(91, 230, 255, 0.7);
         }
 
         .logo-supernova {
@@ -345,6 +346,39 @@
             margin-bottom: 25px;
         }
 
+        /* Protocolos collapsible dentro do cartão ativo */
+        .protocols-container {
+            margin-top: 8px;
+        }
+
+        .protocols-toggle {
+            background: transparent;
+            border: none;
+            color: var(--hexa-white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .protocols-list {
+            margin-top: 10px;
+            display: none;
+            max-height: 120px; /* limita a altura e permite scroll */
+            overflow-y: auto;
+            padding-right: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .protocols-list .effect-tag {
+            padding: 4px 10px;
+            font-size: 0.85rem;
+        }
+
         .effect-tag {
             background: rgba(0, 122, 255, 0.2);
             border: 1px solid var(--hexa-blue);
@@ -445,7 +479,7 @@
             margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            border-left: 4px solid var(--hexa-red);
+            border-left: 4px solid var(--hexa-yellow);
         }
 
         .log-entry.turn {
@@ -697,8 +731,8 @@
         <!-- HEADER -->
         <header class="header">
             <div class="logo">
-                <span class="logo-hexa">HEXA</span> 
-                <span class="logo-supernova">SUPER.NOVA</span>
+                <span class="logo-hexa">H.E.X.A</span> 
+                <span class="logo-supernova"></span>
             </div>
             
             <div class="turn-display">
@@ -721,14 +755,16 @@
                     <div class="character-avatar">
                         <i class="fas fa-user-ninja"></i>
                     </div>
-                    <div class="character-info">
+                        <div class="character-info">
                         <h2 id="activeCharacterName">ARISCO</h2>
-                        <div class="character-archetype">PORTADOR DE HEXAWARE</div>
-                        <div class="character-status">
+                        <div class="character-archetype"></div>
+                        <div class="character-status" id="characterStatus"></div>
+                        <!-- sample status tags (hidden template for later use) -->
+                        <template id="statusSample" style="display:none">
                             <span class="effect-tag positive"><i class="fas fa-bullseye"></i> VANTAGEM</span>
                             <span class="effect-tag positive"><i class="fas fa-shield-alt"></i> DEF +2</span>
                             <span class="effect-tag negative"><i class="fas fa-tint"></i> SANGRANDO</span>
-                        </div>
+                        </template>
                     </div>
                 </div>
                 
@@ -750,11 +786,7 @@
                     </div>
                 </div>
                 
-                <div class="status-effects">
-                    <div class="effect-tag"><i class="fas fa-bolt"></i> SURTO ENÉRGICO</div>
-                    <div class="effect-tag"><i class="fas fa-magnet"></i> CAMPO MAGNÉTICO (2)</div>
-                    <div class="effect-tag negative"><i class="fas fa-brain"></i> CONFUSO (1)</div>
-                </div>
+                <div class="status-effects" id="statusEffects"></div>
                 
                 <div class="quick-actions">
                     <button class="action-btn" onclick="takeAction('attack')">
@@ -769,6 +801,10 @@
                     <button class="action-btn" onclick="takeAction('item')">
                         <i class="fas fa-briefcase-medical"></i> ITEM
                     </button>
+                </div>
+                <div class="protocols-container">
+                    <button id="protocolsToggle" class="protocols-toggle">Protocolos <span id="protocolsArrow">›</span></button>
+                    <div id="protocolsList" class="protocols-list" aria-hidden="true"></div>
                 </div>
             </section>
             
@@ -799,12 +835,12 @@
         <footer class="footer">
             <div class="turn-summary">
                 <div class="summary-title">DANO ESTE TURNO</div>
-                <div class="summary-value" id="damageThisTurn">24</div>
+                <div class="summary-value" id="damageThisTurn">0</div>
             </div>
             
             <div class="turn-summary">
                 <div class="summary-title">CO GASTO ESTE TURNO</div>
-                <div class="summary-value" id="coSpentThisTurn">5</div>
+                <div class="summary-value" id="coSpentThisTurn">0</div>
             </div>
             
             <div class="control-buttons">
@@ -843,8 +879,8 @@
             timer: 0, // segundos
             characters: [
                             ],
-            damageThisTurn: 24,
-            coSpentThisTurn: 5
+            damageThisTurn: 0,
+            coSpentThisTurn: 0
         };
 
         // REPOSITÓRIO DE FICHAS H.E.X.A
@@ -858,6 +894,7 @@
             updateTimer();
             updateActiveCharacter();
             updateSummary();
+            setupProtocolsToggle();
             
             // Iniciar timer
             setInterval(updateTimer, 1000);
@@ -921,6 +958,9 @@
             }
             
             document.getElementById('activeCharacterName').textContent = activeChar.name;
+            // atualizar texto do arquétipo dinamicamente
+            const archeEl = document.querySelector('.character-archetype');
+            if (archeEl) archeEl.textContent = activeChar.archetype || '';
             
             const hpPercent = Math.round((activeChar.hp / activeChar.maxHp) * 100);
             const coPercent = Math.round((activeChar.co / activeChar.maxCo) * 100);
@@ -930,6 +970,42 @@
             
             document.getElementById('coBar').style.width = `${coPercent}%`;
             document.getElementById('coText').textContent = `${activeChar.co}/${activeChar.maxCo}`;
+
+            // limpar status-effects visíveis (não mostrar exemplos estáticos)
+            try { const se = document.getElementById('statusEffects'); if (se) se.innerHTML = ''; } catch(e){}
+
+            // render protocolos (mostrar somente com 1+ pontos) dentro do container recolhível
+            try{
+                const list = document.getElementById('protocolsList');
+                const arrow = document.getElementById('protocolsArrow');
+                if (list) {
+                    list.innerHTML = '';
+                    // garantir que a lista comece recolhida
+                    list.style.display = 'none';
+                    if (arrow) arrow.textContent = '›';
+
+                    const prot = activeChar.protocolos || {};
+                    const keys = Object.keys(prot).filter(k => parseInt(prot[k]) > 0);
+
+                    if (keys.length) {
+                        keys.forEach(k=>{
+                            const v = prot[k];
+                            const tag = document.createElement('div');
+                            tag.className = 'effect-tag';
+                            tag.style.background = 'rgba(0, 122, 255, 0.12)';
+                            tag.style.border = '1px solid rgba(0,122,255,0.25)';
+                            tag.innerHTML = `${k} <span style="font-weight:700;margin-left:6px;">(${v})</span>`;
+                            list.appendChild(tag);
+                        });
+                    } else {
+                        const empty = document.createElement('div');
+                        empty.style.color = 'rgba(255,255,255,0.6)';
+                        empty.style.fontSize = '0.9rem';
+                        empty.textContent = 'Nenhum protocolo';
+                        list.appendChild(empty);
+                    }
+                }
+            } catch(e){}
         }
 
         // ATUALIZAR TIMER
@@ -1104,27 +1180,47 @@
             const saved = JSON.parse(localStorage.getItem('sheetRepo')) || [];
             const allSheets = [...hexSheets, ...saved];
 
-            container.innerHTML = `
+            // construir HTML do modal usando propriedades seguras (suporta sheet.meta/recursos)
+            let modalHtml = `
                 <div class="sheet-modal-backdrop" onclick="closeSheetModal(event)">
                     <div class="sheet-modal" onclick="event.stopPropagation()">
                         <h3 style="margin-bottom:10px;">Repositório H.E.X.A - Escolha uma ficha</h3>
-                        ${allSheets.map(s => `
-                            <div class="sheet-item">
-                                <div>
-                                    <div style="font-size:1.1rem;"><strong>${s.name}</strong> ${s.avatar || ''}</div>
-                                    <div style="font-size:0.85rem; color:rgba(255,255,255,0.7)">${s.archetype || ''} — HP ${s.hp || s.vitalidade || '-'} / ${s.maxHp || s.vitalidade || '-'} • CO ${s.co || s.co_atual || '-'} / ${s.maxCo || s.co_max || '-'}</div>
-                                </div>
-                                <div>
-                                    <button onclick="addCharFromSheet('${s.sheetId}')">Adicionar</button>
-                                </div>
-                            </div>
-                        `).join('')}
+            `;
+
+            allSheets.forEach(s => {
+                const name = s.name || (s.meta && (s.meta.name || s.meta.nome)) || '';
+                const avatar = s.avatar || (s.meta && s.meta.avatar) || '';
+                const arche = s.archetype || (s.meta && (s.meta.archetype || s.meta.arquetipo)) || '';
+                const pv = (s.hp != null) ? s.hp : (s.recursos && s.recursos.vitalidade) || (s.meta && (s.meta.vitalidade || s.meta.vit_atual)) || '-';
+                const maxPv = (s.maxHp != null) ? s.maxHp : (s.recursos && s.recursos.vitalidade) || (s.meta && (s.meta.vitalidade || s.meta.vit_max)) || '-';
+                // unified carga-operacional: prefer recursos.carga_operacional, then carga_atual / carga_maxima, then meta fallbacks
+                const coVal = (s.co != null) ? s.co : (s.recursos && (s.recursos.carga_operacional != null ? s.recursos.carga_operacional : (s.recursos.carga_atual != null ? s.recursos.carga_atual : s.recursos.carga_maxima))) || (s.meta && (s.meta.co || s.meta.co_atual)) || '-';
+                const maxCoVal = (s.maxCo != null) ? s.maxCo : (s.recursos && (s.recursos.carga_operacional != null ? s.recursos.carga_operacional : (s.recursos.carga_maxima != null ? s.recursos.carga_maxima : s.recursos.carga_atual))) || (s.meta && (s.meta.maxCo || s.meta.carga_maxima)) || '-';
+
+                modalHtml += `
+                    <div class="sheet-item" id="sheet-${s.sheetId}">
+                        <div>
+                            <div style="font-size:1.1rem;"><strong>${name}</strong> ${avatar}</div>
+                            <div style="font-size:0.85rem; color:rgba(255,255,255,0.7)">${arche} — PV ${pv} / ${maxPv} • CO ${coVal} / ${maxCoVal}</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                            <button onclick="addCharFromSheet('${s.sheetId}')">Adicionar</button>
+                            <button onclick="editSheet('${s.sheetId}')" style="background:#444;color:#fff;padding:6px;border-radius:6px;border:none;cursor:pointer;">Editar</button>
+                            <button onclick="deleteSheetFromRepo('${s.sheetId}')" style="background:#b71c1c;color:#fff;padding:6px;border-radius:6px;border:none;cursor:pointer;">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            modalHtml += `
                         <div style="text-align:right; margin-top:8px;">
                             <button onclick="closeSheetModal()" style="background:#444; color:#fff; padding:6px 10px; border-radius:8px; border:none; cursor:pointer;">Fechar</button>
                         </div>
                     </div>
                 </div>
             `;
+
+            container.innerHTML = modalHtml;
             container.style.display = 'block';
         }
 
@@ -1140,24 +1236,58 @@
             const saved = JSON.parse(localStorage.getItem('sheetRepo')) || [];
             const sheet = hexSheets.find(s => s.sheetId === sheetId) || saved.find(s => s.sheetId === sheetId);
             if (!sheet) return;
+
+            // suportar formatos antigos (flat) e novos (com meta/atributos/recursos)
+            const name = sheet.name || (sheet.meta && sheet.meta.name) || 'Sem nome';
+            const archetype = sheet.archetype || (sheet.meta && sheet.meta.archetype) || (sheet.meta && sheet.meta.archetype) || '';
+            const avatar = sheet.avatar || (sheet.meta && sheet.meta.avatar) || sheet.avatar || '🙂';
+            const hp = (sheet.hp != null) ? sheet.hp : (sheet.recursos && sheet.recursos.vitalidade) || (sheet.meta && sheet.meta.vitalidade) || 0;
+            const maxHp = (sheet.maxHp != null) ? sheet.maxHp : (sheet.recursos && sheet.recursos.vitalidade) || hp || 0;
+            // set both current and max CO from unified carga_operacional when available
+            const coFromRecursos = sheet.recursos && (sheet.recursos.carga_operacional != null ? sheet.recursos.carga_operacional : (sheet.recursos.carga_atual != null ? sheet.recursos.carga_atual : sheet.recursos.carga_maxima));
+            const co = (sheet.co != null) ? sheet.co : (coFromRecursos != null ? coFromRecursos : 0);
+            const maxCo = (sheet.maxCo != null) ? sheet.maxCo : (coFromRecursos != null ? coFromRecursos : co || 0);
+            const initiative = sheet.initiative || Math.floor(Math.random()*20)+1;
+
             const newChar = {
                 id: combatData.characters.length ? Math.max(...combatData.characters.map(c=>c.id)) + 1 : 1,
-                name: sheet.name,
-                hp: sheet.hp,
-                maxHp: sheet.maxHp,
-                co: sheet.co,
-                maxCo: sheet.maxCo,
-                initiative: sheet.initiative || Math.floor(Math.random()*20)+1,
-                avatar: sheet.avatar,
+                name,
+                hp: Number(hp),
+                maxHp: Number(maxHp),
+                co: Number(co),
+                maxCo: Number(maxCo),
+                initiative,
+                avatar,
                 isActive: false,
                 isNext: false,
-                archetype: sheet.archetype
+                archetype,
+                protocolos: sheet.protocolos || {}
             };
             combatData.characters.push(newChar);
             updateInitiativeList();
             addLogEntry(`<strong>${newChar.name}</strong> entrou no combate`);
             playSoundEffect('characterAdd');
             closeSheetModal();
+        }
+
+        // Deleta uma ficha do repositório (usuário)
+        function deleteSheetFromRepo(sheetId) {
+            const sheetRepo = JSON.parse(localStorage.getItem('sheetRepo')) || [];
+            const idx = sheetRepo.findIndex(s => s.sheetId === sheetId);
+            if (idx === -1) return;
+            const removed = sheetRepo.splice(idx, 1)[0];
+            localStorage.setItem('sheetRepo', JSON.stringify(sheetRepo));
+            localStorage.setItem('sheetRepoUpdated', JSON.stringify({ sheetId: sheetId, action: 'deleted', time: Date.now() }));
+            const removedName = (removed && (removed.name || (removed.meta && (removed.meta.name || removed.meta.nome)))) || 'Sem nome';
+            addLogEntry(`<strong>${removedName}</strong> foi removido do repositório`);
+            // atualizar modal
+            openAddModal();
+        }
+
+        // Abrir a ficha para edição em nova aba
+        function editSheet(sheetId) {
+            // abrir a página de criação com parâmetro ?edit=sheetId
+            window.open('pages/create_character.html?edit=' + encodeURIComponent(sheetId), '_blank');
         }
 
         // RESETAR TIMER E CONTADORES
@@ -1229,6 +1359,60 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadCharacters);
+
+        // Ouvir atualizações vindas de outras abas (ex.: página de criação salvou no sheetRepo)
+        window.addEventListener('storage', function(e) {
+            if (!e.key) return;
+            if (e.key === 'sheetRepoUpdated') {
+                try {
+                    const payload = JSON.parse(e.newValue || '{}');
+                    console.log('sheetRepoUpdated recebido:', payload);
+                } catch (err) {
+                    console.log('sheetRepoUpdated recebido (não JSON)');
+                }
+                // Abre o modal de adição automaticamente
+                openAddModal();
+
+                // destacar (visual) a ficha recém-criada no modal, se possível
+                setTimeout(() => {
+                    try {
+                        const raw = localStorage.getItem('sheetRepoUpdated');
+                        const info = raw ? JSON.parse(raw) : null;
+                        if (info && info.sheetId) {
+                            const modal = document.querySelector('.sheet-modal');
+                            if (modal) {
+                                const btn = modal.querySelector(`button[onclick="addCharFromSheet('${info.sheetId}')"]`);
+                                if (btn) {
+                                    btn.style.boxShadow = '0 0 14px rgba(52,199,89,0.9)';
+                                    btn.style.transform = 'translateY(-2px)';
+                                    setTimeout(()=>{ btn.style.boxShadow=''; btn.style.transform=''; }, 2500);
+                                }
+                            }
+                        }
+                    } catch (err) { /* ignore */ }
+                }, 150);
+            }
+        });
+
+        // setup do toggle de protocolos (colapsar/expandir)
+        function setupProtocolsToggle() {
+            const toggle = document.getElementById('protocolsToggle');
+            const list = document.getElementById('protocolsList');
+            const arrow = document.getElementById('protocolsArrow');
+            if (!toggle || !list) return;
+            toggle.addEventListener('click', () => {
+                const expanded = list.style.display === 'block';
+                if (expanded) {
+                    list.style.display = 'none';
+                    if (arrow) arrow.textContent = '›';
+                    list.setAttribute('aria-hidden', 'true');
+                } else {
+                    list.style.display = 'block';
+                    if (arrow) arrow.textContent = '˅';
+                    list.setAttribute('aria-hidden', 'false');
+                }
+            });
+        }
     </script>
 
     <!-- duplicata removida: #character-list já está dentro da sidebar -->
