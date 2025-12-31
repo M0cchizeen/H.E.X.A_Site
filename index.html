@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEXA Supernova - Painel de Combate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --hexa-red: #FF3B30;
+            --hexa-black: #0A0A0A;
+            --hexa-blue: #007AFF;
+            --hexa-yellow: #FFCC00;
+            --hexa-white: #F0F0F0;
+            --hexa-gray: #1A1A1A;
+            --hexa-green: #34C759;
+            --hexa-purple: #AF52DE;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--hexa-black);
+            color: var(--hexa-white);
+            font-family: 'Roboto Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 59, 48, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 122, 255, 0.1) 0%, transparent 20%);
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23007aff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        /* GLITCH EFFECT NO HEADER */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--hexa-blue);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--hexa-red);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); }
+            5% { clip: rect(12px, 9999px, 59px, 0); }
+            10% { clip: rect(48px, 9999px, 29px, 0); }
+            15% { clip: rect(42px, 9999px, 73px, 0); }
+            20% { clip: rect(63px, 9999px, 27px, 0); }
+            25% { clip: rect(34px, 9999px, 55px, 0); }
+            30% { clip: rect(86px, 9999px, 73px, 0); }
+            35% { clip: rect(20px, 9999px, 20px, 0); }
+            40% { clip: rect(26px, 9999px, 60px, 0); }
+            45% { clip: rect(25px, 9999px, 66px, 0); }
+            50% { clip: rect(57px, 9999px, 98px, 0); }
+            55% { clip: rect(5px, 9999px, 46px, 0); }
+            60% { clip: rect(82px, 9999px, 31px, 0); }
+            65% { clip: rect(54px, 9999px, 27px, 0); }
+            70% { clip: rect(28px, 9999px, 99px, 0); }
+            75% { clip: rect(45px, 9999px, 69px, 0); }
+            80% { clip: rect(23px, 9999px, 85px, 0); }
+            85% { clip: rect(54px, 9999px, 84px, 0); }
+            90% { clip: rect(45px, 9999px, 47px, 0); }
+            95% { clip: rect(37px, 9999px, 99px, 0); }
+            100% { clip: rect(4px, 9999px, 43px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            5% { clip: rect(52px, 9999px, 74px, 0); }
+            10% { clip: rect(79px, 9999px, 85px, 0); }
+            15% { clip: rect(75px, 9999px, 5px, 0); }
+            20% { clip: rect(67px, 9999px, 61px, 0); }
+            25% { clip: rect(14px, 9999px, 79px, 0); }
+            30% { clip: rect(1px, 9999px, 66px, 0); }
+            35% { clip: rect(86px, 9999px, 30px, 0); }
+            40% { clip: rect(23px, 9999px, 98px, 0); }
+            45% { clip: rect(85px, 9999px, 72px, 0); }
+            50% { clip: rect(71px, 9999px, 75px, 0); }
+            55% { clip: rect(2px, 9999px, 48px, 0); }
+            60% { clip: rect(30px, 9999px, 16px, 0); }
+            65% { clip: rect(59px, 9999px, 50px, 0); }
+            70% { clip: rect(41px, 9999px, 62px, 0); }
+            75% { clip: rect(2px, 9999px, 82px, 0); }
+            80% { clip: rect(47px, 9999px, 73px, 0); }
+            85% { clip: rect(3px, 9999px, 27px, 0); }
+            90% { clip: rect(40px, 9999px, 86px, 0); }
+            95% { clip: rect(45px, 9999px, 72px, 0); }
+            100% { clip: rect(23px, 9999px, 49px, 0); }
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .combat-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            grid-template-rows: 100px 1fr 120px;
+            height: 100vh;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            padding: 0 30px;
+            border: 2px solid var(--hexa-red);
+            box-shadow: 0 0 25px rgba(255, 59, 48, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--hexa-red), var(--hexa-blue), var(--hexa-yellow));
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .logo-hexa {
+            color: var(--hexa-red);
+            text-shadow: 0 0 10px rgba(255, 59, 48, 0.7);
+        }
+
+        .logo-supernova {
+            color: var(--hexa-blue);
+            text-shadow: 0 0 10px rgba(0, 122, 255, 0.7);
+        }
+
+        .turn-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .turn-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            color: var(--hexa-yellow);
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.7);
+            line-height: 1;
+        }
+
+        .turn-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: var(--hexa-white);
+        }
+
+        .combat-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--hexa-green);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--hexa-green);
+        }
+
+        /* ÁREA PRINCIPAL */
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* CARTÃO DO PERSONAGEM ATIVO */
+        .active-character {
+            background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(10, 10, 10, 0.9));
+            border-radius: 20px;
+            padding: 25px;
+            border: 3px solid var(--hexa-yellow);
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .active-character::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--hexa-yellow), var(--hexa-red), var(--hexa-yellow));
+        }
+
+        .character-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .character-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            border: 3px solid var(--hexa-blue);
+            overflow: hidden;
+            background: linear-gradient(45deg, #1a1a1a, #333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .character-info h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            color: var(--hexa-white);
+            margin-bottom: 5px;
+        }
+
+        .character-archetype {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--hexa-purple);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* BARRAS DE STATUS */
+        .status-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bar-label {
+            width: 60px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .bar {
+            flex: 1;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            position: relative;
+            transition: width 0.5s ease;
+        }
+
+        .hp-bar .bar-fill {
+            background: linear-gradient(90deg, var(--hexa-red), #ff6b6b);
+        }
+
+        .co-bar .bar-fill {
+            background: linear-gradient(90deg, var(--hexa-blue), #5d9cec);
+        }
+
+        .bar-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-shadow: 0 0 3px black;
+        }
+
+        /* STATUS EFEITOS */
+        .status-effects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .effect-tag {
+            background: rgba(0, 122, 255, 0.2);
+            border: 1px solid var(--hexa-blue);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .effect-tag.positive {
+            background: rgba(52, 199, 89, 0.2);
+            border-color: var(--hexa-green);
+        }
+
+        .effect-tag.negative {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: var(--hexa-red);
+        }
+
+        /* AÇÕES RÁPIDAS */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(145deg, rgba(255, 59, 48, 0.9), rgba(200, 40, 30, 0.9));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 59, 48, 0.4);
+        }
+
+        .action-btn.blue {
+            background: linear-gradient(145deg, rgba(0, 122, 255, 0.9), rgba(0, 90, 200, 0.9));
+        }
+
+        .action-btn.blue:hover {
+            box-shadow: 0 5px 15px rgba(0, 122, 255, 0.4);
+        }
+
+        .action-btn.yellow {
+            background: linear-gradient(145deg, rgba(255, 204, 0, 0.9), rgba(220, 170, 0, 0.9));
+        }
+
+        .action-btn.yellow:hover {
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);
+        }
+
+        /* LOG DE AÇÕES */
+        .action-log {
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--hexa-blue);
+            overflow: hidden;
+        }
+
+        .log-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: var(--hexa-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-content {
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .log-entry {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--hexa-red);
+        }
+
+        .log-entry.turn {
+            border-left-color: var(--hexa-yellow);
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        .log-entry.damage {
+            border-left-color: var(--hexa-red);
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .log-entry.heal {
+            border-left-color: var(--hexa-green);
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        /* BARRA LATERAL - ORDEM DE INICIATIVA */
+        .initiative-sidebar {
+            grid-row: 2;
+            grid-column: 2;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--hexa-purple);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--hexa-purple);
+            text-align: center;
+            border-bottom: 2px solid var(--hexa-purple);
+            padding-bottom: 10px;
+        }
+
+        .initiative-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .initiative-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .initiative-item.active {
+            border-color: var(--hexa-yellow);
+            background: rgba(255, 204, 0, 0.1);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+        }
+
+        .initiative-item.next {
+            border-color: var(--hexa-blue);
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        .initiative-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid var(--hexa-blue);
+            background: linear-gradient(45deg, #1a1a1a, #333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .initiative-info {
+            flex: 1;
+        }
+
+        .initiative-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+
+        .initiative-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .initiative-value {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--hexa-yellow);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* FOOTER */
+        .footer {
+            grid-column: 1 / -1;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--hexa-green);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .turn-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .summary-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: var(--hexa-green);
+        }
+
+        .summary-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--hexa-white);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: linear-gradient(145deg, rgba(255, 59, 48, 0.9), rgba(200, 40, 30, 0.9));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+            text-transform: uppercase;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 59, 48, 0.4);
+        }
+
+        .control-btn.blue {
+            background: linear-gradient(145deg, rgba(0, 122, 255, 0.9), rgba(0, 90, 200, 0.9));
+        }
+
+        .control-btn.blue:hover {
+            box-shadow: 0 5px 15px rgba(0, 122, 255, 0.4);
+        }
+
+        /* Modal para repositório de fichas */
+        .sheet-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .sheet-modal {
+            background: #0f0f0f;
+            border: 2px solid var(--hexa-purple);
+            padding: 20px;
+            border-radius: 12px;
+            width: 420px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .sheet-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.03);
+        }
+        .sheet-item button {
+            background: linear-gradient(145deg, rgba(0,122,255,0.9), rgba(0,90,200,0.9));
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* LISTA DE PERSONAGENS (CARREGADA DO LOCAL STORAGE) */
+        #character-list {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--hexa-purple);
+        }
+
+        #character-list p {
+            margin: 0;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            color: var(--hexa-white);
+        }
+
+        #character-list button {
+            background: var(--hexa-red);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        #character-list button:hover {
+            background: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="combat-container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-hexa">HEXA</span> 
+                <span class="logo-supernova">SUPER.NOVA</span>
+            </div>
+            
+            <div class="turn-display">
+                <div class="turn-label">TURNO ATUAL</div>
+                <div class="turn-number" id="currentTurn">00</div>
+                <div class="turn-label" style="font-size:0.9rem; margin-top:6px;">RODADAS</div>
+                <div class="turn-number" id="roundsDisplay" style="font-size:1.2rem;">00</div>
+            </div>
+            
+            <div class="combat-time">
+                <i class="fas fa-clock"></i> <span id="combatTimer">00:00</span>
+            </div>
+        </header>
+        
+        <!-- ÁREA PRINCIPAL -->
+        <main class="main-area">
+            <!-- CARTÃO DO PERSONAGEM ATIVO -->
+            <section class="active-character">
+                <div class="character-header">
+                    <div class="character-avatar">
+                        <i class="fas fa-user-ninja"></i>
+                    </div>
+                    <div class="character-info">
+                        <h2 id="activeCharacterName">ARISCO</h2>
+                        <div class="character-archetype">PORTADOR DE HEXAWARE</div>
+                        <div class="character-status">
+                            <span class="effect-tag positive"><i class="fas fa-bullseye"></i> VANTAGEM</span>
+                            <span class="effect-tag positive"><i class="fas fa-shield-alt"></i> DEF +2</span>
+                            <span class="effect-tag negative"><i class="fas fa-tint"></i> SANGRANDO</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status-bars">
+                    <div class="bar-container">
+                        <div class="bar-label">PV</div>
+                        <div class="bar hp-bar">
+                            <div class="bar-fill" id="hpBar" style="width: 75%"></div>
+                            <div class="bar-text" id="hpText">45/60</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bar-container">
+                        <div class="bar-label">CO</div>
+                        <div class="bar co-bar">
+                            <div class="bar-fill" id="coBar" style="width: 53%"></div>
+                            <div class="bar-text" id="coText">8/15</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status-effects">
+                    <div class="effect-tag"><i class="fas fa-bolt"></i> SURTO ENÉRGICO</div>
+                    <div class="effect-tag"><i class="fas fa-magnet"></i> CAMPO MAGNÉTICO (2)</div>
+                    <div class="effect-tag negative"><i class="fas fa-brain"></i> CONFUSO (1)</div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="takeAction('attack')">
+                        <i class="fas fa-fist-raised"></i> ATACAR
+                    </button>
+                    <button class="action-btn blue" onclick="takeAction('skill')">
+                        <i class="fas fa-bolt"></i> HABILIDADE
+                    </button>
+                    <button class="action-btn yellow" onclick="takeAction('move')">
+                        <i class="fas fa-running"></i> MOVER
+                    </button>
+                    <button class="action-btn" onclick="takeAction('item')">
+                        <i class="fas fa-briefcase-medical"></i> ITEM
+                    </button>
+                </div>
+            </section>
+            
+            <!-- LOG DE AÇÕES -->
+            <section class="action-log">
+                <div class="log-title">
+                    <i class="fas fa-scroll"></i> LOG DE COMBATE
+                </div>
+                <div class="log-content" id="actionLog">
+                    
+                </div>
+            </section>
+        </main>
+        
+        <!-- BARRA LATERAL - ORDEM DE INICIATIVA -->
+        <aside class="initiative-sidebar">
+            <div class="sidebar-title">
+                <i class="fas fa-list-ol"></i> ORDEM DE INICIATIVA
+            </div>
+            <div class="initiative-list" id="initiativeList">
+                <!-- Itens serão gerados por JavaScript -->
+            </div>
+            <!-- Lista de fichas salvas / carregadas do localStorage -->
+            <div id="character-list" style="margin-top:16px;"></div>
+        </aside>
+        
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="turn-summary">
+                <div class="summary-title">DANO ESTE TURNO</div>
+                <div class="summary-value" id="damageThisTurn">24</div>
+            </div>
+            
+            <div class="turn-summary">
+                <div class="summary-title">CO GASTO ESTE TURNO</div>
+                <div class="summary-value" id="coSpentThisTurn">5</div>
+            </div>
+            
+            <div class="control-buttons">
+                <button class="control-btn" onclick="nextTurn()">
+                    <i class="fas fa-forward"></i> PRÓXIMO TURNO
+                </button>
+                <button class="control-btn blue" onclick="rollInitiative()">
+                    <i class="fas fa-dice-d20"></i> ROLAR INICIATIVA
+                </button>
+                    <button class="control-btn blue" onclick="window.open('pages/create_character.html','_blank')">
+                        <i class="fas fa-file-circle-plus"></i> CRIAR FICHA
+                    </button>
+                <button class="control-btn" onclick="openAddModal()">
+                    <i class="fas fa-user-plus"></i> ADICIONAR
+                </button>
+                <button class="control-btn" onclick="resetCombat()">
+                    <i class="fas fa-undo"></i> RESETAR
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MODAL DE FICHAS -->
+    <div id="sheetModalContainer" style="display:none;"></div>
+
+    <!-- BALÃO DE CRÍTICO (aparece quando necessário) -->
+    <div class="critical-popup" id="criticalPopup" style="display: none;">
+        <div>💥 CRÍTICO! 💥</div>
+    </div>
+
+    <script>
+        // DADOS INICIAIS DO COMBATE (AGORA SEM NENHUM PERSONAGEM ATIVO)
+        let combatData = {
+            currentTurn: 0,
+            rounds: 0,
+            timer: 0, // segundos
+            characters: [
+                            ],
+            damageThisTurn: 24,
+            coSpentThisTurn: 5
+        };
+
+        // REPOSITÓRIO DE FICHAS H.E.X.A
+        const hexSheets = [
+        ];
+
+        // INICIALIZAR A INTERFACE
+        function initCombat() {
+            updateTurnDisplay();
+            updateInitiativeList();
+            updateTimer();
+            updateActiveCharacter();
+            updateSummary();
+            
+            // Iniciar timer
+            setInterval(updateTimer, 1000);
+        }
+
+        // ATUALIZAR DISPLAY DO TURNO E RODADAS
+        function updateTurnDisplay() {
+            document.getElementById('currentTurn').textContent = combatData.currentTurn.toString().padStart(2, '0');
+            document.getElementById('roundsDisplay').textContent = combatData.rounds.toString().padStart(2, '0');
+        }
+
+        // ATUALIZAR LISTA DE INICIATIVA
+        function updateInitiativeList() {
+            const list = document.getElementById('initiativeList');
+            list.innerHTML = '';
+            
+            // Ordenar por iniciativa (maior primeiro)
+            const sortedChars = [...combatData.characters].sort((a, b) => b.initiative - a.initiative);
+            
+            sortedChars.forEach(char => {
+                const item = document.createElement('div');
+                item.className = 'initiative-item';
+                if (char.isActive) item.classList.add('active');
+                if (char.isNext) item.classList.add('next');
+
+                const hpPercent = Math.round((char.hp / char.maxHp) * 100);
+                const coPercent = Math.round((char.co / char.maxCo) * 100);
+
+                item.innerHTML = `
+                    <div class="initiative-avatar">${char.avatar}</div>
+                    <div class="initiative-info">
+                        <div class="initiative-name">${char.name}</div>
+                        <div class="initiative-stats">
+                            <span>HP: ${char.hp}/${char.maxHp}</span>
+                            <span>CO: ${char.co}/${char.maxCo}</span>
+                        </div>
+                        <div class="progress-bar" style="height: 4px; background: rgba(255,255,255,0.1); margin-top: 5px; border-radius: 2px;">
+                            <div style="height: 100%; width: ${hpPercent}%; background: ${hpPercent > 50 ? '#34C759' : hpPercent > 25 ? '#FF9500' : '#FF3B30'}; border-radius: 2px;"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                        <div class="initiative-value">${char.initiative}</div>
+                        <button onclick="removeCombatCharacter(${char.id})" style="background:var(--hexa-red);border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer;font-family:'Bebas Neue';font-size:0.85rem;">Remover</button>
+                    </div>
+                `;
+
+                list.appendChild(item);
+            });
+        }
+
+        // ATUALIZAR PERSONAGEM ATIVO (AGORA MANUSEIA SEM ATIVO)
+        function updateActiveCharacter() {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) {
+                document.getElementById('activeCharacterName').textContent = 'NENHUM';
+                document.getElementById('hpBar').style.width = `0%`;
+                document.getElementById('hpText').textContent = `-/-`;
+                document.getElementById('coBar').style.width = `0%`;
+                document.getElementById('coText').textContent = `-/-`;
+                return;
+            }
+            
+            document.getElementById('activeCharacterName').textContent = activeChar.name;
+            
+            const hpPercent = Math.round((activeChar.hp / activeChar.maxHp) * 100);
+            const coPercent = Math.round((activeChar.co / activeChar.maxCo) * 100);
+            
+            document.getElementById('hpBar').style.width = `${hpPercent}%`;
+            document.getElementById('hpText').textContent = `${activeChar.hp}/${activeChar.maxHp}`;
+            
+            document.getElementById('coBar').style.width = `${coPercent}%`;
+            document.getElementById('coText').textContent = `${activeChar.co}/${activeChar.maxCo}`;
+        }
+
+        // ATUALIZAR TIMER
+        function updateTimer() {
+            combatData.timer++;
+            const minutes = Math.floor(combatData.timer / 60);
+            const seconds = combatData.timer % 60;
+            document.getElementById('combatTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // ATUALIZAR RESUMO
+        function updateSummary() {
+            document.getElementById('damageThisTurn').textContent = combatData.damageThisTurn;
+            document.getElementById('coSpentThisTurn').textContent = combatData.coSpentThisTurn;
+        }
+
+        // PRÓXIMO TURNO (AGORA GERA RODADAS AO ENROLAR)
+        function nextTurn() {
+            const currentIndex = combatData.characters.findIndex(c => c.isActive);
+            const nextIndex = (currentIndex + 1) % combatData.characters.length;
+            
+            // Resetar flags
+            combatData.characters.forEach(c => {
+                c.isActive = false;
+                c.isNext = false;
+            });
+            
+            // Se não havia personagem ativo (início), iniciar no índice 0 e turno 1
+            if (currentIndex === -1) {
+                combatData.characters[nextIndex].isActive = true;
+                const nextNextIndex = (nextIndex + 1) % combatData.characters.length;
+                combatData.characters[nextNextIndex].isNext = true;
+                combatData.currentTurn = 1;
+                // rounds permanece como estava (não conta como fim de rodada)
+            } else {
+                // definir novo personagem ativo
+                combatData.characters[nextIndex].isActive = true;
+                const nextNextIndex = (nextIndex + 1) % combatData.characters.length;
+                combatData.characters[nextNextIndex].isNext = true;
+                
+                // Se voltamos ao índice 0, significa nova rodada
+                if (nextIndex === 0) {
+                    combatData.rounds++;
+                }
+                
+                // Incrementar turno contador
+                combatData.currentTurn++;
+            }
+            
+            combatData.damageThisTurn = 0;
+            combatData.coSpentThisTurn = 0;
+            
+            addLogEntry(`TURNO ${combatData.currentTurn} INICIADO - ${combatData.characters[nextIndex].name} está agindo`, 'turn');
+            
+            updateTurnDisplay();
+            updateInitiativeList();
+            updateActiveCharacter();
+            updateSummary();
+            
+            playSoundEffect('nextTurn');
+        }
+
+        // ROLAR INICIATIVA (AGORA ZERA/INICIA RODADAS)
+        function rollInitiative() {
+            combatData.characters.forEach(char => {
+                const roll = Math.floor(Math.random() * 20) + 1;
+                const modifier = Math.floor(Math.random() * 5) + 1;
+                char.initiative = roll + modifier;
+            });
+            
+            combatData.characters.sort((a, b) => b.initiative - a.initiative);
+            
+            combatData.characters.forEach((c, i) => {
+                c.isActive = i === 0;
+                c.isNext = i === 1;
+            });
+            
+            combatData.currentTurn = 1;
+            combatData.rounds = 1;
+            combatData.damageThisTurn = 0;
+            combatData.coSpentThisTurn = 0;
+            
+            addLogEntry('INICIATIVA ROLADA - Nova ordem definida', 'turn');
+            
+            updateTurnDisplay();
+            updateInitiativeList();
+            updateActiveCharacter();
+            updateSummary();
+            
+            playSoundEffect('diceRoll');
+        }
+
+        // ADICIONAR ENTRADA NO LOG
+        function addLogEntry(text, type = '') {
+            const log = document.getElementById('actionLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = text;
+            
+            log.insertBefore(entry, log.firstChild);
+            
+            // Manter log com no máximo 20 entradas
+            if (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        // AÇÃO DO PERSONAGEM
+        function takeAction(action) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+            
+            const actions = {
+                attack: { text: `${activeChar.name} atacou`, co: 0, damage: Math.floor(Math.random() * 20) + 5 },
+                skill: { text: `${activeChar.name} usou uma habilidade`, co: 3, damage: Math.floor(Math.random() * 25) + 10 },
+                move: { text: `${activeChar.name} se moveu`, co: 0, damage: 0 },
+                item: { text: `${activeChar.name} usou um item`, co: 0, damage: 0 }
+            };
+            
+            const act = actions[action];
+            
+            // Atualizar CO
+            if (activeChar.co >= act.co) {
+                activeChar.co -= act.co;
+                combatData.coSpentThisTurn += act.co;
+                
+                // Adicionar dano se houver
+                if (act.damage > 0) {
+                    combatData.damageThisTurn += act.damage;
+                    
+                    // Chance de crítico (20%)
+                    if (Math.random() < 0.2) {
+                        showCriticalPopup();
+                        act.damage *= 2;
+                        act.text += ` (CRÍTICO! ${act.damage} de dano)`;
+                    } else {
+                        act.text += ` (${act.damage} de dano)`;
+                    }
+                }
+                
+                addLogEntry(`<strong>${act.text}</strong>`);
+                
+                // Atualizar UI
+                updateInitiativeList();
+                updateActiveCharacter();
+                updateSummary();
+                
+                playSoundEffect(action);
+            } else {
+                addLogEntry(`<strong>${activeChar.name}</strong> não tem CO suficiente para essa ação!`, 'damage');
+            }
+        }
+
+        // MOSTRAR POPUP DE CRÍTICO
+        function showCriticalPopup() {
+            const popup = document.getElementById('criticalPopup');
+            popup.style.display = 'block';
+            
+            // Reproduzir som de crítico (simulado)
+            playSoundEffect('critical');
+            
+            // Remover após 1.5 segundos
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 1500);
+        }
+
+        // ABRIR MODAL DE ADIÇÃO E ESCOLHA DE FICHA
+        function openAddModal() {
+            const container = document.getElementById('sheetModalContainer');
+            const saved = JSON.parse(localStorage.getItem('sheetRepo')) || [];
+            const allSheets = [...hexSheets, ...saved];
+
+            container.innerHTML = `
+                <div class="sheet-modal-backdrop" onclick="closeSheetModal(event)">
+                    <div class="sheet-modal" onclick="event.stopPropagation()">
+                        <h3 style="margin-bottom:10px;">Repositório H.E.X.A - Escolha uma ficha</h3>
+                        ${allSheets.map(s => `
+                            <div class="sheet-item">
+                                <div>
+                                    <div style="font-size:1.1rem;"><strong>${s.name}</strong> ${s.avatar || ''}</div>
+                                    <div style="font-size:0.85rem; color:rgba(255,255,255,0.7)">${s.archetype || ''} — HP ${s.hp || s.vitalidade || '-'} / ${s.maxHp || s.vitalidade || '-'} • CO ${s.co || s.co_atual || '-'} / ${s.maxCo || s.co_max || '-'}</div>
+                                </div>
+                                <div>
+                                    <button onclick="addCharFromSheet('${s.sheetId}')">Adicionar</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div style="text-align:right; margin-top:8px;">
+                            <button onclick="closeSheetModal()" style="background:#444; color:#fff; padding:6px 10px; border-radius:8px; border:none; cursor:pointer;">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.style.display = 'block';
+        }
+
+        function closeSheetModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            const container = document.getElementById('sheetModalContainer');
+            container.style.display = 'none';
+            container.innerHTML = '';
+        }
+
+        // ADICIONA UMA FICHA ESCOLHIDA AO COMBATE
+        function addCharFromSheet(sheetId) {
+            const saved = JSON.parse(localStorage.getItem('sheetRepo')) || [];
+            const sheet = hexSheets.find(s => s.sheetId === sheetId) || saved.find(s => s.sheetId === sheetId);
+            if (!sheet) return;
+            const newChar = {
+                id: combatData.characters.length ? Math.max(...combatData.characters.map(c=>c.id)) + 1 : 1,
+                name: sheet.name,
+                hp: sheet.hp,
+                maxHp: sheet.maxHp,
+                co: sheet.co,
+                maxCo: sheet.maxCo,
+                initiative: sheet.initiative || Math.floor(Math.random()*20)+1,
+                avatar: sheet.avatar,
+                isActive: false,
+                isNext: false,
+                archetype: sheet.archetype
+            };
+            combatData.characters.push(newChar);
+            updateInitiativeList();
+            addLogEntry(`<strong>${newChar.name}</strong> entrou no combate`);
+            playSoundEffect('characterAdd');
+            closeSheetModal();
+        }
+
+        // RESETAR TIMER E CONTADORES
+        function resetCombat() {
+            combatData.timer = 0;
+            combatData.currentTurn = 0;
+            combatData.rounds = 0;
+            combatData.damageThisTurn = 0;
+            combatData.coSpentThisTurn = 0;
+            combatData.characters.forEach(c => { c.isActive = false; c.isNext = false; });
+            updateTurnDisplay();
+            updateInitiativeList();
+            updateActiveCharacter();
+            updateSummary();
+            addLogEntry('Combate resetado pelo usuário', 'turn');
+            playSoundEffect('reset');
+        }
+
+        // SIMULAR EFEITOS SONOROS
+        function playSoundEffect(type) {
+            // Em uma implementação real, você tocaria arquivos de áudio
+            console.log(`Som reproduzido: ${type}`);
+        }
+
+        // INICIAR QUANDO A PÁGINA CARREGAR
+        window.onload = initCombat;
+
+        // CARREGAR PERSONAGENS DO LOCAL STORAGE
+        function loadCharacters() {
+            const characters = JSON.parse(localStorage.getItem('characters')) || [];
+            const characterList = document.getElementById('character-list');
+            characterList.innerHTML = '';
+
+            characters.forEach((character, index) => {
+                const characterItem = document.createElement('div');
+                characterItem.innerHTML = `
+                    <p><strong>${character.name}</strong> - Nível: ${character.level}</p>
+                    <button onclick="removeCharacter(${index})">Remover</button>
+                `;
+                characterList.appendChild(characterItem);
+            });
+        }
+
+        // REMOVER PERSONAGEM DO LOCAL STORAGE
+        function removeCharacter(index) {
+            const characters = JSON.parse(localStorage.getItem('characters')) || [];
+            characters.splice(index, 1);
+            localStorage.setItem('characters', JSON.stringify(characters));
+            loadCharacters();
+        }
+
+        // REMOVER PERSONAGEM DA ORDEM DE COMBATE (por id)
+        function removeCombatCharacter(id) {
+            const idx = combatData.characters.findIndex(c => c.id === id);
+            if (idx === -1) return;
+
+            const removed = combatData.characters.splice(idx, 1)[0];
+            addLogEntry(`<strong>${removed.name}</strong> foi removido da ordem de iniciativa`);
+
+            // Se não houver mais personagens, resetar estado ativo
+            if (combatData.characters.length === 0) {
+                combatData.currentTurn = 0;
+                combatData.rounds = 0;
+            }
+
+            updateInitiativeList();
+            updateActiveCharacter();
+            updateTurnDisplay();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCharacters);
+    </script>
+
+    <!-- duplicata removida: #character-list já está dentro da sidebar -->
+</body>
+</html>

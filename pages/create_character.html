@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criação de Personagem</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <h1>Criação de Personagem</h1>
+    <form id="character-form">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="archetype">Arquétipo:</label>
+        <input type="text" id="archetype" name="archetype" required>
+
+        <label for="background">Plano de Fundo:</label>
+        <input type="text" id="background" name="background" required>
+
+        <label for="level">Nível:</label>
+        <input type="number" id="level" name="level" required>
+
+        <label for="exp">EXP:</label>
+        <input type="number" id="exp" name="exp" required>
+
+        <h2>Atributos</h2>
+        <label for="men">MEN:</label>
+        <input type="number" id="men" name="men" required>
+
+        <label for="cor">COR:</label>
+        <input type="number" id="cor" name="cor" required>
+
+        <label for="agi">AGI:</label>
+        <input type="number" id="agi" name="agi" required>
+
+        <label for="for">FOR:</label>
+        <input type="number" id="for" name="for" required>
+
+        <label for="cha">CHA:</label>
+        <input type="number" id="cha" name="cha" required>
+
+        <label for="con">CON:</label>
+        <input type="number" id="con" name="con" required>
+
+        <h2>Recursos</h2>
+        <label for="vitalidade">Vitalidade:</label>
+        <input type="number" id="vitalidade" name="vitalidade" required>
+
+        <label for="carga-atual">Carga Operacional Atual:</label>
+        <input type="number" id="carga-atual" name="carga-atual" required>
+
+        <label for="carga-maxima">Carga Operacional Máxima:</label>
+        <input type="number" id="carga-maxima" name="carga-maxima" required>
+
+        <label for="defesa">Defesa:</label>
+        <input type="number" id="defesa" name="defesa" required>
+
+        <h3>Dados para repositório</h3>
+        <label for="avatar">Avatar (emoji ou caractere):</label>
+        <input type="text" id="avatar" name="avatar" placeholder="🙂">
+
+        <p style="font-size:0.95rem; color:rgba(255,255,255,0.8);">Obs: Vitalidade e CO serão usados a partir dos campos da própria ficha ("Vitalidade" e "Carga Operacional"). A iniciativa é rolada no combate.</p>
+
+        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;"><input type="checkbox" id="saveRepo" name="saveRepo"> Salvar esta ficha no repositório</label>
+
+        <h2>Implantes</h2>
+        <textarea id="implantes" name="implantes" placeholder="Listagem de Implantes"></textarea>
+
+        <h2>Inventário</h2>
+        <textarea id="inventario" name="inventario" placeholder="Itens do Inventário"></textarea>
+
+        <h2>Habilidades de Arquétipo</h2>
+        <textarea id="habilidades" name="habilidades" placeholder="Descrição das Habilidades"></textarea>
+
+        <button type="submit">Salvar Personagem</button>
+    </form>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>

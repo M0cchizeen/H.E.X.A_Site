@@ -1,0 +1,7 @@
+body { font-family: Arial, sans-serif; margin:20px; }
+.container { max-width:800px; margin:auto; }
+#activeCard img { width:128px; height:128px; object-fit:cover; }
+#orderList li { margin:6px 0; }
+button { margin:4px; padding:8px 12px; }
+.modal { position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; }
+.modal-content { background:#fff; padding:16px; border-radius:6px; width:90%; max-width:500px; }
