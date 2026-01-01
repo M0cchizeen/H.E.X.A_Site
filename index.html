@@ -184,9 +184,9 @@
 
         .turn-display {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: 5px;
+            gap: 15px;
         }
 
         .turn-number {
@@ -289,6 +289,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            width: 100%;
         }
 
         .bar-label {
@@ -296,22 +297,23 @@
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.3rem;
             letter-spacing: 1px;
+            color: var(--hexa-white);
         }
 
         .bar {
-            flex: 1;
-            height: 25px;
+            position: relative;
+            height: 24px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 5px;
+            flex: 1;
+            min-width: 200px;
         }
 
         .bar-fill {
             height: 100%;
             border-radius: 12px;
-            position: relative;
             transition: width 0.5s ease;
         }
 
@@ -320,22 +322,63 @@
         }
 
         .co-bar .bar-fill {
-            background: linear-gradient(90deg, var(--hexa-blue), #5d9cec);
+            background: linear-gradient(90deg, var(--hexa-blue), #4a90e2);
         }
 
         .bar-text {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
             font-size: 0.9rem;
-            text-shadow: 0 0 3px black;
+            color: white;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .bar-text:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .bar-adjust-buttons {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 2px;
+            z-index: 15;
+        }
+
+        .bar-adjust-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .bar-adjust-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .bar-adjust-btn:active {
+            transform: scale(0.9);
         }
 
         /* STATUS EFEITOS */
@@ -444,6 +487,22 @@
 
         .action-btn.yellow:hover {
             box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);
+        }
+
+        .action-btn.purple {
+            background: linear-gradient(145deg, var(--hexa-purple), #8e2de2);
+        }
+
+        .action-btn.purple:hover {
+            box-shadow: 0 5px 15px rgba(175, 82, 222, 0.4);
+        }
+
+        .action-btn.green {
+            background: linear-gradient(145deg, var(--hexa-green), #28a745);
+        }
+
+        .action-btn.green:hover {
+            box-shadow: 0 5px 15px rgba(52, 199, 89, 0.4);
         }
 
         /* LOG DE AÇÕES */
@@ -654,6 +713,271 @@
             box-shadow: 0 5px 15px rgba(0, 122, 255, 0.4);
         }
 
+        /* ESTILOS PARA SEÇÃO DE ITENS */
+        .item-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            color: var(--hexa-white);
+            margin-bottom: 4px;
+        }
+
+        .item-effect {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 4px;
+        }
+
+        .item-details {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .item-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .item-btn {
+            background: linear-gradient(145deg, rgba(0, 122, 255, 0.9), rgba(0, 90, 200, 0.9));
+            border: none;
+            border-radius: 6px;
+            color: white;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 122, 255, 0.4);
+        }
+
+        .item-btn.use {
+            background: linear-gradient(145deg, var(--hexa-green), #28a745);
+        }
+
+        .item-btn.use:hover {
+            box-shadow: 0 3px 10px rgba(52, 199, 89, 0.4);
+        }
+
+        .empty-items {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            padding: 20px;
+        }
+
+        /* MODAL PARA ADICIONAR ITENS */
+        .item-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .item-modal {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border: 2px solid var(--hexa-green);
+            padding: 25px;
+            border-radius: 15px;
+            width: 450px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .item-modal h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: var(--hexa-green);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            color: var(--hexa-white);
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--hexa-white);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--hexa-green);
+            box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(145deg, var(--hexa-green), #28a745);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .modal-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(52, 199, 89, 0.4);
+            }
+
+            .modal-btn.cancel {
+                background: linear-gradient(145deg, var(--hexa-red), #dc3545);
+            }
+
+            .modal-btn.cancel:hover {
+                box-shadow: 0 5px 15px rgba(255, 59, 48, 0.4);
+            }
+
+            /* ESTILOS PARA MODAL DE SELEÇÃO DE ALVO */
+            .targets-list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                max-height: 300px;
+                overflow-y: auto;
+                margin-bottom: 20px;
+            }
+
+            .target-item {
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 8px;
+                padding: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 0.3s;
+                cursor: pointer;
+            }
+
+            .target-item:hover {
+                background: rgba(255, 255, 255, 0.12);
+                transform: translateY(-2px);
+                border-color: var(--hexa-green);
+            }
+
+            .target-item.active {
+                background: rgba(52, 199, 89, 0.1);
+                border-color: var(--hexa-green);
+                box-shadow: 0 0 15px rgba(52, 199, 89, 0.3);
+            }
+
+            .target-info {
+                flex: 1;
+            }
+
+            .target-name {
+                font-family: 'Bebas Neue', sans-serif;
+                font-size: 1.1rem;
+                color: var(--hexa-white);
+                margin-bottom: 4px;
+            }
+
+            .target-stats {
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 4px;
+            }
+
+            .target-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                border: 2px solid var(--hexa-blue);
+                background: linear-gradient(45deg, #1a1a1a, #333);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+            }
+
         /* Modal para repositório de fichas */
         .sheet-modal-backdrop {
             position: fixed;
@@ -736,10 +1060,10 @@
             </div>
             
             <div class="turn-display">
-                <div class="turn-label">TURNO ATUAL</div>
-                <div class="turn-number" id="currentTurn">00</div>
-                <div class="turn-label" style="font-size:0.9rem; margin-top:6px;">RODADAS</div>
+                <div class="turn-label">RODADAS</div>
                 <div class="turn-number" id="roundsDisplay" style="font-size:1.2rem;">00</div>
+                <div class="turn-label" style="font-size:0.9rem; margin-left:10px;">TURNO</div>
+                <div class="turn-number" id="currentTurn" style="font-size:0.9rem; margin-left:5px;">00</div>
             </div>
             
             <div class="combat-time">
@@ -773,7 +1097,11 @@
                         <div class="bar-label">PV</div>
                         <div class="bar hp-bar">
                             <div class="bar-fill" id="hpBar" style="width: 75%"></div>
-                            <div class="bar-text" id="hpText">45/60</div>
+                            <div class="bar-text" id="hpText" onclick="editStat('hp')">45/60</div>
+                            <div class="bar-adjust-buttons">
+                                <button class="bar-adjust-btn" onclick="adjustStat('hp', -1)">−</button>
+                                <button class="bar-adjust-btn" onclick="adjustStat('hp', 1)">+</button>
+                            </div>
                         </div>
                     </div>
                     
@@ -781,18 +1109,22 @@
                         <div class="bar-label">CO</div>
                         <div class="bar co-bar">
                             <div class="bar-fill" id="coBar" style="width: 53%"></div>
-                            <div class="bar-text" id="coText">8/15</div>
+                            <div class="bar-text" id="coText" onclick="editStat('co')">8/15</div>
+                            <div class="bar-adjust-buttons">
+                                <button class="bar-adjust-btn" onclick="adjustStat('co', -1)">−</button>
+                                <button class="bar-adjust-btn" onclick="adjustStat('co', 1)">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="status-effects" id="statusEffects"></div>
                 
-                <div class="quick-actions">
+                <div class="quick-actions" id="quickActions">
                     <button class="action-btn" onclick="takeAction('attack')">
                         <i class="fas fa-fist-raised"></i> ATACAR
                     </button>
-                    <button class="action-btn blue" onclick="takeAction('skill')">
+                    <button class="action-btn blue" onclick="toggleSkillButtons()">
                         <i class="fas fa-bolt"></i> HABILIDADE
                     </button>
                     <button class="action-btn yellow" onclick="takeAction('move')">
@@ -801,6 +1133,33 @@
                     <button class="action-btn" onclick="takeAction('item')">
                         <i class="fas fa-briefcase-medical"></i> ITEM
                     </button>
+                </div>
+                <div class="skill-actions" id="skillActions" style="display:none;">
+                    <button class="action-btn purple" onclick="useSkill('skill1')">
+                        <i class="fas fa-fire"></i> Habilidade 1
+                    </button>
+                    <button class="action-btn purple" onclick="useSkill('skill2')">
+                        <i class="fas fa-shield-alt"></i> Habilidade 2
+                    </button>
+                    <button class="action-btn purple" onclick="useSkill('skill3')">
+                        <i class="fas fa-bolt"></i> Habilidade 3
+                    </button>
+                    <button class="action-btn purple" onclick="toggleSkillButtons()">
+                        <i class="fas fa-arrow-left"></i> VOLTAR
+                    </button>
+                </div>
+                <div class="item-actions" id="itemActions" style="display:none;">
+                    <div class="items-list" id="itemsList">
+                        <!-- Itens serão adicionados dinamicamente aqui -->
+                    </div>
+                    <div class="item-controls">
+                        <button class="action-btn green" onclick="openAddItemModal()">
+                            <i class="fas fa-plus"></i> ADICIONAR ITEM
+                        </button>
+                        <button class="action-btn purple" onclick="toggleItemButtons()">
+                            <i class="fas fa-arrow-left"></i> VOLTAR
+                        </button>
+                    </div>
                 </div>
                 <div class="protocols-container">
                     <button id="protocolsToggle" class="protocols-toggle">Protocolos <span id="protocolsArrow">›</span></button>
@@ -866,9 +1225,12 @@
     <!-- MODAL DE FICHAS -->
     <div id="sheetModalContainer" style="display:none;"></div>
 
+    <!-- MODAL PARA ADICIONAR ITENS -->
+    <div id="itemModalContainer" style="display:none;"></div>
+
     <!-- BALÃO DE CRÍTICO (aparece quando necessário) -->
     <div class="critical-popup" id="criticalPopup" style="display: none;">
-        <div>💥 CRÍTICO! 💥</div>
+        <div> CRÍTICO! </div>
     </div>
 
     <script>
@@ -882,6 +1244,9 @@
             damageThisTurn: 0,
             coSpentThisTurn: 0
         };
+
+        // Sistema de controle de mudanças de stats por turno
+        let statChanges = {};
 
         // REPOSITÓRIO DE FICHAS H.E.X.A
         const hexSheets = [
@@ -952,8 +1317,10 @@
                 document.getElementById('activeCharacterName').textContent = 'NENHUM';
                 document.getElementById('hpBar').style.width = `0%`;
                 document.getElementById('hpText').textContent = `-/-`;
+                document.getElementById('hpText').setAttribute('onclick', "editStat('hp')");
                 document.getElementById('coBar').style.width = `0%`;
                 document.getElementById('coText').textContent = `-/-`;
+                document.getElementById('coText').setAttribute('onclick', "editStat('co')");
                 return;
             }
             
@@ -967,43 +1334,77 @@
             
             document.getElementById('hpBar').style.width = `${hpPercent}%`;
             document.getElementById('hpText').textContent = `${activeChar.hp}/${activeChar.maxHp}`;
+            document.getElementById('hpText').setAttribute('onclick', "editStat('hp')");
             
             document.getElementById('coBar').style.width = `${coPercent}%`;
             document.getElementById('coText').textContent = `${activeChar.co}/${activeChar.maxCo}`;
+            document.getElementById('coText').setAttribute('onclick', "editStat('co')");
+
+            // Carregar itens pendentes se houver
+            try {
+                // Carregar itens específicos deste personagem
+                const characterKey = `characterItems_${activeChar.id}`;
+                const savedItems = localStorage.getItem(characterKey);
+                
+                if (savedItems) {
+                    const items = JSON.parse(savedItems);
+                    if (Array.isArray(items) && items.length > 0) {
+                        if (!activeChar.inventory) {
+                            activeChar.inventory = [];
+                        }
+                        activeChar.inventory = items;
+                        updateItemsList();
+                    }
+                } else {
+                    // Tentar carregar do characterInfo geral
+                    const characterInfo = localStorage.getItem('characterItems');
+                    if (characterInfo) {
+                        const info = JSON.parse(characterInfo);
+                        if (info.characterId === activeChar.id && Array.isArray(info.items)) {
+                            if (!activeChar.inventory) {
+                                activeChar.inventory = [];
+                            }
+                            activeChar.inventory = info.items;
+                            updateItemsList();
+                        }
+                    }
+                }
+                
+                // Limpar itens pendentes genéricos se existirem
+                localStorage.removeItem('pendingItems');
+            } catch(e) {
+                console.error('Erro ao carregar itens pendentes:', e);
+            }
+
+            // Resetar visualização para os 4 botões originais ao mudar de personagem
+            try {
+                const quickActions = document.getElementById('quickActions');
+                const itemActions = document.getElementById('itemActions');
+                if (quickActions && itemActions) {
+                    quickActions.style.display = 'grid';
+                    itemActions.style.display = 'none';
+                }
+            } catch(e) {
+                console.error('Erro ao resetar visualização de ações:', e);
+            }
 
             // limpar status-effects visíveis (não mostrar exemplos estáticos)
             try { const se = document.getElementById('statusEffects'); if (se) se.innerHTML = ''; } catch(e){}
 
             // render protocolos (mostrar somente com 1+ pontos) dentro do container recolhível
             try{
-                const list = document.getElementById('protocolsList');
-                const arrow = document.getElementById('protocolsArrow');
-                if (list) {
-                    list.innerHTML = '';
-                    // garantir que a lista comece recolhida
-                    list.style.display = 'none';
-                    if (arrow) arrow.textContent = '›';
-
-                    const prot = activeChar.protocolos || {};
-                    const keys = Object.keys(prot).filter(k => parseInt(prot[k]) > 0);
-
-                    if (keys.length) {
-                        keys.forEach(k=>{
-                            const v = prot[k];
-                            const tag = document.createElement('div');
+                const protocolos = activeChar.protocolos || {};
+                const protocolListEl = document.getElementById('protocolsList');
+                if (protocolListEl) {
+                    protocolListEl.innerHTML = '';
+                    Object.entries(protocolos).forEach(([key, val]) => {
+                        if (val && val > 0) {
+                            const tag = document.createElement('span');
                             tag.className = 'effect-tag';
-                            tag.style.background = 'rgba(0, 122, 255, 0.12)';
-                            tag.style.border = '1px solid rgba(0,122,255,0.25)';
-                            tag.innerHTML = `${k} <span style="font-weight:700;margin-left:6px;">(${v})</span>`;
-                            list.appendChild(tag);
-                        });
-                    } else {
-                        const empty = document.createElement('div');
-                        empty.style.color = 'rgba(255,255,255,0.6)';
-                        empty.style.fontSize = '0.9rem';
-                        empty.textContent = 'Nenhum protocolo';
-                        list.appendChild(empty);
-                    }
+                            tag.textContent = `${key} +${val}`;
+                            protocolListEl.appendChild(tag);
+                        }
+                    });
                 }
             } catch(e){}
         }
@@ -1028,6 +1429,9 @@
             const currentIndex = combatData.characters.findIndex(c => c.isActive);
             const nextIndex = (currentIndex + 1) % combatData.characters.length;
             
+            // Registrar mudanças de stats antes de mudar o turno
+            logStatChanges();
+            
             // Resetar flags
             combatData.characters.forEach(c => {
                 c.isActive = false;
@@ -1040,7 +1444,8 @@
                 const nextNextIndex = (nextIndex + 1) % combatData.characters.length;
                 combatData.characters[nextNextIndex].isNext = true;
                 combatData.currentTurn = 1;
-                // rounds permanece como estava (não conta como fim de rodada)
+                combatData.rounds = 1; // Começa com 1 rodada
+                // rounds permanece como está (não conta como fim de rodada)
             } else {
                 // definir novo personagem ativo
                 combatData.characters[nextIndex].isActive = true;
@@ -1059,7 +1464,7 @@
             combatData.damageThisTurn = 0;
             combatData.coSpentThisTurn = 0;
             
-            addLogEntry(`TURNO ${combatData.currentTurn} INICIADO - ${combatData.characters[nextIndex].name} está agindo`, 'turn');
+            // Removido o log de "TURNO X INICIADO"
             
             updateTurnDisplay();
             updateInitiativeList();
@@ -1119,11 +1524,16 @@
             const activeChar = combatData.characters.find(c => c.isActive);
             if (!activeChar) return;
             
+            // Se for ação de item, alternar para a tela de itens
+            if (action === 'item') {
+                toggleItemButtons();
+                return;
+            }
+            
             const actions = {
                 attack: { text: `${activeChar.name} atacou`, co: 0, damage: Math.floor(Math.random() * 20) + 5 },
                 skill: { text: `${activeChar.name} usou uma habilidade`, co: 3, damage: Math.floor(Math.random() * 25) + 10 },
-                move: { text: `${activeChar.name} se moveu`, co: 0, damage: 0 },
-                item: { text: `${activeChar.name} usou um item`, co: 0, damage: 0 }
+                move: { text: `${activeChar.name} se moveu`, co: 0, damage: 0 }
             };
             
             const act = actions[action];
@@ -1142,22 +1552,520 @@
                         showCriticalPopup();
                         act.damage *= 2;
                         act.text += ` (CRÍTICO! ${act.damage} de dano)`;
-                    } else {
-                        act.text += ` (${act.damage} de dano)`;
                     }
                 }
                 
-                addLogEntry(`<strong>${act.text}</strong>`);
-                
-                // Atualizar UI
-                updateInitiativeList();
+                addLogEntry(act.text, 'damage');
                 updateActiveCharacter();
                 updateSummary();
-                
-                playSoundEffect(action);
+                playSoundEffect('attack');
             } else {
                 addLogEntry(`<strong>${activeChar.name}</strong> não tem CO suficiente para essa ação!`, 'damage');
             }
+        }
+
+        // ALTERNAR ENTRE BOTÕES DE AÇÃO E HABILIDADES
+        function toggleSkillButtons() {
+            const quickActions = document.getElementById('quickActions');
+            const skillActions = document.getElementById('skillActions');
+            
+            if (quickActions.style.display === 'none') {
+                quickActions.style.display = 'grid';
+                skillActions.style.display = 'none';
+            } else {
+                quickActions.style.display = 'none';
+                skillActions.style.display = 'grid';
+            }
+        }
+
+        // USAR HABILIDADE ESPECÍFICA
+        function useSkill(skillId) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+            
+            const skills = {
+                skill1: { name: 'Habilidade 1', co: 4, damage: Math.floor(Math.random() * 30) + 15, icon: '🔥' },
+                skill2: { name: 'Habilidade 2', co: 3, damage: Math.floor(Math.random() * 25) + 10, icon: '🛡️' },
+                skill3: { name: 'Habilidade 3', co: 5, damage: Math.floor(Math.random() * 35) + 20, icon: '⚡' }
+            };
+            
+            const skill = skills[skillId];
+            
+            if (activeChar.co >= skill.co) {
+                activeChar.co -= skill.co;
+                combatData.coSpentThisTurn += skill.co;
+                
+                if (skill.damage > 0) {
+                    combatData.damageThisTurn += skill.damage;
+                    
+                    // Chance de crítico maior para habilidades (25%)
+                    if (Math.random() < 0.25) {
+                        showCriticalPopup();
+                        skill.damage *= 2;
+                        addLogEntry(`${activeChar.name} usou ${skill.name} ${skill.icon} (CRÍTICO! ${skill.damage} de dano)`, 'damage');
+                    } else {
+                        addLogEntry(`${activeChar.name} usou ${skill.name} ${skill.icon} (${skill.damage} de dano)`, 'damage');
+                    }
+                } else {
+                    addLogEntry(`${activeChar.name} usou ${skill.name} ${skill.icon}`, 'turn');
+                }
+                
+                updateActiveCharacter();
+                updateSummary();
+                playSoundEffect('skill');
+                
+                // Voltar para os botões originais após usar a habilidade
+                toggleSkillButtons();
+            } else {
+                addLogEntry(`${activeChar.name} não tem CO suficiente para ${skill.name}!`, 'turn');
+                playSoundEffect('error');
+            }
+        }
+
+        // ALTERNAR ENTRE BOTÕES DE AÇÃO E ITENS
+        function toggleItemButtons() {
+            const quickActions = document.getElementById('quickActions');
+            const itemActions = document.getElementById('itemActions');
+            
+            if (quickActions.style.display === 'none') {
+                quickActions.style.display = 'grid';
+                itemActions.style.display = 'none';
+            } else {
+                quickActions.style.display = 'none';
+                itemActions.style.display = 'grid';
+                // Atualizar lista de itens ao abrir
+                updateItemsList();
+            }
+        }
+
+        // ABRIR MODAL PARA ADICIONAR ITEM
+        function openAddItemModal() {
+            const container = document.getElementById('itemModalContainer');
+            
+            const modalHtml = `
+                <div class="item-modal-backdrop" onclick="closeItemModal(event)">
+                    <div class="item-modal" onclick="event.stopPropagation()">
+                        <h3><i class="fas fa-plus"></i> ADICIONAR NOVO ITEM</h3>
+                        
+                        <form id="addItemForm" onsubmit="addItem(event)">
+                            <div class="form-group">
+                                <label for="itemName">Nome do Item</label>
+                                <input type="text" id="itemName" name="itemName" required placeholder="Ex: Poção de Cura">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="itemEffect">Efeito do Item</label>
+                                <textarea id="itemEffect" name="itemEffect" required placeholder="Ex: Restaura 20 pontos de vida"></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="itemConsumable">É Consumível?</label>
+                                    <select id="itemConsumable" name="itemConsumable" required onchange="toggleConsumableFields()">
+                                        <option value="true">Sim</option>
+                                        <option value="false">Não</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" id="usesGroup">
+                                    <label for="itemUses">Usos Restantes</label>
+                                    <input type="number" id="itemUses" name="itemUses" min="0" value="1">
+                                </div>
+                            </div>
+ 　 　 　 　 　 　 　 　 　
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="itemTargetable">Usável em Criaturas?</label>
+                                    <select id="itemTargetable" name="itemTargetable" required>
+                                        <option value="false">Apenas em si mesmo</option>
+                                        <option value="true">Em qualquer criatura</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="itemSpace">Espaço no Inventário</label>
+                                    <input type="number" id="itemSpace" name="itemSpace" min="1" value="1" required placeholder="Quantos espaços ocupa">
+                                </div>
+                            </div>
+                            
+                            <div class="modal-buttons">
+                                <button type="button" class="modal-btn cancel" onclick="closeItemModal()">CANCELAR</button>
+                                <button type="submit" class="modal-btn">ADICIONAR ITEM</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = modalHtml;
+            container.style.display = 'block';
+        }
+
+        // FECHAR MODAL DE ITENS
+        function closeItemModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            const container = document.getElementById('itemModalContainer');
+            container.style.display = 'none';
+            container.innerHTML = '';
+        }
+
+        // ALTERNAR CAMPOS DE CONSUMÍVEL
+        function toggleConsumableFields() {
+            const isConsumable = document.getElementById('itemConsumable').value === 'true';
+            const usesGroup = document.getElementById('usesGroup');
+            
+            if (isConsumable) {
+                usesGroup.style.display = 'block';
+                document.getElementById('itemUses').required = true;
+            } else {
+                usesGroup.style.display = 'none';
+                document.getElementById('itemUses').required = false;
+                document.getElementById('itemUses').value = '0';
+            }
+        }
+
+        // ADICIONAR ITEM AO INVENTÁRIO
+        function addItem(event) {
+            event.preventDefault();
+            
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) {
+                addLogEntry('Nenhum personagem ativo para adicionar item!', 'turn');
+                return;
+            }
+            
+            const formData = new FormData(event.target);
+            const isConsumable = formData.get('itemConsumable') === 'true';
+            
+            const newItem = {
+                id: Date.now(), // ID único baseado no timestamp
+                name: formData.get('itemName'),
+                effect: formData.get('itemEffect'),
+                consumable: isConsumable,
+                uses: isConsumable ? parseInt(formData.get('itemUses')) : 0,
+                targetable: formData.get('itemTargetable') === 'true',
+                space: parseInt(formData.get('itemSpace'))
+            };
+            
+            // Inicializar inventário se não existir
+            if (!activeChar.inventory) {
+                activeChar.inventory = [];
+            }
+            
+            // Adicionar item ao inventário
+            activeChar.inventory.push(newItem);
+            
+            // Sincronizar com a ficha
+            syncItemsToSheet(activeChar.inventory);
+            
+            addLogEntry(`${activeChar.name} adicionou "${newItem.name}" ao inventário`, 'turn');
+            playSoundEffect('itemAdd');
+            
+            // Fechar modal e atualizar lista
+            closeItemModal();
+            updateItemsList();
+        }
+
+        // Sincronizar itens com a ficha
+        function syncItemsToSheet(items) {
+            // Obter personagem ativo
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) {
+                console.log('❌ SyncItemsToSheet - Nenhum personagem ativo');
+                return;
+            }
+            
+            console.log('🔄 SyncItemsToSheet - Personagem:', activeChar.name, 'Itens:', items.length);
+            
+            // Salvar itens específicos do personagem usando seu ID
+            const characterKey = `characterItems_${activeChar.id}`;
+            localStorage.setItem(characterKey, JSON.stringify(items));
+            console.log('💾 Salvou itens em:', characterKey);
+            
+            // Salvar também informações do personagem para a ficha
+            const characterInfo = {
+                characterId: activeChar.id,
+                characterName: activeChar.name,
+                items: items
+            };
+            localStorage.setItem('characterItems', JSON.stringify(characterInfo));
+            
+            // Disparar evento para notificar outras páginas
+            localStorage.setItem('itemsUpdated', Date.now().toString());
+            console.log('📢 Evento itemsUpdated disparado da página principal');
+        }
+
+        // Carregar itens da ficha
+        function loadItemsFromSheet() {
+            console.log('📥 LoadItemsFromSheet - Iniciando carregamento');
+            try {
+                const activeChar = combatData.characters.find(c => c.isActive);
+                if (!activeChar) {
+                    console.log('❌ Nenhum personagem ativo encontrado');
+                    // Se não houver personagem ativo, tentar carregar itens pendentes
+                    const pendingItems = localStorage.getItem('pendingItems');
+                    if (pendingItems) {
+                        const items = JSON.parse(pendingItems);
+                        if (Array.isArray(items) && items.length > 0) {
+                            localStorage.setItem('pendingItems', JSON.stringify(items));
+                        }
+                    }
+                    return;
+                }
+                
+                console.log('✅ Personagem ativo:', activeChar.name, 'ID:', activeChar.id);
+                
+                // Tentar carregar itens específicos do personagem
+                const characterKey = `characterItems_${activeChar.id}`;
+                const savedItems = localStorage.getItem(characterKey);
+                
+                console.log('🔍 Procurando itens em:', characterKey);
+                
+                if (savedItems) {
+                    const items = JSON.parse(savedItems);
+                    if (Array.isArray(items)) {
+                        if (!activeChar.inventory) {
+                            activeChar.inventory = [];
+                        }
+                        activeChar.inventory = items;
+                        updateItemsList();
+                        console.log('✅ Itens carregados do personagem:', items.length);
+                    }
+                } else {
+                    // Tentar carregar do characterInfo geral
+                    const characterInfo = localStorage.getItem('characterItems');
+                    if (characterInfo) {
+                        const info = JSON.parse(characterInfo);
+                        if (info.characterId === activeChar.id && Array.isArray(info.items)) {
+                            if (!activeChar.inventory) {
+                                activeChar.inventory = [];
+                            }
+                            activeChar.inventory = info.items;
+                            updateItemsList();
+                            console.log('✅ Itens carregados do characterInfo:', info.items.length);
+                        }
+                    }
+                }
+            } catch(e) {
+                console.error('Erro ao carregar itens da ficha:', e);
+            }
+        }
+
+        // ATUALIZAR LISTA DE ITENS
+        function updateItemsList() {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            const itemsList = document.getElementById('itemsList');
+            
+            if (!activeChar || !activeChar.inventory || activeChar.inventory.length === 0) {
+                itemsList.innerHTML = '<div class="empty-items">Nenhum item no inventário</div>';
+                return;
+            }
+            
+            itemsList.innerHTML = '';
+            
+            activeChar.inventory.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                
+                const usesText = item.consumable ? ` (${item.uses} usos)` : '';
+                const spaceText = item.space > 1 ? ` [${item.space} espaços]` : '';
+                
+                itemCard.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${item.name}${usesText}${spaceText}</div>
+                        <div class="item-effect">${item.effect}</div>
+                        <div class="item-details">${item.consumable ? 'Consumível' : 'Permanente'}</div>
+                    </div>
+                    <div class="item-controls">
+                        ${item.consumable && item.uses > 0 ? 
+                            `<button class="item-btn use" onclick="useItem('${item.id}')">USAR</button>` : 
+                            item.consumable ? 
+                            `<button class="item-btn" disabled>ESGOTADO</button>` : 
+                            `<button class="item-btn use" onclick="useItem('${item.id}')">USAR</button>`
+                        }
+                        <button class="item-btn" onclick="removeItem('${item.id}')">REMOVER</button>
+                    </div>
+                `;
+                itemsList.appendChild(itemCard);
+            });
+        }
+
+        // USAR ITEM
+        function useItem(itemId) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+            
+            const item = activeChar.inventory.find(i => i.id == itemId);
+            if (!item) return;
+            
+            // Verificar se item pode ser usado em outras criaturas
+            if (item.targetable) {
+                // Abrir modal de seleção de alvo
+                openTargetSelectionModal(itemId);
+            } else {
+                // Usar diretamente no personagem ativo
+                applyItemEffect(activeChar, item, activeChar);
+            }
+        }
+
+        // ABRIR MODAL DE SELEÇÃO DE ALVO
+        function openTargetSelectionModal(itemId) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            const item = activeChar.inventory.find(i => i.id == itemId);
+            if (!item) return;
+            
+            const container = document.getElementById('itemModalContainer');
+            
+            // Gerar HTML com lista de personagens como alvos
+            let targetsHtml = '';
+            combatData.characters.forEach(char => {
+                const hpPercent = Math.round((char.hp / char.maxHp) * 100);
+                const isActive = char.isActive ? 'active' : '';
+                const statusIcon = char.isActive ? '⭐' : '';
+                
+                targetsHtml += `
+                    <div class="target-item ${isActive}" onclick="selectTarget('${itemId}', '${char.id}')">
+                        <div class="target-info">
+                            <div class="target-name">${char.name} ${statusIcon}</div>
+                            <div class="target-stats">
+                                <span>HP: ${char.hp}/${char.maxHp}</span>
+                                <span>CO: ${char.co}/${char.maxCo}</span>
+                            </div>
+                            <div class="progress-bar" style="height: 4px; background: rgba(255,255,255,0.1); margin-top: 5px; border-radius: 2px;">
+                                <div style="height: 100%; width: ${hpPercent}%; background: ${hpPercent > 50 ? '#34C759' : hpPercent > 25 ? '#FF9500' : '#FF3B30'}; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <div class="target-avatar">${char.avatar}</div>
+                    </div>
+                `;
+            });
+            
+            const modalHtml = `
+                <div class="item-modal-backdrop" onclick="closeTargetSelectionModal(event)">
+                    <div class="item-modal" onclick="event.stopPropagation()">
+                        <h3><i class="fas fa-crosshairs"></i> SELECIONAR ALVO PARA ${item.name.toUpperCase()}</h3>
+                        <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Escolha quem receberá o efeito: ${item.effect}</p>
+                        
+                        <div class="targets-list">
+                            ${targetsHtml}
+                        </div>
+                        
+                        <div class="modal-buttons">
+                            <button type="button" class="modal-btn cancel" onclick="closeTargetSelectionModal()">CANCELAR</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = modalHtml;
+            container.style.display = 'block';
+        }
+
+        // FECHAR MODAL DE SELEÇÃO DE ALVO
+        function closeTargetSelectionModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            const container = document.getElementById('itemModalContainer');
+            container.style.display = 'none';
+            container.innerHTML = '';
+        }
+
+        // SELECIONAR ALVO E APLICAR ITEM
+        function selectTarget(itemId, targetId) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            const targetChar = combatData.characters.find(c => c.id == targetId);
+            const item = activeChar.inventory.find(i => i.id == itemId);
+            
+            if (!targetChar || !item) return;
+            
+            // Aplicar efeito no alvo
+            applyItemEffect(activeChar, item, targetChar);
+            
+            // Fechar modal
+            closeTargetSelectionModal();
+        }
+
+        // APLICAR EFEITO DO ITEM
+        function applyItemEffect(userChar, item, targetChar) {
+            // Verificar se o item pode ser usado
+            if (item.consumable && item.uses <= 0) {
+                addLogEntry(`${item.name} não tem usos restantes!`, 'turn');
+                return;
+            }
+            
+            let effectMessage = '';
+            let logType = 'turn';
+            
+            // Verificar se é uma poção de cura
+            if (item.name.toLowerCase().includes('cura') || item.effect.toLowerCase().includes('vida') || item.effect.toLowerCase().includes('cura')) {
+                const healAmount = 20; // Valor fixo por enquanto
+                const actualHeal = Math.min(healAmount, targetChar.maxHp - targetChar.hp);
+                targetChar.hp += actualHeal;
+                effectMessage = ` (curou ${actualHeal} PV)`;
+                logType = 'heal';
+            }
+            // Verificar se é uma poção de CO/energia
+            else if (item.name.toLowerCase().includes('co') || item.name.toLowerCase().includes('energia') || item.effect.toLowerCase().includes('co')) {
+                const restoreAmount = 5; // Valor fixo por enquanto
+                const actualRestore = Math.min(restoreAmount, targetChar.maxCo - targetChar.co);
+                targetChar.co += actualRestore;
+                effectMessage = ` (restaurou ${actualRestore} CO)`;
+                logType = 'turn';
+            }
+            else {
+                // Efeito genérico
+                effectMessage = ` - ${item.effect}`;
+                logType = 'turn';
+            }
+            
+            // Mensagem de log diferenciada para uso em si mesmo vs outros
+            if (userChar.id === targetChar.id) {
+                addLogEntry(`${userChar.name} usou ${item.name} em si mesmo${effectMessage}`, logType);
+            } else {
+                addLogEntry(`${userChar.name} usou ${item.name} em ${targetChar.name}${effectMessage}`, logType);
+            }
+            
+            // Reduzir usos se for consumível
+            if (item.consumable) {
+                item.uses--;
+                
+                // Remover item se usos chegaram a 0
+                if (item.uses <= 0) {
+                    const itemIndex = userChar.inventory.findIndex(i => i.id == item.id);
+                    userChar.inventory.splice(itemIndex, 1);
+                    addLogEntry(`${item.name} foi completamente usado e removido do inventário`, 'turn');
+                    
+                    // Sincronizar remoção com a ficha
+                    syncItemsToSheet(userChar.inventory);
+                } else {
+                    // Sincronizar redução de usos com a ficha
+                    syncItemsToSheet(userChar.inventory);
+                }
+            }
+            
+            // Atualizar interface
+            updateActiveCharacter();
+            updateInitiativeList();
+            updateItemsList();
+            playSoundEffect('itemUse');
+        }
+
+        // REMOVER ITEM DO INVENTÁRIO
+        function removeItem(itemId) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+            
+            const itemIndex = activeChar.inventory.findIndex(i => i.id == itemId);
+            if (itemIndex === -1) return;
+            
+            const removedItem = activeChar.inventory[itemIndex];
+            activeChar.inventory.splice(itemIndex, 1);
+            
+            // Sincronizar com a ficha
+            syncItemsToSheet(activeChar.inventory);
+            
+            addLogEntry(`${activeChar.name} removeu "${removedItem.name}" do inventário`, 'turn');
+            updateItemsList();
+            playSoundEffect('itemRemove');
         }
 
         // MOSTRAR POPUP DE CRÍTICO
@@ -1250,7 +2158,7 @@
             const initiative = sheet.initiative || Math.floor(Math.random()*20)+1;
 
             const newChar = {
-                id: combatData.characters.length ? Math.max(...combatData.characters.map(c=>c.id)) + 1 : 1,
+                id: sheetId, // Usar o sheetId original em vez de ID numérico
                 name,
                 hp: Number(hp),
                 maxHp: Number(maxHp),
@@ -1313,7 +2221,11 @@
         }
 
         // INICIAR QUANDO A PÁGINA CARREGAR
-        window.onload = initCombat;
+        window.onload = function() {
+            initCombat();
+            // Tentar carregar itens da ficha ao iniciar
+            loadItemsFromSheet();
+        };
 
         // CARREGAR PERSONAGENS DO LOCAL STORAGE
         function loadCharacters() {
@@ -1337,25 +2249,6 @@
             characters.splice(index, 1);
             localStorage.setItem('characters', JSON.stringify(characters));
             loadCharacters();
-        }
-
-        // REMOVER PERSONAGEM DA ORDEM DE COMBATE (por id)
-        function removeCombatCharacter(id) {
-            const idx = combatData.characters.findIndex(c => c.id === id);
-            if (idx === -1) return;
-
-            const removed = combatData.characters.splice(idx, 1)[0];
-            addLogEntry(`<strong>${removed.name}</strong> foi removido da ordem de iniciativa`);
-
-            // Se não houver mais personagens, resetar estado ativo
-            if (combatData.characters.length === 0) {
-                combatData.currentTurn = 0;
-                combatData.rounds = 0;
-            }
-
-            updateInitiativeList();
-            updateActiveCharacter();
-            updateTurnDisplay();
         }
 
         document.addEventListener('DOMContentLoaded', loadCharacters);
@@ -1389,10 +2282,177 @@
                                 }
                             }
                         }
-                    } catch (err) { /* ignore */ }
-                }, 150);
+                    } catch (e) {
+                        console.error('Erro ao destacar ficha recém-criada:', e);
+                    }
+                }, 300);
+            }
+            // Sincronizar itens quando atualizados da ficha
+            else if (e.key === 'itemsUpdated') {
+                loadItemsFromSheet();
             }
         });
+
+// REMOVER PERSONAGEM DA ORDEM DE COMBATE (por id)
+function removeCombatCharacter(id) {
+    const idx = combatData.characters.findIndex(c => c.id === id);
+    if (idx === -1) return;
+
+            const removed = combatData.characters.splice(idx, 1)[0];
+            addLogEntry(`<strong>${removed.name}</strong> foi removido da ordem de iniciativa`);
+
+            // Se não houver mais personagens, resetar estado ativo
+            if (combatData.characters.length === 0) {
+                combatData.currentTurn = 0;
+                combatData.rounds = 0;
+            }
+
+            updateInitiativeList();
+            updateActiveCharacter();
+            updateTurnDisplay();
+        }
+
+        // AJUSTAR VALOR DE STAT (PV ou CO)
+        function adjustStat(statType, amount) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+
+            // Inicializar controle de mudanças se não existir
+            if (!statChanges[activeChar.id]) {
+                statChanges[activeChar.id] = { hp: 0, co: 0 };
+            }
+
+            if (statType === 'hp') {
+                const newHp = Math.max(0, Math.min(activeChar.maxHp, activeChar.hp + amount));
+                activeChar.hp = newHp;
+                statChanges[activeChar.id].hp += amount;
+            } else if (statType === 'co') {
+                const newCo = Math.max(0, Math.min(activeChar.maxCo, activeChar.co + amount));
+                activeChar.co = newCo;
+                statChanges[activeChar.id].co += amount;
+            }
+
+            updateActiveCharacter();
+            updateInitiativeList();
+        }
+
+        // EDITAR VALOR DE STAT (clicando no texto)
+        function editStat(statType) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+
+            const currentValue = statType === 'hp' ? activeChar.hp : activeChar.co;
+            const maxValue = statType === 'hp' ? activeChar.maxHp : activeChar.maxCo;
+            const statName = statType === 'hp' ? 'PV' : 'CO';
+            const textElement = document.getElementById(statType + 'Text');
+
+            // Criar input inline
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '0';
+            input.max = maxValue;
+            input.value = currentValue;
+            input.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-family: 'Orbitron', sans-serif;
+                font-weight: 700;
+                font-size: 0.9rem;
+                color: white;
+                background: rgba(0, 0, 0, 0.8);
+                border: 2px solid var(--hexa-blue);
+                border-radius: 4px;
+                padding: 2px 8px;
+                width: 80px;
+                text-align: center;
+                z-index: 20;
+            `;
+
+            // Substituir texto pelo input
+            textElement.style.display = 'none';
+            textElement.parentNode.appendChild(input);
+            input.focus();
+            input.select();
+
+            // Função para salvar ou cancelar
+            const saveOrCancel = () => {
+                const newValue = parseInt(input.value);
+                
+                if (!isNaN(newValue) && newValue >= 0 && newValue <= maxValue) {
+                    // Inicializar controle de mudanças se não existir
+                    if (!statChanges[activeChar.id]) {
+                        statChanges[activeChar.id] = { hp: 0, co: 0 };
+                    }
+
+                    const oldValue = currentValue;
+                    const difference = newValue - oldValue;
+                    
+                    if (statType === 'hp') {
+                        activeChar.hp = newValue;
+                        statChanges[activeChar.id].hp += difference;
+                    } else {
+                        activeChar.co = newValue;
+                        statChanges[activeChar.id].co += difference;
+                    }
+                    
+                    updateActiveCharacter();
+                    updateInitiativeList();
+                }
+                
+                // Remover input e mostrar texto novamente
+                input.remove();
+                textElement.style.display = '';
+            };
+
+            // Eventos
+            input.addEventListener('blur', saveOrCancel);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveOrCancel();
+                } else if (e.key === 'Escape') {
+                    input.remove();
+                    textElement.style.display = '';
+                }
+            });
+        }
+
+        // REGISTRAR MUDANÇAS DE STATS NO LOG (chamado no final do turno)
+        function logStatChanges() {
+            Object.keys(statChanges).forEach(charId => {
+                const char = combatData.characters.find(c => c.id == charId);
+                if (!char) return;
+
+                const changes = statChanges[charId];
+                let logMessages = [];
+
+                if (changes.hp !== 0) {
+                    const action = changes.hp > 0 ? 'recebeu' : 'perdeu';
+                    logMessages.push(`${action} ${Math.abs(changes.hp)} PV`);
+                }
+
+                if (changes.co !== 0) {
+                    const action = changes.co > 0 ? 'ganhou' : 'perdeu';
+                    logMessages.push(`${action} ${Math.abs(changes.co)} CO`);
+                }
+
+                if (logMessages.length > 0) {
+                    addLogEntry(`${char.name} ${logMessages.join(' e ')} neste turno`, 
+                               changes.hp > 0 ? 'heal' : 'damage');
+                }
+            });
+
+            // Resetar mudanças após o log
+            statChanges = {};
+        }
+
+        // SIMULAR EFEITOS SONOROS
+        function playSoundEffect(type) {
+            // Em uma implementação real, você tocaria arquivos de áudio
+            console.log(`Som reproduzido: ${type}`);
+        }
 
         // setup do toggle de protocolos (colapsar/expandir)
         function setupProtocolsToggle() {
@@ -1417,4 +2477,3 @@
 
     <!-- duplicata removida: #character-list já está dentro da sidebar -->
 </body>
-</html>

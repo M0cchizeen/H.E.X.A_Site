@@ -25,6 +25,19 @@
         @media(max-width:900px){.three-cols{grid-template-columns:1fr}}
         .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
         .btn{background:linear-gradient(90deg,var(--accent-blue),var(--accent-pink));color:#050505;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+        /* Estilos para inventário */
+        .inventory-header{margin-bottom:12px}
+        .items-list{max-height:200px;overflow-y:auto;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;background:rgba(0,0,0,0.2)}
+        .item-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+        .item-info{flex:1}
+        .item-name{font-weight:700;color:var(--accent-blue);margin-bottom:4px}
+        .item-effect{font-size:0.9rem;color:rgba(255,255,255,0.7);margin-bottom:4px}
+        .item-details{font-size:0.8rem;color:var(--accent-pink)}
+        .item-controls{display:flex;gap:6px;margin-left:12px}
+        .item-btn{background:rgba(0,209,255,0.2);border:1px solid var(--accent-blue);color:var(--text);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.8rem;font-family:inherit}
+        .item-btn:hover{background:rgba(0,209,255,0.3)}
+        .item-btn:disabled{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);cursor:not-allowed}
+        .empty-items{color:rgba(255,255,255,0.5);text-align:center;padding:20px;font-style:italic}
     </style>
 </head>
 <body>
@@ -58,6 +71,10 @@
             input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
             input[type=number]{-moz-appearance:textfield}
             @media(max-width:700px){.compact-grid{grid-template-columns:1fr}}
+            /* Two column layout for Attributes and Resources */
+            .two-column-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+            .two-column-layout h2{margin-top:0}
+            @media(max-width:900px){.two-column-layout{grid-template-columns:1fr}}
         </style>
 
         <div class="compact-grid">
@@ -94,85 +111,109 @@
         </div>
         
 
-        <h2>Atributos</h2>
-        <style>
-            .attributes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
-            .attr-item{text-align:center}
-            .attr-hex{width:100%;max-width:120px;margin:0 auto;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;color:var(--text);background:linear-gradient(180deg, rgba(255,51,204,0.12), rgba(0,209,255,0.06));-webkit-clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);border:2px solid rgba(255,255,255,0.04);padding:8px;position:relative}
-            .attr-hex .attr-input{width:60%;font-size:2.2rem;background:transparent;border:none;color:var(--text);text-align:center;outline:none;padding:0;margin:0}
-            .attr-input::-webkit-outer-spin-button,
-            .attr-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-            .attr-input[type=number]{-moz-appearance:textfield}
-            .attr-label{display:block;margin-top:8px;color:var(--accent-pink);font-weight:700}
-            @media(max-width:700px){.attributes-grid{grid-template-columns:repeat(2,1fr);}}
-        </style>
+        <div class="two-column-layout">
+            <div class="left-column">
+                <h2>Atributos</h2>
+                <style>
+                    .attributes-grid {
+    display: grid;
+    /* Define um tamanho fixo para as colunas em vez de 1fr */
+    grid-template-columns: repeat(3, 100px); 
+    /* Reduz o espaço entre os hexágonos */
+    gap: 8px; 
+    /* Centraliza a grade inteira no painel */
+    justify-content: center; 
+    margin-top: 8px;
+}
+                    .attr-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Garante que o label e hex fiquem alinhados no eixo vertical */
+    text-align: center;
+}
+                    .attr-hex{width:100px;height:100px;max-width:120px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;color:var(--text);background:linear-gradient(180deg, rgba(255,51,204,0.12), rgba(0,209,255,0.06));-webkit-clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);border:2px solid rgba(255,255,255,0.04);padding:8px;position:relative}
+                    .attr-hex .attr-input{width:60%;font-size:2.2rem;background:transparent;border:none;color:var(--text);text-align:center;outline:none;padding:0;margin:0}
+                    .attr-input::-webkit-outer-spin-button,
+                    .attr-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+                    .attr-input[type=number]{-moz-appearance:textfield}
+                    .attr-label {
+    display: block;
+    margin-top: 2px; /* Espaço mínimo entre o hex e o texto */
+    font-size: 0.8rem;
+    color: var(--accent-pink);
+    font-weight: 700;
+}
+                    @media(max-width:700px){.attributes-grid{grid-template-columns:repeat(2,1fr);}}
+                </style>
 
-        <div class="attributes-grid">
-            <div class="attr-item">
-                <div class="attr-hex"><input class="attr-input" type="number" id="men" name="men" required></div>
-                <label class="attr-label" for="men">MEN</label>
+                <div class="attributes-grid">
+                    <div class="attr-item">
+                        <div class="attr-hex"><input class="attr-input" type="number" id="men" name="men" required></div>
+                        <label class="attr-label" for="men">MEN</label>
+                    </div>
+                    <div class="attr-item">
+                        <div class="attr-hex"><input class="attr-input" type="number" id="cor" name="cor" required></div>
+                        <label class="attr-label" for="cor">COR</label>
+                    </div>
+                    <div class="attr-item">
+                        <div class="attr-hex"><input class="attr-input" type="number" id="agi" name="agi" required></div>
+                        <label class="attr-label" for="agi">AGI</label>
+                    </div>
+                    <div class="attr-item">
+                        <div class="attr-hex"><input class="attr-input" type="number" id="for" name="for" required></div>
+                        <label class="attr-label" for="for">FOR</label>
+                    </div>
+                    <div class="attr-item">
+                        <div class="attr-hex"><input class="attr-input" type="number" id="cha" name="cha" required></div>
+                        <label class="attr-label" for="cha">CHA</label>
+                    </div>
+                    <div class="attr-item">
+                        <div class="attr-hex"><input class="attr-input" type="number" id="con" name="con" required></div>
+                        <label class="attr-label" for="con">CON</label>
+                    </div>
+                </div>
             </div>
-            <div class="attr-item">
-                <div class="attr-hex"><input class="attr-input" type="number" id="cor" name="cor" required></div>
-                <label class="attr-label" for="cor">COR</label>
-            </div>
-            <div class="attr-item">
-                <div class="attr-hex"><input class="attr-input" type="number" id="agi" name="agi" required></div>
-                <label class="attr-label" for="agi">AGI</label>
-            </div>
-            <div class="attr-item">
-                <div class="attr-hex"><input class="attr-input" type="number" id="for" name="for" required></div>
-                <label class="attr-label" for="for">FOR</label>
-            </div>
-            <div class="attr-item">
-                <div class="attr-hex"><input class="attr-input" type="number" id="cha" name="cha" required></div>
-                <label class="attr-label" for="cha">CHA</label>
-            </div>
-            <div class="attr-item">
-                <div class="attr-hex"><input class="attr-input" type="number" id="con" name="con" required></div>
-                <label class="attr-label" for="con">CON</label>
+            
+            <div class="right-column">
+                <h2>Recursos</h2>
+                <div class="resources-row">
+                    <div class="resource-item">
+                        <div class="resource-shape">
+                            <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                                <!-- stylized straight-line heart made with polygon (no curves) -->
+                                <polygon data-shape="hexagon" 
+                 points="50,10 72,22 64,44 50,56 36,44 28,22" stroke="rgba(255,51,204,0.85)" stroke-width="2" fill="rgba(255,51,204,0.03)"/>
+                            </svg>
+                            <input type="number" id="vitalidade" name="vitalidade" required>
+                        </div>
+                        <label class="resource-label" for="vitalidade">Vitalidade</label>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-shape">
+                            <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                                <!-- chip-like square with inner lines -->
+                                <rect x="10" y="14" width="80" height="56" rx="6" stroke="rgba(0,209,255,0.8)" stroke-width="2" fill="rgba(0,209,255,0.03)"/>
+                                <rect x="24" y="28" width="52" height="28" rx="3" stroke="rgba(0,209,255,0.45)" stroke-width="1" fill="none"/>
+                                <line x1="34" y1="36" x2="34" y2="52" stroke="rgba(0,209,255,0.45)" stroke-width="1"/>
+                                <line x1="66" y1="36" x2="66" y2="52" stroke="rgba(0,209,255,0.45)" stroke-width="1"/>
+                            </svg>
+                            <input type="number" id="carga-operacional" name="carga-operacional" required>
+                        </div>
+                        <label class="resource-label" for="carga-operacional">Carga Operacional</label>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-shape">
+                            <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                                <!-- shield built with straight segments -->
+                                <polygon points="50,6 80,20 80,44 50,72 20,44 20,20" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="rgba(0,0,0,0.02)"/>
+                            </svg>
+                            <input type="number" id="defesa" name="defesa" required>
+                        </div>
+                        <label class="resource-label" for="defesa">Defesa</label>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <h2>Recursos</h2>
-        <div class="resources-row">
-            <div class="resource-item">
-                <div class="resource-shape">
-                    <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                        <!-- stylized straight-line heart made with polygon (no curves) -->
-                        <polygon data-shape="hexagon" 
-             points="50,10 72,22 64,44 50,56 36,44 28,22" stroke="rgba(255,51,204,0.85)" stroke-width="2" fill="rgba(255,51,204,0.03)"/>
-                    </svg>
-                    <input type="number" id="vitalidade" name="vitalidade" required>
-                </div>
-                <label class="resource-label" for="vitalidade">Vitalidade</label>
-            </div>
-            <div class="resource-item">
-                <div class="resource-shape">
-                    <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                        <!-- chip-like square with inner lines -->
-                        <rect x="10" y="14" width="80" height="56" rx="6" stroke="rgba(0,209,255,0.8)" stroke-width="2" fill="rgba(0,209,255,0.03)"/>
-                        <rect x="24" y="28" width="52" height="28" rx="3" stroke="rgba(0,209,255,0.45)" stroke-width="1" fill="none"/>
-                        <line x1="34" y1="36" x2="34" y2="52" stroke="rgba(0,209,255,0.45)" stroke-width="1"/>
-                        <line x1="66" y1="36" x2="66" y2="52" stroke="rgba(0,209,255,0.45)" stroke-width="1"/>
-                    </svg>
-                    <input type="number" id="carga-operacional" name="carga-operacional" required>
-                </div>
-                <label class="resource-label" for="carga-operacional">Carga Operacional</label>
-            </div>
-            <div class="resource-item">
-                <div class="resource-shape">
-                    <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                        <!-- shield built with straight segments -->
-                        <polygon points="50,6 80,20 80,44 50,72 20,44 20,20" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="rgba(0,0,0,0.02)"/>
-                    </svg>
-                    <input type="number" id="defesa" name="defesa" required>
-                </div>
-                <label class="resource-label" for="defesa">Defesa</label>
-            </div>
-        </div>
-
-        <!-- Removed duplicate avatar and heading; only compact-grid avatar kept -->
 
         <h2 class="section-title">Protocolos</h2>
         <div id="protocol-list" class="protocols">
@@ -186,7 +227,17 @@
             </div>
             <div>
                 <label class="section-title" for="inventario">Inventário</label>
-                <textarea id="inventario" name="inventario" placeholder="Itens do Inventário"></textarea>
+                <div id="inventory-container">
+                    <div class="inventory-header">
+                        <button type="button" class="btn" onclick="openAddItemModal()" style="font-size:0.9rem; padding:6px 12px;">
+                            <i class="fas fa-plus"></i> ADICIONAR ITEM
+                        </button>
+                    </div>
+                    <div id="items-list" class="items-list">
+                        <!-- Itens serão adicionados dinamicamente aqui -->
+                    </div>
+                    <textarea id="inventario" name="inventario" style="display:none;" placeholder="Itens do Inventário"></textarea>
+                </div>
             </div>
             <div>
                 <label class="section-title" for="habilidades">Habilidades de Arquétipo</label>

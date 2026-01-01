@@ -5,3 +5,39 @@ body { font-family: Arial, sans-serif; margin:20px; }
 button { margin:4px; padding:8px 12px; }
 .modal { position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; }
 .modal-content { background:#fff; padding:16px; border-radius:6px; width:90%; max-width:500px; }
+
+.main-stats-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px; /* Espaço entre Atributos e Recursos */
+    margin-top: 20px;
+}
+
+/* Garante que o título fique dentro de cada coluna */
+.stat-column {
+    flex: 1;
+}
+
+/* Ajuste na grid de atributos para não centralizar, mas sim alinhar à esquerda */
+.attributes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 12px;
+    justify-content: flex-start; /* Alinhado à esquerda */
+}
+
+/* Ajuste na row de recursos para empilhar verticalmente ou em grid menor */
+.resources-column-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Responsividade: Volta a empilhar em telas pequenas */
+@media(max-width: 850px) {
+    .main-stats-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
