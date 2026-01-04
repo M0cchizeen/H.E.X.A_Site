@@ -28,53 +28,87 @@ class HexaGitHubSync {
             
             console.log('🔗 Conectado à sincronização via GitHub API');
         } else {
-            console.error('❌ GitHub API não encontrada - sistema desativado');
-            this.disableSystem();
+            console.error('❌ GitHub API não encontrada');
+            this.enableOfflineMode();
         }
-    }
-
-    disableSystem() {
-        console.log('❌ Sistema desativado - GitHub API não disponível');
-        this.isConnected = false;
-        
-        if (this.onDisconnect) {
-            this.onDisconnect();
-        }
-        
-        this.showNotification('❌ Sistema desativado - GitHub API não disponível', 'error');
     }
 
     enableOfflineMode() {
-        console.log('📴 Ativando modo offline...');
+        console.log('📴 GitHub API desconectada - BLOQUEANDO SITE...');
         this.isConnected = false;
         
-        // Configurar sincronização local como fallback
-        if (window.hexaLocalSync) {
-            console.log('🔄 Configurando sincronização local como fallback...');
-            
-            // Redirecionar callbacks para o sistema local
-            window.hexaLocalSync.onStateUpdate = this.onStateUpdate;
-            window.hexaLocalSync.onLogUpdate = this.onLogUpdate;
-            
-            // Carregar dados existentes do localStorage
-            const localState = window.hexaLocalSync.loadState();
-            if (localState && this.onStateUpdate) {
-                console.log('📥 Carregando estado do localStorage...');
-                this.onStateUpdate(localState);
-            }
-            
-            const localLog = window.hexaLocalSync.loadLog();
-            if (localLog.length > 0 && this.onLogUpdate) {
-                console.log('📥 Carregando log do localStorage...');
-                this.onLogUpdate(localLog);
-            }
-        }
+        // Bloquear completamente o site
+        this.blockSite();
         
         if (this.onDisconnect) {
             this.onDisconnect();
         }
+    }
+
+    blockSite() {
+        console.log('🚫 Site bloqueado - GitHub API não disponível');
         
-        this.showNotification('📴 Modo offline ativado - usando sincronização local', 'warning');
+        // Remover todo o conteúdo do body
+        document.body.innerHTML = '';
+        
+        // Criar tela de bloqueio
+        const blockScreen = document.createElement('div');
+        blockScreen.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            z-index: 99999;
+        `;
+        
+        blockScreen.innerHTML = `
+            <div style="text-align: center; max-width: 600px; padding: 40px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+                <h1 style="color: #ff4444; margin-bottom: 20px; font-size: 2.5rem;">H.E.X.A BLOQUEADO</h1>
+                <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.8;">
+                    O sistema de sincronização via GitHub API não está disponível.
+                </p>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h3 style="color: #ffaa00; margin-bottom: 15px;">🔧 Soluções:</h3>
+                    <ul style="text-align: left; list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px;">✅ Verifique sua conexão com a internet</li>
+                        <li style="margin-bottom: 10px;">✅ Verifique se o repositório GitHub está acessível</li>
+                        <li style="margin-bottom: 10px;">✅ Configure um token GitHub API se necessário</li>
+                        <li style="margin-bottom: 10px;">✅ Tente recarregar a página em alguns minutos</li>
+                    </ul>
+                </div>
+                <div style="font-size: 0.9rem; opacity: 0.6;">
+                    <p>Erro: GitHub API 401/403 - Sem autenticação ou acesso negado</p>
+                    <p style="margin-top: 10px;">Repositório: M0cchizeen/H.E.X.A_Site</p>
+                </div>
+                <button onclick="location.reload()" style="
+                    margin-top: 30px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border: none;
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    font-size: 1.1rem;
+                    cursor: pointer;
+                    transition: transform 0.2s;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    🔄 TENTAR NOVAMENTE
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(blockScreen);
+        
+        // Parar todos os scripts
+        throw new Error('H.E.X.A Site bloqueado - GitHub API não disponível');
     }
 
     showNotification(message, type = 'info') {
@@ -152,23 +186,25 @@ class HexaGitHubSync {
         } catch (error) {
             console.error('❌ Erro ao verificar atualizações:', error);
             
-            // Se for erro de autenticação, desativar sistema completamente
+            // Se for erro de autenticação, bloquear o site
             if (error.message && (error.message.includes('401') || error.message.includes('403'))) {
-                console.error('🔒 Erro de autenticação detectado - desativando sistema...');
-                this.disableSystem();
+                console.error('🔒 Erro de autenticação detectado - BLOQUEANDO SITE...');
+                this.blockSite();
             }
         }
     }
 
     // Métodos de sincronização
     async updateInitiative(initiative) {
-        if (!this.isConnected || !window.hexaDatabase) {
-            console.error('❌ Sistema não conectado - impossível sincronizar iniciativa');
+        if (!this.isConnected) {
+            console.error('❌ Impossível sincronizar - GitHub API desconectada');
+            this.blockSite();
             return;
         }
 
         try {
             console.log('🔄 Sincronizando iniciativa:', initiative);
+            
             const currentState = await this.getCurrentState();
             if (currentState) {
                 currentState.initiative = initiative;
@@ -181,10 +217,13 @@ class HexaGitHubSync {
                     console.log('✅ Iniciativa sincronizada com sucesso via GitHub');
                 } else {
                     console.error('❌ Falha ao sincronizar iniciativa via GitHub:', result.error);
+                    throw new Error(result.error);
                 }
             }
+            
         } catch (error) {
             console.error('❌ Erro ao sincronizar iniciativa:', error);
+            this.blockSite();
         }
     }
 
@@ -289,21 +328,32 @@ class HexaGitHubSync {
     }
 
     async addLogEntry(logType, message) {
-        if (!this.isConnected || !window.hexaDatabase) {
-            console.error('❌ Sistema não conectado - impossível adicionar entrada de log');
-            return;
-        }
-
         try {
             console.log('📝 Adicionando entrada ao log...');
-            const result = await window.hexaDatabase.addCombatLogEntry(logType, message);
-            if (result.success) {
-                console.log('✅ Entrada de log sincronizada com sucesso via GitHub');
-            } else {
-                console.error('❌ Falha ao adicionar entrada de log via GitHub:', result.error);
+            
+            if (this.isConnected && window.hexaDatabase) {
+                // Tentar sincronizar via GitHub
+                const result = await window.hexaDatabase.addCombatLogEntry(logType, message);
+                if (result.success) {
+                    console.log('✅ Entrada de log sincronizada com sucesso via GitHub');
+                    return;
+                } else {
+                    console.error('❌ Falha ao adicionar entrada de log via GitHub:', result.error);
+                }
             }
+            
+            // Fallback para localStorage
+            if (window.hexaLocalSync) {
+                window.hexaLocalSync.addLogEntry(logType, message);
+                console.log('✅ Entrada de log sincronizada via localStorage');
+            }
+            
         } catch (error) {
             console.error('❌ Erro ao adicionar entrada de log:', error);
+            // Fallback para localStorage
+            if (window.hexaLocalSync) {
+                window.hexaLocalSync.addLogEntry(logType, message);
+            }
         }
     }
 
