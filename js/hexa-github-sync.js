@@ -19,8 +19,8 @@ class HexaGitHubSync {
     init() {
         // Verificar se a API GitHub está disponível
         if (window.hexaDatabase) {
-            this.startPolling();
             this.isConnected = true;
+            this.startPolling();
             
             if (this.onConnect) {
                 this.onConnect();
@@ -244,18 +244,23 @@ class HexaGitHubSync {
     }
 }
 
-// Instância global do sistema de sincronização GitHub
-let hexaGitHubSync = null;
-
 // Inicializar quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     // Esperar um pouco para garantir que hexaDatabase esteja disponível
     setTimeout(() => {
-        hexaGitHubSync = new HexaGitHubSync();
+        console.log('🔍 Verificando disponibilidade do hexaDatabase...');
+        console.log('🔍 window.hexaDatabase disponível:', !!window.hexaDatabase);
         
-        // Disponibilizar globalmente
-        window.hexaGitHubSync = hexaGitHubSync;
-        
-        console.log('🔗 Sistema de sincronização GitHub H.E.X.A inicializado');
-    }, 500);
+        if (window.hexaDatabase) {
+            console.log('🔍 hexaDatabase encontrado, criando sistema de sincronização...');
+            hexaGitHubSync = new HexaGitHubSync();
+            
+            // Disponibilizar globalmente
+            window.hexaGitHubSync = hexaGitHubSync;
+            
+            console.log('🔗 Sistema de sincronização GitHub H.E.X.A inicializado');
+        } else {
+            console.error('❌ hexaDatabase não encontrado após espera');
+        }
+    }, 1000); // Aumentar espera para 1 segundo
 });
