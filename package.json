@@ -1,0 +1,19 @@
+{
+  "name": "hexa-combat-sync",
+  "version": "1.0.0",
+  "description": "Sistema de sincronização em tempo real para H.E.X.A Combat",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["hexa", "combat", "websocket", "sync", "realtime"],
+  "author": "H.E.X.A Team",
+  "license": "MIT"
+}

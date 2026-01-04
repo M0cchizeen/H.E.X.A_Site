@@ -1384,6 +1384,7 @@
             
             <div class="combat-time">
                 <i class="fas fa-clock"></i> <span id="combatTimer">00:00</span>
+                <span id="syncStatus" class="sync-status" style="margin-left: 10px; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Desconectado</span>
             </div>
         </header>
         
@@ -1515,15 +1516,21 @@
             </div>
             
             <div class="control-buttons">
-                <button class="control-btn" onclick="nextTurn()">
+                <button class="control-btn" id="startCombatBtn" onclick="hexaCombat.startCombat()">
+                    <i class="fas fa-play"></i> INICIAR COMBATE
+                </button>
+                <button class="control-btn" id="endCombatBtn" onclick="hexaCombat.endCombat()">
+                    <i class="fas fa-stop"></i> FINALIZAR COMBATE
+                </button>
+                <button class="control-btn" id="nextTurnBtn" onclick="hexaCombat.nextTurn()">
                     <i class="fas fa-forward"></i> PRÓXIMO TURNO
                 </button>
                 <button class="control-btn blue" onclick="rollInitiative()">
                     <i class="fas fa-dice-d20"></i> ROLAR INICIATIVA
                 </button>
-                    <button class="control-btn blue" onclick="window.open('pages/create_character.html','_blank')">
-                        <i class="fas fa-file-circle-plus"></i> CRIAR FICHA
-                    </button>
+                <button class="control-btn blue" onclick="window.open('pages/create_character.html','_blank')">
+                    <i class="fas fa-file-circle-plus"></i> CRIAR FICHA
+                </button>
                 <button class="control-btn" onclick="openAddModal()">
                     <i class="fas fa-user-plus"></i> ADICIONAR
                 </button>
@@ -3349,6 +3356,12 @@ function removeCombatCharacter(id) {
         `;
         document.head.appendChild(adminStyles);
     </script>
+
+    <!-- Script de Sincronização GitHub API -->
+    <script src="js/hexa-github-sync.js"></script>
+    
+    <!-- Script de Combate Sincronizado -->
+    <script src="js/hexa-combat.js"></script>
 
     <!-- Script de Inicialização H.E.X.A (LOGIN) -->
     <script src="js/hexa-init.js"></script>
