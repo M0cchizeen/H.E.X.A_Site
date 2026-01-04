@@ -195,12 +195,6 @@ class HexaGitHubDatabase {
     }
 }
 
-// Instância global do banco de dados
-const hexaDatabase = new HexaGitHubDatabase();
-
-// Disponibilizar globalmente
-window.hexaDatabase = hexaDatabase;
-
 // ===== MÉTODOS DE SINCRONIZAÇÃO DE COMBATE =====
 
 // Salvar estado do combate
@@ -446,3 +440,16 @@ HexaGitHubDatabase.prototype.closeIssue = async function(issueNumber) {
         return null;
     }
 };
+
+// Instância global do banco de dados GitHub
+let hexaDatabase = null;
+
+// Inicializar quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', () => {
+    hexaDatabase = new HexaGitHubDatabase();
+    
+    // Disponibilizar globalmente
+    window.hexaDatabase = hexaDatabase;
+    
+    console.log('🗄️ Banco de dados GitHub H.E.X.A inicializado');
+});

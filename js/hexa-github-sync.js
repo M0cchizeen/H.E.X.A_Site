@@ -296,6 +296,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('🔗 Sistema de sincronização GitHub H.E.X.A inicializado');
         } else {
             console.error('❌ hexaDatabase não encontrado após espera');
+            // Tentar novamente após mais tempo
+            setTimeout(() => {
+                if (window.hexaDatabase) {
+                    console.log('🔍 hexaDatabase encontrado na segunda tentativa...');
+                    hexaGitHubSync = new HexaGitHubSync();
+                    window.hexaGitHubSync = hexaGitHubSync;
+                    console.log('🔗 Sistema de sincronização GitHub H.E.X.A inicializado (tardio)');
+                } else {
+                    console.error('❌ hexaDatabase não encontrado mesmo após espera extendida');
+                }
+            }, 2000);
         }
-    }, 1000); // Aumentar espera para 1 segundo
+    }, 1500); // Aumentar espera para 1.5 segundos
 });
