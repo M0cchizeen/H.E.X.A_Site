@@ -10,8 +10,9 @@
     <style>
         :root {
             --cyber-black: #000000;
-            --cyber-yellow: #FFE500;
-            --cyber-blue: #00D4FF;
+            --primary-1: #FB00C1;
+            --primary-2: #85FFC6;
+            --secondary: #7332FE;
             --cyber-white: #FFFFFF;
             --cyber-gray: #1A1A1A;
         }
@@ -43,8 +44,8 @@
                 0deg,
                 transparent,
                 transparent 2px,
-                rgba(0, 212, 255, 0.03) 2px,
-                rgba(0, 212, 255, 0.03) 4px
+                rgba(133, 255, 198, 0.03) 2px,
+                rgba(133, 255, 198, 0.03) 4px
             );
             pointer-events: none;
             z-index: 1;
@@ -62,8 +63,8 @@
                     90deg,
                     transparent,
                     transparent 2px,
-                    rgba(255, 229, 0, 0.02) 2px,
-                    rgba(255, 229, 0, 0.02) 4px
+                    rgba(251, 0, 193, 0.02) 2px,
+                    rgba(251, 0, 193, 0.02) 4px
                 );
             pointer-events: none;
             z-index: 1;
@@ -82,20 +83,20 @@
 
         ::-webkit-scrollbar-track {
             background: var(--cyber-black);
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--cyber-blue);
-            border: 2px solid var(--cyber-yellow);
+            background: var(--primary-2);
+            border: 2px solid var(--primary-1);
             clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
             transition: all 0.3s;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--cyber-yellow);
-            border-color: var(--cyber-blue);
+            background: var(--primary-1);
+            border-color: var(--primary-2);
             box-shadow: 0 0 10px rgba(255, 229, 0, 0.5);
         }
 
@@ -108,11 +109,11 @@
             margin: 0 auto;
             background: var(--cyber-black);
             padding: 22px;
-            border: 3px solid var(--cyber-yellow);
+            border: 3px solid var(--primary-1);
             clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
             box-shadow: 
-                0 0 30px rgba(255, 229, 0, 0.4),
-                inset 0 0 30px rgba(0, 212, 255, 0.1);
+                0 0 30px rgba(251, 0, 193, 0.4),
+                inset 0 0 30px rgba(133, 255, 198, 0.1);
             position: relative;
             z-index: 2;
         }
@@ -124,7 +125,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--cyber-yellow), var(--cyber-blue), var(--cyber-yellow));
+            background: linear-gradient(90deg, var(--primary-1), var(--primary-2), var(--primary-1));
             animation: glow-pulse 2s ease-in-out infinite;
         }
 
@@ -135,10 +136,10 @@
 
         h1 {
             font-family: 'Bebas Neue', sans-serif;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             font-size: 2.8rem;
             margin-bottom: 20px;
-            text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+            text-shadow: 0 0 15px rgba(133, 255, 198, 0.8);
             text-align: center;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -147,18 +148,18 @@
         label {
             display: block;
             margin-top: 10px;
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             font-weight: 700;
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 1px;
-            text-shadow: 0 0 5px rgba(255, 229, 0, 0.5);
+            text-shadow: 0 0 5px rgba(251, 0, 193, 0.5);
         }
 
         input[type="text"], input[type="number"], textarea, select {
             width: 100%;
             padding: 10px;
             background: var(--cyber-black);
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             color: var(--cyber-white);
             margin-top: 6px;
             font-family: 'Orbitron', monospace;
@@ -168,8 +169,8 @@
 
         input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: var(--cyber-yellow);
-            box-shadow: 0 0 15px rgba(255, 229, 0, 0.3);
+            border-color: var(--primary-1);
+            box-shadow: 0 0 15px rgba(251, 0, 193, 0.3);
         }
 
         textarea {
@@ -185,7 +186,7 @@
 
         .section-title {
             font-family: 'Bebas Neue';
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             margin-top: 20px;
             margin-bottom: 12px;
             font-size: 1.5rem;
@@ -203,7 +204,7 @@
         .protocol-item {
             background: var(--cyber-black);
             padding: 8px;
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
             text-align: center;
             font-size: 0.9rem;
@@ -212,13 +213,13 @@
         }
 
         .protocol-item:hover {
-            border-color: var(--cyber-yellow);
-            box-shadow: 0 0 10px rgba(255, 229, 0, 0.3);
+            border-color: var(--primary-1);
+            box-shadow: 0 0 15px rgba(251, 0, 193, 0.3);
         }
 
         .protocol-item span {
             display: block;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             font-weight: 700;
             margin-bottom: 4px;
             font-family: 'Bebas Neue', sans-serif;
@@ -246,9 +247,9 @@
 
         .btn {
             background: var(--cyber-black);
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             padding: 12px 24px;
-            border: 2px solid var(--cyber-yellow);
+            border: 2px solid var(--primary-1);
             cursor: pointer;
             font-weight: 700;
             font-family: 'Bebas Neue', sans-serif;
@@ -267,7 +268,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 229, 0, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(251, 0, 193, 0.3), transparent);
             transition: left 0.5s;
         }
 
@@ -278,10 +279,10 @@
         .btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 
-                0 5px 20px rgba(255, 229, 0, 0.6),
-                inset 0 0 20px rgba(255, 229, 0, 0.1);
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+                0 5px 20px rgba(251, 0, 193, 0.6),
+                inset 0 0 20px rgba(251, 0, 193, 0.1);
+            border-color: var(--primary-2);
+            color: var(--primary-2);
         }
 
         .btn:active {
@@ -290,18 +291,18 @@
 
         /* Estilos para inventário */
         .inventory-header{margin-bottom:15px}
-        .items-list{max-height:200px;overflow-y:auto;border:2px solid var(--cyber-blue);padding:12px;background:var(--cyber-black);clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);}
-        .item-card{background:rgba(255, 255, 255, 0.05);border:1px solid var(--cyber-blue);padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);transition:all 0.3s;}
-        .item-card:hover{background:rgba(255, 255, 255, 0.1);border-color:var(--cyber-yellow);transform:translateX(5px);}
+        .items-list{max-height:200px;overflow-y:auto;border:2px solid var(--primary-2);padding:12px;background:var(--cyber-black);clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);}
+        .item-card{background:rgba(255, 255, 255, 0.05);border:1px solid var(--primary-2);padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);transition:all 0.3s;}
+        .item-card:hover{background:rgba(255, 255, 255, 0.1);border-color:var(--primary-1);transform:translateX(5px);}
         .item-info{flex:1}
-        .item-name{font-weight:700;color:var(--cyber-blue);margin-bottom:4px;font-family:'Bebas Neue', sans-serif;letter-spacing:1px;}
+        .item-name{font-weight:700;color:var(--primary-2);margin-bottom:4px;font-family:'Bebas Neue', sans-serif;letter-spacing:1px;}
         .item-effect{font-size:0.9rem;color:rgba(255, 255, 255, 0.7);margin-bottom:4px}
-        .item-details{font-size:0.8rem;color:var(--cyber-yellow)}
+        .item-details{font-size:0.8rem;color:var(--primary-1)}
         .item-controls{display:flex;gap:8px;margin-left:12px}
-        .item-btn{background:var(--cyber-black);border:2px solid var(--cyber-blue);color:var(--cyber-white);padding:6px 12px;cursor:pointer;font-size:0.8rem;font-family:'Bebas Neue', sans-serif;clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);transition:all 0.3s;}
-        .item-btn:hover{background:var(--cyber-blue);color:var(--cyber-black);border-color:var(--cyber-yellow);}
+        .item-btn{background:var(--cyber-black);border:2px solid var(--primary-2);color:var(--cyber-white);padding:6px 12px;cursor:pointer;font-size:0.8rem;font-family:'Bebas Neue', sans-serif;clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);transition:all 0.3s;}
+        .item-btn:hover{background:var(--primary-2);color:var(--cyber-black);border-color:var(--primary-1);}
         .item-btn:disabled{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);cursor:not-allowed}
-        .empty-items{color:var(--cyber-yellow);text-align:center;padding:20px;font-family:'Bebas Neue', sans-serif;letter-spacing:2px;}
+        .empty-items{color:var(--primary-1);text-align:center;padding:20px;font-family:'Bebas Neue', sans-serif;letter-spacing:2px;}
 
     </style>
 </head>
@@ -324,10 +325,10 @@
             .resource-item{text-align:center}
             .resource-shape{position:relative;width:100%;max-width:96px;height:84px;margin:0 auto}
             .resource-shape svg{width:100%;height:100%;transform:translateY(6px)}
-            .resource-shape.heart-shape{background:rgba(255,229,0,0.03);border:2px solid var(--cyber-yellow);-webkit-clip-path: polygon(50% 30%, 80% 16%, 100% 53%, 50% 100%, 0 53%, 20% 16%);clip-path: polygon(50% 30%, 80% 16%, 100% 53%, 50% 100%, 0 53%, 20% 16%);transform:translateY(6px);transition:all 0.3s;}
-            .resource-shape.heart-shape:hover{border-color:var(--cyber-blue);box-shadow:0 0 15px rgba(0,212,255,0.4);}
+            .resource-shape.heart-shape{background:rgba(251,0,193,0.03);border:2px solid var(--primary-1);-webkit-clip-path: polygon(50% 30%, 80% 16%, 100% 53%, 50% 100%, 0 53%, 20% 16%);clip-path: polygon(50% 30%, 80% 16%, 100% 53%, 50% 100%, 0 53%, 20% 16%);transform:translateY(6px);transition:all 0.3s;}
+            .resource-shape.heart-shape:hover{border-color:var(--primary-2);box-shadow:0 0 15px rgba(133,255,198,0.4);}
             .resource-shape input{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:56px;background:transparent;border:none;color:var(--cyber-white);font-size:1.1rem;text-align:center;outline:none;font-family:'Orbitron', monospace;}
-            .resource-label{display:block;margin-top:8px;color:var(--cyber-yellow);font-weight:700;font-family:'Bebas Neue', sans-serif;letter-spacing:1px;text-shadow:0 0 5px rgba(255,229,0,0.5);}
+            .resource-label{display:block;margin-top:8px;color:var(--primary-1);font-weight:700;font-family:'Bebas Neue', sans-serif;letter-spacing:1px;text-shadow:0 0 5px rgba(251,0,193,0.5);}
             /* protocols more compact */
             .protocols{display:grid;grid-template-columns:repeat(6, minmax(36px,1fr));gap:3px;margin-top:6px}
             .protocol-item{padding:2px;border-radius:6px;font-size:0.88rem}
@@ -396,8 +397,8 @@
     align-items: center; /* Garante que o label e hex fiquem alinhados no eixo vertical */
     text-align: center;
 }
-                    .attr-hex{width:100px;height:100px;max-width:120px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;color:var(--cyber-white);background:linear-gradient(180deg, rgba(255,229,0,0.12), rgba(0,212,255,0.06));-webkit-clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);border:2px solid var(--cyber-blue);padding:8px;position:relative;transition:all 0.3s;}
-                    .attr-hex:hover{border-color:var(--cyber-yellow);box-shadow:0 0 15px rgba(255,229,0,0.4);transform:scale(1.05);}
+                    .attr-hex{width:100px;height:100px;max-width:120px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;color:var(--cyber-white);background:linear-gradient(180deg, rgba(251,0,193,0.12), rgba(133,255,198,0.06));-webkit-clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);border:2px solid var(--primary-2);padding:8px;position:relative;transition:all 0.3s;}
+                    .attr-hex:hover{border-color:var(--primary-1);box-shadow:0 0 15px rgba(251,0,193,0.4);transform:scale(1.05);}
                     .attr-hex .attr-input{width:60%;font-size:2.2rem;background:transparent;border:none;color:var(--text);text-align:center;outline:none;padding:0;margin:0}
                     .attr-input::-webkit-outer-spin-button,
                     .attr-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
@@ -406,11 +407,11 @@
     display: block;
     margin-top: 4px;
     font-size: 0.8rem;
-    color: var(--cyber-yellow);
+    color: var(--primary-1);
     font-weight: 700;
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 1px;
-    text-shadow: 0 0 5px rgba(255,229,0,0.5);
+    text-shadow: 0 0 5px rgba(251,0,193,0.5);
 }
                     @media(max-width:700px){.attributes-grid{grid-template-columns:repeat(2,1fr);}}
 
@@ -453,7 +454,7 @@
                             <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                                 <!-- stylized straight-line heart made with polygon (no curves) -->
                                 <polygon data-shape="hexagon" 
-                 points="50,10 72,22 64,44 50,56 36,44 28,22" stroke="var(--cyber-yellow)" stroke-width="2" fill="rgba(255,229,0,0.03)"/>
+                 points="50,10 72,22 64,44 50,56 36,44 28,22" stroke="var(--primary-1)" stroke-width="2" fill="rgba(251,0,193,0.03)"/>
                             </svg>
                             <input type="number" id="vitalidade" name="vitalidade" required>
                         </div>
@@ -463,10 +464,10 @@
                         <div class="resource-shape">
                             <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                                 <!-- chip-like square with inner lines -->
-                                <rect x="10" y="14" width="80" height="56" rx="6" stroke="var(--cyber-blue)" stroke-width="2" fill="rgba(0,212,255,0.03)"/>
-                                <rect x="24" y="28" width="52" height="28" rx="3" stroke="var(--cyber-blue)" stroke-width="1" fill="none"/>
-                                <line x1="34" y1="36" x2="34" y2="52" stroke="var(--cyber-blue)" stroke-width="1"/>
-                                <line x1="66" y1="36" x2="66" y2="52" stroke="var(--cyber-blue)" stroke-width="1"/>
+                                <rect x="10" y="14" width="80" height="56" rx="6" stroke="var(--primary-2)" stroke-width="2" fill="rgba(133,255,198,0.03)"/>
+                                <rect x="24" y="28" width="52" height="28" rx="3" stroke="var(--primary-2)" stroke-width="1" fill="none"/>
+                                <line x1="34" y1="36" x2="34" y2="52" stroke="var(--primary-2)" stroke-width="1"/>
+                                <line x1="66" y1="36" x2="66" y2="52" stroke="var(--primary-2)" stroke-width="1"/>
                             </svg>
                             <input type="number" id="carga-operacional" name="carga-operacional" required>
                         </div>
@@ -476,7 +477,7 @@
                         <div class="resource-shape">
                             <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                                 <!-- shield built with straight segments -->
-                                <polygon points="50,6 80,20 80,44 50,72 20,44 20,20" stroke="var(--cyber-blue)" stroke-width="2" fill="rgba(0,212,255,0.03)"/>
+                                <polygon points="50,6 80,20 80,44 50,72 20,44 20,20" stroke="var(--primary-2)" stroke-width="2" fill="rgba(133,255,198,0.03)"/>
                             </svg>
                             <input type="number" id="defesa" name="defesa" required>
                         </div>
@@ -512,7 +513,17 @@
             </div>
             <div>
                 <label class="section-title" for="habilidades">Habilidades de Arquétipo</label>
-                <textarea id="habilidades" name="habilidades" placeholder="Descrição das Habilidades"></textarea>
+                <div id="skills-container">
+                    <div class="inventory-header">
+                        <button type="button" class="btn" onclick="openAddSkillModal()" style="font-size:0.9rem; padding:6px 12px;">
+                            <i class="fas fa-plus"></i> ADICIONAR HABILIDADE
+                        </button>
+                    </div>
+                    <div id="skills-list" class="items-list">
+                        <!-- Habilidades serão adicionadas dinamicamente aqui -->
+                    </div>
+                    <textarea id="habilidades" name="habilidades" style="display:none;" placeholder="Habilidades do Personagem"></textarea>
+                </div>
             </div>
         </div>
 

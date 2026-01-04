@@ -8,13 +8,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Verificar autenticação antes de carregar a página
+        (function() {
+            const isAuthenticated = sessionStorage.getItem('hexa_authenticated');
+            if (isAuthenticated !== 'true') {
+                window.location.href = 'login.html';
+                return;
+            }
+        })();
+    </script>
     <style>
         :root {
             --cyber-black: #000000;
-            --cyber-yellow: #FFE500;
-            --cyber-blue: #00D4FF;
+            --primary-1: #FB00C1;
+            --primary-2: #85FFC6;
+            --secondary: #7332FE;
             --cyber-white: #FFFFFF;
             --cyber-gray: #1A1A1A;
+            --cyber-blue: #00D4FF;
+            --cyber-yellow: #FFD700;
         }
 
         * {
@@ -43,8 +56,8 @@
                 0deg,
                 transparent,
                 transparent 2px,
-                rgba(0, 212, 255, 0.03) 2px,
-                rgba(0, 212, 255, 0.03) 4px
+                rgba(133, 255, 198, 0.03) 2px,
+                rgba(133, 255, 198, 0.03) 4px
             );
             pointer-events: none;
             z-index: 1;
@@ -62,8 +75,8 @@
                     90deg,
                     transparent,
                     transparent 2px,
-                    rgba(255, 229, 0, 0.02) 2px,
-                    rgba(255, 229, 0, 0.02) 4px
+                    rgba(251, 0, 193, 0.02) 2px,
+                    rgba(251, 0, 193, 0.02) 4px
                 );
             pointer-events: none;
             z-index: 1;
@@ -82,20 +95,20 @@
 
         ::-webkit-scrollbar-track {
             background: var(--cyber-black);
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--cyber-blue);
-            border: 2px solid var(--cyber-yellow);
+            background: var(--primary-2);
+            border: 2px solid var(--primary-1);
             clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
             transition: all 0.3s;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--cyber-yellow);
-            border-color: var(--cyber-blue);
+            background: var(--primary-1);
+            border-color: var(--primary-2);
             box-shadow: 0 0 10px rgba(255, 229, 0, 0.5);
         }
 
@@ -121,14 +134,14 @@
 
         .glitch::before {
             left: 2px;
-            text-shadow: -2px 0 var(--cyber-blue);
+            text-shadow: -2px 0 var(--primary-2);
             clip: rect(24px, 550px, 90px, 0);
             animation: glitch-anim 3s infinite linear alternate-reverse;
         }
 
         .glitch::after {
             left: -2px;
-            text-shadow: -2px 0 var(--cyber-yellow);
+            text-shadow: -2px 0 var(--primary-1);
             clip: rect(85px, 550px, 140px, 0);
             animation: glitch-anim2 2.5s infinite linear alternate-reverse;
         }
@@ -207,14 +220,14 @@
             justify-content: space-between;
             align-items: center;
             background: var(--cyber-black);
-            border: 3px solid var(--cyber-yellow);
+            border: 3px solid var(--primary-1);
             padding: 0 30px;
             position: relative;
             overflow: hidden;
             clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%, 0 100%);
             box-shadow: 
-                0 0 20px rgba(255, 229, 0, 0.5),
-                inset 0 0 20px rgba(0, 212, 255, 0.1);
+                0 0 20px rgba(251, 0, 193, 0.5),
+                inset 0 0 20px rgba(133, 255, 198, 0.1);
         }
 
         .header::before {
@@ -224,7 +237,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--cyber-yellow), var(--cyber-blue), var(--cyber-yellow));
+            background: linear-gradient(90deg, var(--primary-1), var(--primary-2), var(--primary-1));
             animation: glow-pulse 2s ease-in-out infinite;
         }
 
@@ -243,19 +256,19 @@
         }
 
         .logo-hexa {
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             text-shadow: 
-                0 0 10px rgba(0, 212, 255, 0.8),
-                0 0 20px rgba(0, 212, 255, 0.4),
+                0 0 10px rgba(133, 255, 198, 0.8),
+                0 0 20px rgba(133, 255, 198, 0.4),
                 2px 2px 0 var(--cyber-yellow);
             animation: logo-glitch 4s infinite;
         }
 
         .logo-supernova {
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             text-shadow: 
-                0 0 10px rgba(255, 229, 0, 0.8),
-                0 0 20px rgba(255, 229, 0, 0.4),
+                0 0 10px rgba(251, 0, 193, 0.8),
+                0 0 20px rgba(251, 0, 193, 0.4),
                 -2px -2px 0 var(--cyber-blue);
         }
 
@@ -278,7 +291,7 @@
         .turn-number {
             font-family: 'Orbitron', sans-serif;
             font-size: 3.5rem;
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             text-shadow: 
                 0 0 15px rgba(255, 229, 0, 0.8),
                 0 0 25px rgba(255, 229, 0, 0.4),
@@ -307,10 +320,10 @@
         .combat-time {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             background: var(--cyber-black);
             padding: 8px 15px;
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
             box-shadow: 
                 0 0 10px rgba(0, 212, 255, 0.5),
@@ -319,8 +332,62 @@
         }
 
         @keyframes time-pulse {
-            0%, 100% { border-color: var(--cyber-blue); }
-            50% { border-color: var(--cyber-yellow); }
+            0%, 100% { border-color: var(--secondary); }
+            50% { border-color: var(--primary-1); }
+        }
+
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-2);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary-2);
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .user-info i {
+            color: var(--primary-2);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, var(--hexa-red), #dc3545);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 0;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 5px 15px rgba(255, 59, 48, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn:active {
+            transform: translateY(0);
         }
 
         /* ÁREA PRINCIPAL */
@@ -333,7 +400,7 @@
         /* CARTÃO DO PERSONAGEM ATIVO */
         .active-character {
             background: var(--cyber-black);
-            border: 3px solid var(--cyber-yellow);
+            border: 3px solid var(--primary-1);
             padding: 25px;
             position: relative;
             overflow: hidden;
@@ -350,7 +417,7 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--cyber-yellow), var(--cyber-blue), var(--cyber-yellow));
+            background: linear-gradient(90deg, var(--primary-1), var(--primary-2), var(--primary-1));
             animation: border-glow 3s ease-in-out infinite;
         }
 
@@ -369,7 +436,7 @@
         .character-avatar {
             width: 120px;
             height: 120px;
-            border: 3px solid var(--cyber-blue);
+            border: 3px solid var(--secondary);
             overflow: hidden;
             background: var(--cyber-black);
             display: flex;
@@ -377,7 +444,7 @@
             justify-content: center;
             font-size: 3rem;
             clip-path: polygon(20px 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 20px rgba(115, 50, 254, 0.5);
         }
 
         .character-info h2 {
@@ -401,7 +468,7 @@
 
         .character-archetype {
             font-family: 'Orbitron', sans-serif;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             font-size: 1.2rem;
             margin-bottom: 10px;
             text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
@@ -439,7 +506,7 @@
             margin-bottom: 5px;
             flex: 1;
             min-width: 200px;
-            border: 1px solid var(--cyber-blue);
+            border: 1px solid var(--secondary);
             clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
         }
 
@@ -467,13 +534,13 @@
         }
 
         .hp-bar .bar-fill {
-            background: linear-gradient(90deg, var(--cyber-yellow), #FFA500);
-            box-shadow: 0 0 10px rgba(255, 229, 0, 0.5);
+            background: linear-gradient(90deg, var(--primary-1), #FF4081);
+            box-shadow: 0 0 10px rgba(251, 0, 193, 0.5);
         }
 
         .co-bar .bar-fill {
-            background: linear-gradient(90deg, var(--cyber-blue), #00A8FF);
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            background: linear-gradient(90deg, var(--secondary), #9B59FF);
+            box-shadow: 0 0 10px rgba(115, 50, 254, 0.5);
         }
 
         .bar-text {
@@ -575,7 +642,7 @@
 
         .effect-tag {
             background: rgba(0, 122, 255, 0.2);
-            border: 1px solid var(--hexa-blue);
+            border: 1px solid var(--secondary);
             border-radius: 20px;
             padding: 5px 15px;
             font-size: 0.9rem;
@@ -603,8 +670,8 @@
 
         .action-btn {
             background: var(--cyber-black);
-            border: 2px solid var(--cyber-yellow);
-            color: var(--cyber-yellow);
+            border: 2px solid var(--primary-1);
+            color: var(--primary-1);
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.4rem;
             letter-spacing: 1px;
@@ -628,7 +695,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 229, 0, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(115, 50, 254, 0.3), transparent);
             transition: left 0.5s;
         }
 
@@ -639,10 +706,10 @@
         .action-btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 
-                0 5px 20px rgba(255, 229, 0, 0.6),
-                inset 0 0 20px rgba(255, 229, 0, 0.1);
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+                0 5px 20px rgba(115, 50, 254, 0.6),
+                inset 0 0 20px rgba(115, 50, 254, 0.1);
+            border-color: var(--primary-2);
+            color: var(--primary-2);
         }
 
         .action-btn:active {
@@ -650,25 +717,25 @@
         }
 
         .action-btn.blue {
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+            border-color: var(--primary-2);
+            color: var(--primary-2);
         }
 
         .action-btn.blue::before {
-            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(115, 50, 254, 0.3), transparent);
         }
 
         .action-btn.blue:hover {
             box-shadow: 
-                0 5px 20px rgba(0, 212, 255, 0.6),
-                inset 0 0 20px rgba(0, 212, 255, 0.1);
-            border-color: var(--cyber-yellow);
-            color: var(--cyber-yellow);
+                0 5px 20px rgba(115, 50, 254, 0.6),
+                inset 0 0 20px rgba(115, 50, 254, 0.1);
+            border-color: var(--primary-1);
+            color: var(--primary-1);
         }
 
         .action-btn.yellow {
-            border-color: var(--cyber-yellow);
-            color: var(--cyber-yellow);
+            border-color: var(--primary-1);
+            color: var(--primary-1);
         }
 
         .action-btn.yellow::before {
@@ -679,13 +746,13 @@
             box-shadow: 
                 0 5px 20px rgba(255, 229, 0, 0.6),
                 inset 0 0 20px rgba(255, 229, 0, 0.1);
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+            border-color: var(--primary-2);
+            color: var(--primary-2);
         }
 
         .action-btn.purple {
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+            border-color: var(--secondary);
+            color: var(--secondary);
         }
 
         .action-btn.purple::before {
@@ -696,13 +763,13 @@
             box-shadow: 
                 0 5px 20px rgba(0, 212, 255, 0.6),
                 inset 0 0 20px rgba(0, 212, 255, 0.1);
-            border-color: var(--cyber-yellow);
-            color: var(--cyber-yellow);
+            border-color: var(--primary-1);
+            color: var(--primary-1);
         }
 
         .action-btn.green {
-            border-color: var(--cyber-yellow);
-            color: var(--cyber-yellow);
+            border-color: var(--secondary);
+            color: var(--secondary);
         }
 
         .action-btn.green::before {
@@ -713,15 +780,15 @@
             box-shadow: 
                 0 5px 20px rgba(255, 229, 0, 0.6),
                 inset 0 0 20px rgba(255, 229, 0, 0.1);
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+            border-color: var(--primary-1);
+            color: var(--primary-1);
         }
 
         /* LOG DE AÇÕES */
         .action-log {
             background: var(--cyber-black);
             padding: 20px;
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             overflow: hidden;
             clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
             box-shadow: 
@@ -734,7 +801,7 @@
             font-size: 1.8rem;
             letter-spacing: 1px;
             margin-bottom: 15px;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -756,16 +823,16 @@
 
         .log-content::-webkit-scrollbar-track {
             background: var(--cyber-black);
-            border: 1px solid var(--cyber-blue);
+            border: 1px solid var(--secondary);
         }
 
         .log-content::-webkit-scrollbar-thumb {
-            background: var(--cyber-blue);
-            border: 1px solid var(--cyber-yellow);
+            background: var(--primary-2);
+            border: 1px solid var(--secondary);
         }
 
         .log-content::-webkit-scrollbar-thumb:hover {
-            background: var(--cyber-yellow);
+            background: var(--primary-1);
         }
 
         .log-entry {
@@ -797,7 +864,7 @@
             grid-column: 2;
             background: var(--cyber-black);
             padding: 20px;
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             overflow-y: auto;
             clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
             box-shadow: 
@@ -811,16 +878,16 @@
 
         .initiative-sidebar::-webkit-scrollbar-track {
             background: var(--cyber-black);
-            border: 1px solid var(--cyber-blue);
+            border: 1px solid var(--secondary);
         }
 
         .initiative-sidebar::-webkit-scrollbar-thumb {
-            background: var(--cyber-blue);
-            border: 1px solid var(--cyber-yellow);
+            background: var(--primary-2);
+            border: 1px solid var(--secondary);
         }
 
         .initiative-sidebar::-webkit-scrollbar-thumb:hover {
-            background: var(--cyber-yellow);
+            background: var(--primary-1);
         }
 
         .sidebar-title {
@@ -828,11 +895,11 @@
             font-size: 2rem;
             letter-spacing: 2px;
             margin-bottom: 20px;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             text-align: center;
-            border-bottom: 2px solid var(--cyber-blue);
+            border-bottom: 2px solid var(--secondary);
             padding-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            text-shadow: 0 0 10px rgba(115, 50, 254, 0.5);
         }
 
         .initiative-list {
@@ -854,12 +921,12 @@
 
         .initiative-item:hover {
             transform: translateX(5px);
-            border-color: var(--cyber-blue);
+            border-color: var(--primary-2);
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
 
         .initiative-item.active {
-            border-color: var(--cyber-yellow);
+            border-color: var(--primary-1);
             background: rgba(255, 229, 0, 0.1);
             box-shadow: 0 0 20px rgba(255, 229, 0, 0.4);
             animation: active-pulse 2s infinite;
@@ -871,7 +938,7 @@
         }
 
         .initiative-item.next {
-            border-color: var(--cyber-blue);
+            border-color: var(--primary-2);
             background: rgba(0, 212, 255, 0.1);
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
@@ -879,7 +946,7 @@
         .initiative-avatar {
             width: 50px;
             height: 50px;
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             background: var(--cyber-black);
             display: flex;
             align-items: center;
@@ -910,15 +977,15 @@
         .initiative-value {
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             background: var(--cyber-black);
             padding: 3px 10px;
-            border: 1px solid var(--cyber-yellow);
+            border: 1px solid var(--secondary);
             font-size: 1.1rem;
             min-width: 40px;
             text-align: center;
             clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
-            box-shadow: 0 0 10px rgba(255, 229, 0, 0.3);
+            box-shadow: 0 0 10px rgba(115, 50, 254, 0.3);
         }
 
         /* FOOTER */
@@ -926,7 +993,7 @@
             grid-column: 1 / -1;
             background: var(--cyber-black);
             padding: 20px;
-            border: 2px solid var(--cyber-blue);
+            border: 2px solid var(--primary-2);
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
@@ -946,14 +1013,14 @@
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.5rem;
             letter-spacing: 1px;
-            color: var(--cyber-blue);
+            color: var(--primary-2);
             text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
         }
 
         .summary-value {
             font-family: 'Orbitron', sans-serif;
             font-size: 2rem;
-            color: var(--cyber-yellow);
+            color: var(--primary-1);
             text-shadow: 0 0 10px rgba(255, 229, 0, 0.5);
         }
 
@@ -965,8 +1032,8 @@
 
         .control-btn {
             background: var(--cyber-black);
-            border: 2px solid var(--cyber-yellow);
-            color: var(--cyber-yellow);
+            border: 2px solid var(--primary-1);
+            color: var(--primary-1);
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.2rem;
             letter-spacing: 1px;
@@ -987,7 +1054,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 229, 0, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(115, 50, 254, 0.3), transparent);
             transition: left 0.5s;
         }
 
@@ -998,10 +1065,10 @@
         .control-btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 
-                0 5px 20px rgba(255, 229, 0, 0.6),
-                inset 0 0 20px rgba(255, 229, 0, 0.1);
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+                0 5px 20px rgba(115, 50, 254, 0.6),
+                inset 0 0 20px rgba(115, 50, 254, 0.1);
+            border-color: var(--primary-2);
+            color: var(--primary-2);
         }
 
         .control-btn:active {
@@ -1009,8 +1076,8 @@
         }
 
         .control-btn.blue {
-            border-color: var(--cyber-blue);
-            color: var(--cyber-blue);
+            border-color: var(--secondary);
+            color: var(--secondary);
         }
 
         .control-btn.blue::before {
@@ -1021,8 +1088,8 @@
             box-shadow: 
                 0 5px 20px rgba(0, 212, 255, 0.6),
                 inset 0 0 20px rgba(0, 212, 255, 0.1);
-            border-color: var(--cyber-yellow);
-            color: var(--cyber-yellow);
+            border-color: var(--secondary);
+            color: var(--secondary);
         }
 
         /* ESTILOS PARA SEÇÃO DE ITENS */
@@ -1359,33 +1426,6 @@
 
         #character-list button:hover {
             background: #c62828;
-        }
-    </style>
-</head>
-<body>
-    <div class="combat-container">
-        <!-- HEADER -->
-        <header class="header">
-            <div class="logo">
-                <span class="logo-hexa glitch" data-text="H.E.X.A">H.E.X.A</span> 
-                <span class="logo-supernova"></span>
-            </div>
-            
-            <div class="turn-display">
-                <div class="turn-label">RODADAS</div>
-                <div class="turn-number" id="roundsDisplay" style="font-size:1.2rem;">00</div>
-                <div class="turn-label" style="font-size:0.9rem; margin-left:10px;">TURNO</div>
-                <div class="turn-number" id="currentTurn" style="font-size:0.9rem; margin-left:5px;">00</div>
-            </div>
-            
-            <div class="combat-time">
-                <i class="fas fa-clock"></i> <span id="combatTimer">00:00</span>
-            </div>
-        </header>
-        
-        <!-- ÁREA PRINCIPAL -->
-        <main class="main-area">
-            <!-- CARTÃO DO PERSONAGEM ATIVO -->
             <section class="active-character">
                 <div class="character-header">
                     <div class="character-avatar">
@@ -1447,18 +1487,14 @@
                     </button>
                 </div>
                 <div class="skill-actions" id="skillActions" style="display:none;">
-                    <button class="action-btn purple" onclick="useSkill('skill1')">
-                        <i class="fas fa-fire"></i> Habilidade 1
-                    </button>
-                    <button class="action-btn purple" onclick="useSkill('skill2')">
-                        <i class="fas fa-shield-alt"></i> Habilidade 2
-                    </button>
-                    <button class="action-btn purple" onclick="useSkill('skill3')">
-                        <i class="fas fa-bolt"></i> Habilidade 3
-                    </button>
-                    <button class="action-btn purple" onclick="toggleSkillButtons()">
-                        <i class="fas fa-arrow-left"></i> VOLTAR
-                    </button>
+                    <div class="items-list" id="skillsList">
+                        <!-- Habilidades serão adicionadas dinamicamente aqui -->
+                    </div>
+                    <div class="item-controls">
+                        <button class="action-btn purple" onclick="toggleSkillButtons()">
+                            <i class="fas fa-arrow-left"></i> VOLTAR
+                        </button>
+                    </div>
                 </div>
                 <div class="item-actions" id="itemActions" style="display:none;">
                     <div class="items-list" id="itemsList">
@@ -1468,7 +1504,7 @@
                         <button class="action-btn green" onclick="openAddItemModal()">
                             <i class="fas fa-plus"></i> ADICIONAR ITEM
                         </button>
-                        <button class="action-btn purple" onclick="toggleItemButtons()">
+                        <button class="action-btn purple" onclick="takeAction('item')">
                             <i class="fas fa-arrow-left"></i> VOLTAR
                         </button>
                     </div>
@@ -1564,6 +1600,25 @@
         const hexSheets = [
         ];
 
+        // ADICIONAR ENTRADA NO LOG DE COMBATE
+        function addLogEntry(message, type = 'turn') {
+            const logContainer = document.getElementById('actionLog');
+            if (!logContainer) return;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = message;
+            
+            // Adicionar no início do log
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // Limitar número de entradas no log
+            const maxEntries = 50;
+            while (logContainer.children.length > maxEntries) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
         // INICIALIZAR A INTERFACE
         function initCombat() {
             updateTurnDisplay();
@@ -1600,6 +1655,12 @@
                 const hpPercent = Math.round((char.hp / char.maxHp) * 100);
                 const coPercent = Math.round((char.co / char.maxCo) * 100);
 
+                // Verificar se o personagem tem ID válido
+                if (!char.id && char.id !== 0) {
+                    console.error('Personagem sem ID válido:', char);
+                    return;
+                }
+
                 item.innerHTML = `
                     <div class="initiative-avatar">${char.avatar}</div>
                     <div class="initiative-info">
@@ -1614,7 +1675,7 @@
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
                         <div class="initiative-value">${char.initiative}</div>
-                        <button onclick="removeCombatCharacter(${char.id})" style="background:var(--hexa-red);border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer;font-family:'Bebas Neue';font-size:0.85rem;">Remover</button>
+                        <button onclick="removeCombatCharacter('${char.id}')" style="background:var(--hexa-red);border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer;font-family:'Bebas Neue';font-size:0.85rem;">Remover</button>
                     </div>
                 `;
 
@@ -1688,6 +1749,16 @@
                 console.error('Erro ao carregar itens pendentes:', e);
             }
 
+            // Carregar habilidades do personagem
+            try {
+                const characterSkills = getCharacterSkills(activeChar.id);
+                if (characterSkills && characterSkills.length > 0) {
+                    updateSkillsList();
+                }
+            } catch(e) {
+                console.error('Erro ao carregar habilidades do personagem:', e);
+            }
+
             // Resetar visualização para os 4 botões originais ao mudar de personagem
             try {
                 const quickActions = document.getElementById('quickActions');
@@ -1744,136 +1815,61 @@
             // Registrar mudanças de stats antes de mudar o turno
             logStatChanges();
             
+            // Decrementar contadores de habilidades do personagem ativo atual
+            decrementSkillTurns();
+            
             // Resetar flags
             combatData.characters.forEach(c => {
                 c.isActive = false;
                 c.isNext = false;
             });
             
-            // Se não havia personagem ativo (início), iniciar no índice 0 e turno 1
-            if (currentIndex === -1) {
-                combatData.characters[nextIndex].isActive = true;
-                const nextNextIndex = (nextIndex + 1) % combatData.characters.length;
-                combatData.characters[nextNextIndex].isNext = true;
-                combatData.currentTurn = 1;
-                combatData.rounds = 1; // Começa com 1 rodada
-                // rounds permanece como está (não conta como fim de rodada)
-            } else {
-                // definir novo personagem ativo
-                combatData.characters[nextIndex].isActive = true;
-                const nextNextIndex = (nextIndex + 1) % combatData.characters.length;
-                combatData.characters[nextNextIndex].isNext = true;
-                
-                // Se voltamos ao índice 0, significa nova rodada
-                if (nextIndex === 0) {
-                    combatData.rounds++;
-                }
-                
-                // Incrementar turno contador
-                combatData.currentTurn++;
-            }
-            
-            combatData.damageThisTurn = 0;
-            combatData.coSpentThisTurn = 0;
-            
-            // Removido o log de "TURNO X INICIADO"
-            
-            updateTurnDisplay();
-            updateInitiativeList();
-            updateActiveCharacter();
-            updateSummary();
-            
-            playSoundEffect('nextTurn');
-        }
-
-        // ROLAR INICIATIVA (AGORA ZERA/INICIA RODADAS)
-        function rollInitiative() {
-            combatData.characters.forEach(char => {
-                const roll = Math.floor(Math.random() * 20) + 1;
-                const modifier = Math.floor(Math.random() * 5) + 1;
-                char.initiative = roll + modifier;
-            });
-            
-            combatData.characters.sort((a, b) => b.initiative - a.initiative);
-            
-            combatData.characters.forEach((c, i) => {
-                c.isActive = i === 0;
-                c.isNext = i === 1;
-            });
-            
-            combatData.currentTurn = 1;
-            combatData.rounds = 1;
-            combatData.damageThisTurn = 0;
-            combatData.coSpentThisTurn = 0;
-            
-            addLogEntry('INICIATIVA ROLADA - Nova ordem definida', 'turn');
-            
-            updateTurnDisplay();
-            updateInitiativeList();
-            updateActiveCharacter();
-            updateSummary();
-            
-            playSoundEffect('diceRoll');
-        }
-
-        // ADICIONAR ENTRADA NO LOG
-        function addLogEntry(text, type = '') {
-            const log = document.getElementById('actionLog');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.innerHTML = text;
-            
-            log.insertBefore(entry, log.firstChild);
-            
-            // Manter log com no máximo 20 entradas
-            if (log.children.length > 20) {
-                log.removeChild(log.lastChild);
-            }
-        }
-
-        // AÇÃO DO PERSONAGEM
-        function takeAction(action) {
-            const activeChar = combatData.characters.find(c => c.isActive);
-            if (!activeChar) return;
-            
-            // Se for ação de item, alternar para a tela de itens
-            if (action === 'item') {
-                toggleItemButtons();
+            // Se não há personagens, não fazer nada
+            if (combatData.characters.length === 0) {
+                console.log('nextTurn: Nenhum personagem disponível');
                 return;
             }
             
-            const actions = {
-                attack: { text: `${activeChar.name} atacou`, co: 0, damage: Math.floor(Math.random() * 20) + 5 },
-                skill: { text: `${activeChar.name} usou uma habilidade`, co: 3, damage: Math.floor(Math.random() * 25) + 10 },
-                move: { text: `${activeChar.name} se moveu`, co: 0, damage: 0 }
-            };
-            
-            const act = actions[action];
-            
-            // Atualizar CO
-            if (activeChar.co >= act.co) {
-                activeChar.co -= act.co;
-                combatData.coSpentThisTurn += act.co;
-                
-                // Adicionar dano se houver
-                if (act.damage > 0) {
-                    combatData.damageThisTurn += act.damage;
-                    
-                    // Chance de crítico (20%)
-                    if (Math.random() < 0.2) {
-                        showCriticalPopup();
-                        act.damage *= 2;
-                        act.text += ` (CRÍTICO! ${act.damage} de dano)`;
+            // Se não havia personagem ativo (início), iniciar no índice 0 e turno 1
+            if (currentIndex === -1) {
+                if (combatData.characters[0]) {
+                    combatData.characters[0].isActive = true;
+                    const nextNextIndex = combatData.characters.length > 1 ? 1 : 0;
+                    if (combatData.characters[nextNextIndex]) {
+                        combatData.characters[nextNextIndex].isNext = true;
                     }
+                    combatData.currentTurn = 1;
+                    combatData.rounds = 1; // Começa com 1 rodada
                 }
-                
-                addLogEntry(act.text, 'damage');
-                updateActiveCharacter();
-                updateSummary();
-                playSoundEffect('attack');
+                // rounds permanece como está (não conta como fim de rodada)
             } else {
-                addLogEntry(`<strong>${activeChar.name}</strong> não tem CO suficiente para essa ação!`, 'damage');
+                // definir novo personagem ativo
+                if (combatData.characters[nextIndex]) {
+                    combatData.characters[nextIndex].isActive = true;
+                    const nextNextIndex = (nextIndex + 1) % combatData.characters.length;
+                    if (combatData.characters[nextNextIndex]) {
+                        combatData.characters[nextNextIndex].isNext = true;
+                    }
+                    
+                    // Se voltamos ao índice 0, significa nova rodada
+                    if (nextIndex === 0) {
+                        combatData.rounds++;
+                    }
+                    
+                    // Incrementar turno contador
+                    combatData.currentTurn++;
+                }
             }
+            
+            // Obter o personagem ativo atualizado
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+            
+            updateActiveCharacter();
+            updateInitiativeList();
+            updateTurnDisplay();
+            updateSummary();
+            updateSkillsList(); // Atualizar habilidades do novo personagem ativo
         }
 
         // ALTERNAR ENTRE BOTÕES DE AÇÃO E HABILIDADES
@@ -1895,58 +1891,401 @@
             const activeChar = combatData.characters.find(c => c.isActive);
             if (!activeChar) return;
             
-            const skills = {
-                skill1: { name: 'Habilidade 1', co: 4, damage: Math.floor(Math.random() * 30) + 15, icon: '🔥' },
-                skill2: { name: 'Habilidade 2', co: 3, damage: Math.floor(Math.random() * 25) + 10, icon: '🛡️' },
-                skill3: { name: 'Habilidade 3', co: 5, damage: Math.floor(Math.random() * 35) + 20, icon: '⚡' }
-            };
+            // Carregar habilidades do personagem
+            const characterSkills = getCharacterSkills(activeChar.id);
+            const skill = characterSkills.find(s => s.id == skillId);
             
-            const skill = skills[skillId];
+            if (!skill) {
+                addLogEntry(`${activeChar.name} não possui essa habilidade!`, 'turn');
+                playSoundEffect('error');
+                return;
+            }
             
-            if (activeChar.co >= skill.co) {
-                activeChar.co -= skill.co;
-                combatData.coSpentThisTurn += skill.co;
-                
-                if (skill.damage > 0) {
-                    combatData.damageThisTurn += skill.damage;
-                    
-                    // Chance de crítico maior para habilidades (25%)
-                    if (Math.random() < 0.25) {
-                        showCriticalPopup();
-                        skill.damage *= 2;
-                        addLogEntry(`${activeChar.name} usou ${skill.name} ${skill.icon} (CRÍTICO! ${skill.damage} de dano)`, 'damage');
-                    } else {
-                        addLogEntry(`${activeChar.name} usou ${skill.name} ${skill.icon} (${skill.damage} de dano)`, 'damage');
-                    }
-                } else {
-                    addLogEntry(`${activeChar.name} usou ${skill.name} ${skill.icon}`, 'turn');
-                }
-                
-                updateActiveCharacter();
-                updateSummary();
-                playSoundEffect('skill');
-                
-                // Voltar para os botões originais após usar a habilidade
-                toggleSkillButtons();
-            } else {
+            // Verificar se habilidade já está ativa (apenas para habilidades com duração)
+            if (skill.active && skill.duration.value > 0) {
+                addLogEntry(`${skill.name} já está ativa!`, 'turn');
+                playSoundEffect('error');
+                return;
+            }
+            
+            // Verificar CO suficiente
+            if (activeChar.co < skill.cost) {
                 addLogEntry(`${activeChar.name} não tem CO suficiente para ${skill.name}!`, 'turn');
                 playSoundEffect('error');
+                return;
             }
+            
+            // Detectar tipo de efeito no texto
+            const effectText = skill.effect.toLowerCase();
+            let effectType = null;
+            let effectValue = null;
+            
+            // Detectar dano
+            if (effectText.includes('dano')) {
+                effectType = 'damage';
+                // Procurar por padrões como "1d4", "2d6", ou números fixos
+                const diceMatch = effectText.match(/(\d+)d(\d+)/);
+                const numberMatch = effectText.match(/(\d+)/);
+                
+                if (diceMatch) {
+                    const numDice = parseInt(diceMatch[1]);
+                    const dieSize = parseInt(diceMatch[2]);
+                    effectValue = 0;
+                    for (let i = 0; i < numDice; i++) {
+                        effectValue += Math.floor(Math.random() * dieSize) + 1;
+                    }
+                } else if (numberMatch) {
+                    effectValue = parseInt(numberMatch[1]);
+                } else {
+                    effectValue = 10; // valor padrão
+                }
+            }
+            // Detectar cura
+            else if (effectText.includes('cura')) {
+                effectType = 'heal';
+                // Procurar por padrões como "1d4", "2d6", ou números fixos
+                const diceMatch = effectText.match(/(\d+)d(\d+)/);
+                const numberMatch = effectText.match(/(\d+)/);
+                
+                if (diceMatch) {
+                    const numDice = parseInt(diceMatch[1]);
+                    const dieSize = parseInt(diceMatch[2]);
+                    effectValue = 0;
+                    for (let i = 0; i < numDice; i++) {
+                        effectValue += Math.floor(Math.random() * dieSize) + 1;
+                    }
+                } else if (numberMatch) {
+                    effectValue = parseInt(numberMatch[1]);
+                } else {
+                    effectValue = 10; // valor padrão
+                }
+            }
+            
+            // Verificar se precisa selecionar alvo
+            if (skill.target === 'qualquer_criatura' || (effectType && skill.target !== 'nenhum')) {
+                // Abrir modal de seleção de alvo
+                openSkillTargetSelection(skillId, effectType, effectValue);
+                return;
+            }
+
+            // Aplicar efeito imediato (para si mesmo ou alvo nenhum)
+            applySkillEffect(activeChar, skill, effectType, effectValue, activeChar);
         }
 
-        // ALTERNAR ENTRE BOTÕES DE AÇÃO E ITENS
-        function toggleItemButtons() {
-            const quickActions = document.getElementById('quickActions');
-            const itemActions = document.getElementById('itemActions');
+        // ABRIR MODAL DE SELEÇÃO DE ALVO PARA HABILIDADE
+        function openSkillTargetSelection(skillId, effectType, effectValue) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
             
-            if (quickActions.style.display === 'none') {
-                quickActions.style.display = 'grid';
-                itemActions.style.display = 'none';
+            const container = document.getElementById('itemModalContainer');
+            const characterSkills = getCharacterSkills(activeChar.id);
+            const skill = characterSkills.find(s => s.id == skillId);
+            
+            if (!skill) return;
+            
+            // Construir HTML do modal com lista de alvos
+            let modalHtml = `
+                <div class="item-modal-backdrop" onclick="closeSkillTargetModal(event)">
+                    <div class="item-modal" onclick="event.stopPropagation()">
+                        <h3><i class="fas fa-bullseye"></i> Selecionar Alvo para ${skill.name}</h3>
+                        <div class="target-list">
+            `;
+            
+            // Adicionar opção para si mesmo se permitido
+            if (skill.target === 'si_mesmo' || skill.target === 'qualquer_criatura') {
+                modalHtml += `
+                    <div class="target-item" onclick="selectSkillTarget('${skillId}', '${activeChar.id}', '${effectType}', ${effectValue})" style="cursor:pointer;padding:12px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.05);transition:all 0.3s ease;">
+                        <div class="target-info">
+                            <div class="target-name" style="font-weight:600;color:var(--accent-blue);">${activeChar.name} (Si Mesmo)</div>
+                            <div class="target-stats" style="font-size:0.9rem;color:rgba(255,255,255,0.7);">HP: ${activeChar.hp}/${activeChar.maxHp} | CO: ${activeChar.co}/${activeChar.maxCo}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Adicionar outros personagens como alvos
+            if (skill.target === 'qualquer_criatura') {
+                combatData.characters.forEach(char => {
+                    if (char.id !== activeChar.id) {
+                        modalHtml += `
+                            <div class="target-item" onclick="selectSkillTarget('${skillId}', '${char.id}', '${effectType}', ${effectValue})" style="cursor:pointer;padding:12px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.05);transition:all 0.3s ease;">
+                                <div class="target-info">
+                                    <div class="target-name" style="font-weight:600;color:var(--text);">${char.name}</div>
+                                    <div class="target-stats" style="font-size:0.9rem;color:rgba(255,255,255,0.7);">HP: ${char.hp}/${char.maxHp} | CO: ${char.co}/${char.maxCo}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            modalHtml += `
+                        </div>
+                        <div class="modal-buttons">
+                            <button type="button" class="modal-btn cancel" onclick="closeSkillTargetModal()">CANCELAR</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = modalHtml;
+            container.style.display = 'block';
+        }
+
+        // FECHAR MODAL DE SELEÇÃO DE ALVO DE HABILIDADE
+        function closeSkillTargetModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            const container = document.getElementById('itemModalContainer');
+            container.style.display = 'none';
+            container.innerHTML = '';
+        }
+
+        // SELECIONAR ALVO E APLICAR HABILIDADE
+        function selectSkillTarget(skillId, targetId, effectType, effectValue) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            const targetChar = combatData.characters.find(c => c.id == targetId);
+            const characterSkills = getCharacterSkills(activeChar.id);
+            const skill = characterSkills.find(s => s.id == skillId);
+            
+            if (!targetChar || !skill) return;
+            
+            // Aplicar efeito da habilidade
+            applySkillEffect(activeChar, skill, effectType, effectValue, targetChar);
+            
+            // Fechar modal
+            closeSkillTargetModal();
+        }
+
+        // APLICAR EFEITO DA HABILIDADE
+        function applySkillEffect(userChar, skill, effectType, effectValue, targetChar) {
+            // Consumir CO
+            userChar.co -= skill.cost;
+            combatData.coSpentThisTurn += skill.cost;
+            
+            // Verificar se é habilidade instantânea ou de duração
+            const isInstantSkill = skill.duration.value === 0 || 
+                                 (skill.duration.type === 'number' && skill.duration.value === 0);
+            
+            if (isInstantSkill) {
+                // Habilidade instantânea - não fica ativa
+                addLogEntry(`${userChar.name} usou ${skill.name}!`, 'turn');
             } else {
-                quickActions.style.display = 'none';
-                itemActions.style.display = 'grid';
-                // Atualizar lista de itens ao abrir
-                updateItemsList();
+                // Habilidade de duração - ativar e definir turnos
+                if (skill.duration.type === 'dice') {
+                    // Rolar os dados para determinar duração
+                    const diceMatch = skill.duration.value.match(/(\d+)d(\d+)/);
+                    if (diceMatch) {
+                        const numDice = parseInt(diceMatch[1]);
+                        const dieSize = parseInt(diceMatch[2]);
+                        let total = 0;
+                        
+                        for (let i = 0; i < numDice; i++) {
+                            total += Math.floor(Math.random() * dieSize) + 1;
+                        }
+                        
+                        skill.remainingTurns = total;
+                        skill.active = true;
+                        
+                        addLogEntry(`${userChar.name} ativou ${skill.name} por ${total} turnos!`, 'turn');
+                    }
+                } else {
+                    // Duração fixa
+                    skill.remainingTurns = skill.duration.value;
+                    skill.active = true;
+                    
+                    addLogEntry(`${userChar.name} ativou ${skill.name} por ${skill.duration.value} turnos!`, 'turn');
+                }
+            }
+            
+            // Aplicar efeito de dano ou cura
+            if (effectType === 'damage' && effectValue) {
+                // Chance de crítico maior para habilidades (25%)
+                if (Math.random() < 0.25) {
+                    showCriticalPopup();
+                    const criticalDamage = effectValue * 2;
+                    targetChar.hp = Math.max(0, targetChar.hp - criticalDamage);
+                    combatData.damageThisTurn += criticalDamage;
+                    
+                    if (userChar.id === targetChar.id) {
+                        addLogEntry(`${userChar.name} usou ${skill.name} em si mesmo (CRÍTICO! ${criticalDamage} de dano)`, 'damage');
+                    } else {
+                        addLogEntry(`${userChar.name} usou ${skill.name} em ${targetChar.name} (CRÍTICO! ${criticalDamage} de dano)`, 'damage');
+                    }
+                } else {
+                    targetChar.hp = Math.max(0, targetChar.hp - effectValue);
+                    combatData.damageThisTurn += effectValue;
+                    
+                    if (userChar.id === targetChar.id) {
+                        addLogEntry(`${userChar.name} usou ${skill.name} em si mesmo (${effectValue} de dano)`, 'damage');
+                    } else {
+                        addLogEntry(`${userChar.name} usou ${skill.name} em ${targetChar.name} (${effectValue} de dano)`, 'damage');
+                    }
+                }
+            } else if (effectType === 'heal' && effectValue) {
+                const actualHeal = Math.min(effectValue, targetChar.maxHp - targetChar.hp);
+                targetChar.hp += actualHeal;
+                
+                if (userChar.id === targetChar.id) {
+                    addLogEntry(`${userChar.name} usou ${skill.name} em si mesmo (curou ${actualHeal} PV)`, 'heal');
+                } else {
+                    addLogEntry(`${userChar.name} usou ${skill.name} em ${targetChar.name} (curou ${actualHeal} PV)`, 'heal');
+                }
+            } else {
+                // Efeito genérico sem dano/cura
+                if (userChar.id === targetChar.id) {
+                    addLogEntry(`${userChar.name} usou ${skill.name} em si mesmo - ${skill.effect}`, 'turn');
+                } else {
+                    addLogEntry(`${userChar.name} usou ${skill.name} em ${targetChar.name} - ${skill.effect}`, 'turn');
+                }
+            }
+            
+            // Sincronizar habilidades com a ficha
+            const characterSkills = getCharacterSkills(userChar.id);
+            syncSkillsToSheet(characterSkills);
+            
+            // Atualizar interface
+            updateActiveCharacter();
+            updateInitiativeList();
+            updateSummary();
+            updateSkillsList();
+            playSoundEffect('skill');
+            
+            // Voltar para os botões originais após usar a habilidade
+            toggleSkillButtons();
+        }
+
+        // Obter habilidades do personagem
+        function getCharacterSkills(characterId) {
+            try {
+                const characterKey = `characterSkills_${characterId}`;
+                const savedSkills = localStorage.getItem(characterKey);
+                
+                if (savedSkills) {
+                    return JSON.parse(savedSkills);
+                } else {
+                    // Tentar carregar do characterInfo geral
+                    const characterInfo = localStorage.getItem('characterSkills');
+                    if (characterInfo) {
+                        const info = JSON.parse(characterInfo);
+                        if (info.characterId === characterId && Array.isArray(info.skills)) {
+                            return info.skills;
+                        }
+                    }
+                }
+            } catch(e) {
+                console.error('Erro ao carregar habilidades do personagem:', e);
+            }
+            
+            return [];
+        }
+
+        // Sincronizar habilidades com a ficha
+        function syncSkillsToSheet(skills) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) {
+                console.log('❌ SyncSkillsToSheet - Nenhum personagem ativo');
+                return;
+            }
+            
+            console.log('🔄 SyncSkillsToSheet - Personagem:', activeChar.name, 'Habilidades:', skills.length);
+            
+            // Salvar habilidades específicas do personagem usando seu ID
+            const characterKey = `characterSkills_${activeChar.id}`;
+            localStorage.setItem(characterKey, JSON.stringify(skills));
+            
+            // Disparar evento para notificar outras páginas
+            localStorage.setItem('skillsUpdated', Date.now().toString());
+            console.log('📢 Evento skillsUpdated disparado');
+        }
+
+        // Atualizar lista de habilidades na interface
+        function updateSkillsList() {
+            const skillsList = document.getElementById('skillsList');
+            if (!skillsList) return;
+            
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) {
+                skillsList.innerHTML = '<div class="empty-items">Nenhum personagem ativo</div>';
+                return;
+            }
+            
+            const characterSkills = getCharacterSkills(activeChar.id);
+            
+            if (characterSkills.length === 0) {
+                skillsList.innerHTML = '<div class="empty-items">Nenhuma habilidade disponível</div>';
+                return;
+            }
+            
+            skillsList.innerHTML = '';
+            
+            characterSkills.forEach(skill => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'item-card';
+                
+                let durationText = '';
+                if (skill.duration.type === 'number') {
+                    durationText = `${skill.duration.value} turnos`;
+                } else {
+                    durationText = `${skill.duration.value} (rolagem)`;
+                }
+                
+                let statusText = '';
+                let canUse = true;
+                
+                if (skill.active) {
+                    statusText = ` [ATIVA: ${skill.remainingTurns} turnos]`;
+                    skillCard.style.borderColor = 'var(--accent-yellow)';
+                    skillCard.style.background = 'rgba(255, 229, 0, 0.1)';
+                    canUse = false;
+                }
+                
+                const targetText = {
+                    'qualquer_criatura': 'Qualquer Criatura',
+                    'si_mesmo': 'A Si Mesmo',
+                    'nenhum': 'Nenhum'
+                }[skill.target] || skill.target;
+                
+                // Verificar se personagem tem CO suficiente
+                const hasEnoughCO = activeChar.co >= skill.cost;
+                
+                skillCard.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${skill.name} (CO: ${skill.cost})${statusText}</div>
+                        <div class="item-effect">${skill.effect}</div>
+                        <div class="item-details">Duração: ${durationText} | Alvo: ${targetText}</div>
+                    </div>
+                    <div class="item-controls">
+                        ${canUse && hasEnoughCO ? `<button class="item-btn use" onclick="useSkill('${skill.id}')">USAR</button>` : ''}
+                        ${!hasEnoughCO && canUse ? `<button class="item-btn" disabled style="opacity:0.5;">SEM CO</button>` : ''}
+                        ${skill.active ? `<button class="item-btn" style="background:rgba(255,193,7,0.2);border-color:#FFC107;">ATIVA</button>` : ''}
+                    </div>
+                `;
+                skillsList.appendChild(skillCard);
+            });
+        }
+
+        // Decrementar contadores de habilidades no próximo turno
+        function decrementSkillTurns() {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) return;
+            
+            const characterSkills = getCharacterSkills(activeChar.id);
+            let updated = false;
+            
+            characterSkills.forEach(skill => {
+                if (skill.active && skill.remainingTurns > 0) {
+                    skill.remainingTurns--;
+                    if (skill.remainingTurns === 0) {
+                        skill.active = false;
+                        addLogEntry(`${skill.name} expirou!`, 'turn');
+                    }
+                    updated = true;
+                }
+            });
+            
+            if (updated) {
+                syncSkillsToSheet(characterSkills);
+                updateSkillsList();
             }
         }
 
@@ -2488,6 +2827,13 @@
             addLogEntry(`<strong>${newChar.name}</strong> entrou no combate`);
             playSoundEffect('characterAdd');
             closeSheetModal();
+            
+            // Se este for o primeiro personagem, torná-lo ativo e carregar habilidades
+            if (combatData.characters.length === 1) {
+                newChar.isActive = true;
+                updateActiveCharacter();
+                updateSkillsList();
+            }
         }
 
         // Deleta uma ficha do repositório (usuário)
@@ -2607,8 +2953,17 @@
 
 // REMOVER PERSONAGEM DA ORDEM DE COMBATE (por id)
 function removeCombatCharacter(id) {
+    // Verificar se o ID é válido
+    if (id === undefined || id === null || id === '') {
+        console.error('removeCombatCharacter: ID inválido', id);
+        return;
+    }
+    
     const idx = combatData.characters.findIndex(c => c.id === id);
-    if (idx === -1) return;
+    if (idx === -1) {
+        console.error('removeCombatCharacter: Personagem não encontrado com ID', id);
+        return;
+    }
 
             const removed = combatData.characters.splice(idx, 1)[0];
             addLogEntry(`<strong>${removed.name}</strong> foi removido da ordem de iniciativa`);
@@ -2766,6 +3121,54 @@ function removeCombatCharacter(id) {
             console.log(`Som reproduzido: ${type}`);
         }
 
+        // FUNÇÃO PARA TRATAR AÇÕES DO PERSONAGEM
+        function takeAction(actionType) {
+            const activeChar = combatData.characters.find(c => c.isActive);
+            if (!activeChar) {
+                addLogEntry('Nenhum personagem ativo encontrado!', 'turn');
+                return;
+            }
+
+            switch(actionType) {
+                case 'attack':
+                    // Implementar lógica de ataque
+                    addLogEntry(`${activeChar.name} prepara um ataque!`, 'damage');
+                    playSoundEffect('attack');
+                    break;
+                
+                case 'move':
+                    // Implementar lógica de movimento
+                    addLogEntry(`${activeChar.name} se move para uma nova posição!`, 'turn');
+                    playSoundEffect('move');
+                    break;
+                
+                case 'item':
+                    // Abrir seção de itens ou alternar visibilidade
+                    const quickActions = document.getElementById('quickActions');
+                    const itemActions = document.getElementById('itemActions');
+                    
+                    if (itemActions && itemActions.style.display !== 'none') {
+                        // Se já está visível, voltar para ações rápidas
+                        itemActions.style.display = 'none';
+                        quickActions.style.display = 'grid';
+                    } else {
+                        // Mostrar seção de itens
+                        if (itemActions) {
+                            itemActions.style.display = 'grid';
+                        }
+                        if (quickActions) {
+                            quickActions.style.display = 'none';
+                        }
+                        // Carregar itens do personagem
+                        loadItemsFromSheet();
+                    }
+                    break;
+                
+                default:
+                    addLogEntry(`Ação desconhecida: ${actionType}`, 'turn');
+            }
+        }
+
         // setup do toggle de protocolos (colapsar/expandir)
         function setupProtocolsToggle() {
             const toggle = document.getElementById('protocolsToggle');
@@ -2785,6 +3188,176 @@ function removeCombatCharacter(id) {
                 }
             });
         }
+
+        // Sistema de Admin - Detecção de sequência de teclas
+        let keySequence = '';
+        const adminSequence = '1337'; // Sequência para ativar admin
+        const adminPassword = 'adm1818'; // Senha do modo admin
+        let isAdminMode = false;
+
+        document.addEventListener('keydown', function(event) {
+            // Ignorar se estiver em campos de input
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            // Apenas teclas numéricas
+            if (event.key >= '0' && event.key <= '9') {
+                keySequence += event.key;
+                
+                // Manter apenas os últimos 4 dígitos
+                if (keySequence.length > adminSequence.length) {
+                    keySequence = keySequence.slice(-adminSequence.length);
+                }
+
+                // Verificar se a sequência corresponde
+                if (keySequence === adminSequence && !isAdminMode) {
+                    keySequence = ''; // Resetar sequência
+                    showAdminPasswordPrompt();
+                }
+            }
+        });
+
+        function showAdminPasswordPrompt() {
+            const password = prompt('🔐 Modo Admin - Digite a senha:');
+            
+            if (password === adminPassword) {
+                activateAdminMode();
+            } else if (password !== null) {
+                alert('❌ Senha incorreta!');
+                keySequence = ''; // Resetar em caso de falha
+            }
+        }
+
+        function activateAdminMode() {
+            isAdminMode = true;
+            document.body.classList.add('admin-mode');
+            
+            // Criar painel admin
+            const adminPanel = document.createElement('div');
+            adminPanel.id = 'adminPanel';
+            adminPanel.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                min-width: 200px;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            `;
+            
+            adminPanel.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong>🔧 MODO ADMIN</strong>
+                    <button onclick="exitAdminMode()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✕</button>
+                </div>
+                <div style="font-size: 12px; opacity: 0.9;">
+                    <div>• Debug ativo</div>
+                    <div>• Console aberto</div>
+                    <div>• Ferramentas disponíveis</div>
+                </div>
+                <button onclick="openDevTools()" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px; border-radius: 5px; cursor: pointer; width: 100%;">
+                    Abrir DevTools
+                </button>
+                <button onclick="openHexaSocial()" style="margin-top: 5px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px; border-radius: 5px; cursor: pointer; width: 100%;">
+                    🌐 H.E.X.A Social
+                </button>
+            `;
+            
+            document.body.appendChild(adminPanel);
+            
+            // Mostrar mensagem de boas-vindas
+            showNotification('🔧 Modo Administrador ativado!', 'success');
+            
+            // Abrir console automaticamente
+            console.log('%c🔧 MODO ADMIN ATIVADO 🔧', 'color: #667eea; font-size: 20px; font-weight: bold;');
+            console.log('%cFerramentas administrativas disponíveis:', 'color: #764ba2; font-size: 14px;');
+            console.log('- debugGame() : Debug do estado do jogo');
+            console.log('- addExp(quantidade) : Adicionar experiência');
+            console.log('- unlockAll() : Destravar todos os itens');
+            
+            // Adicionar funções admin ao window
+            window.debugGame = function() {
+                console.log('=== DEBUG DO JOGO ===');
+                console.log('Personagem ativo:', activeChar);
+                console.log('Modo admin:', isAdminMode);
+                console.log('Itens:', items);
+                console.log('Protocolos:', protocols);
+            };
+            
+            window.addExp = function(amount) {
+                if (activeChar) {
+                    activeChar.experience.current = (activeChar.experience.current || 0) + amount;
+                    updateCharacterInfo();
+                    showNotification(`+${amount} EXP adicionado!`, 'success');
+                }
+            };
+            
+            // Função de logout
+            window.logout = function() {
+                sessionStorage.removeItem('hexa_authenticated');
+                sessionStorage.removeItem('hexa_username');
+                window.location.href = 'login.html';
+            };
+            
+            // Mostrar nome do usuário
+            const username = sessionStorage.getItem('hexa_username') || 'Admin';
+            const userDisplay = document.getElementById('userDisplay');
+            if (userDisplay) {
+                userDisplay.textContent = username;
+            }
+            
+            window.unlockAll = function() {
+                showNotification('Todos os itens destravados!', 'success');
+            };
+        }
+
+        function exitAdminMode() {
+            isAdminMode = false;
+            document.body.classList.remove('admin-mode');
+            const panel = document.getElementById('adminPanel');
+            if (panel) panel.remove();
+            showNotification('Modo administrador desativado', 'info');
+        }
+
+        function openDevTools() {
+            // Tentar abrir DevTools (pode não funcionar em todos os browsers)
+            if (typeof console !== 'undefined') {
+                console.clear();
+                console.log('%cDevTools Aberto - Modo Admin', 'background: #667eea; color: white; padding: 10px; border-radius: 5px;');
+            }
+        }
+
+        function openHexaSocial() {
+            window.open('hexa-social.html', '_blank');
+        }
+
+        // Adicionar estilos para modo admin
+        const adminStyles = document.createElement('style');
+        adminStyles.textContent = `
+            .admin-mode {
+                border: 2px solid #667eea !important;
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.3) !important;
+            }
+            
+            .admin-mode::before {
+                content: '🔧 ADMIN';
+                position: fixed;
+                top: 0;
+                left: 0;
+                background: #667eea;
+                color: white;
+                padding: 5px 10px;
+                font-size: 12px;
+                z-index: 9999;
+                opacity: 0.8;
+            }
+        `;
+        document.head.appendChild(adminStyles);
     </script>
 
     <!-- duplicata removida: #character-list já está dentro da sidebar -->

@@ -11,6 +11,9 @@ const protocols = [
 // Variável global para itens do inventário
 let characterItems = [];
 
+// Variável global para habilidades do personagem
+let characterSkills = [];
+
 function el(id){return document.getElementById(id)}
 
 // Funções para gerenciar itens na ficha
@@ -256,6 +259,351 @@ function updateInventoryField() {
     inventoryField.value = inventoryText;
 }
 
+// Funções para gerenciar habilidades na ficha
+function openAddSkillModal() {
+    const modalHtml = `
+        <div class="skill-modal-backdrop" onclick="closeSkillModal(event)" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;">
+            <div class="skill-modal" onclick="event.stopPropagation()" style="background:#1f1f1f;border:2px solid var(--accent-blue);padding:20px;border-radius:12px;width:450px;max-width:90vw;">
+                <h3 style="color:var(--accent-blue);margin-bottom:15px;"><i class="fas fa-plus"></i> ADICIONAR NOVA HABILIDADE</h3>
+                
+                <form id="addSkillForm" onsubmit="addSkill(event)">
+                    <div style="margin-bottom:12px;">
+                        <label style="color:var(--accent-pink);display:block;margin-bottom:6px;">Nome da Habilidade</label>
+                        <input type="text" id="skillName" name="skillName" required placeholder="Ex: Sobrevida Cibernética" style="width:100%;padding:8px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);">
+                    </div>
+                    
+                    <div style="margin-bottom:12px;">
+                        <label style="color:var(--accent-pink);display:block;margin-bottom:6px;">Efeito da Habilidade</label>
+                        <textarea id="skillEffect" name="skillEffect" required placeholder="Ex: Aumenta resistência a dano em 50% por 3 turnos" style="width:100%;min-height:60px;padding:8px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);"></textarea>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                        <div>
+                            <label style="color:var(--accent-pink);display:block;margin-bottom:6px;">Custo (CO)</label>
+                            <input type="number" id="skillCost" name="skillCost" min="0" required placeholder="0" style="width:100%;padding:8px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);">
+                        </div>
+                        
+                        <div>
+                            <label style="color:var(--accent-pink);display:block;margin-bottom:6px;">Alvo</label>
+                            <select id="skillTarget" name="skillTarget" required style="width:100%;padding:8px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);">
+                                <option value="qualquer_criatura">Qualquer Criatura</option>
+                                <option value="si_mesmo">A Si Mesmo</option>
+                                <option value="nenhum">Nenhum</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:12px;">
+                        <label style="color:var(--accent-pink);display:block;margin-bottom:6px;">Duração</label>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                            <div>
+                                <input type="radio" id="durationInstant" name="durationType" value="instant" checked onchange="toggleDurationFields()">
+                                <label for="durationInstant" style="color:var(--text);font-weight:normal;">Instantânea</label>
+                                <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:4px;">Uso único</div>
+                            </div>
+                            <div>
+                                <input type="radio" id="durationNumber" name="durationType" value="number" onchange="toggleDurationFields()">
+                                <label for="durationNumber" style="color:var(--text);font-weight:normal;">Número Fixo</label>
+                                <input type="number" id="skillDurationNumber" name="skillDurationNumber" min="1" placeholder="Turnos" style="width:100%;padding:6px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:var(--text);margin-top:4px;" disabled>
+                            </div>
+                            <div>
+                                <input type="radio" id="durationDice" name="durationType" value="dice" onchange="toggleDurationFields()">
+                                <label for="durationDice" style="color:var(--text);font-weight:normal;">Rolagem de Dados</label>
+                                <input type="text" id="skillDurationDice" name="skillDurationDice" placeholder="Ex: 1d4, 2d6" style="width:100%;padding:6px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:var(--text);margin-top:4px;" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:10px;justify-content:flex-end;">
+                        <button type="button" onclick="closeSkillModal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--text);padding:8px 16px;border-radius:6px;cursor:pointer;">CANCELAR</button>
+                        <button type="submit" style="background:linear-gradient(90deg,var(--accent-blue),var(--accent-pink));border:none;color:#050505;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:700;">ADICIONAR HABILIDADE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    // Criar modal temporariamente
+    const modalDiv = document.createElement('div');
+    modalDiv.innerHTML = modalHtml;
+    document.body.appendChild(modalDiv.firstElementChild);
+}
+
+function closeSkillModal(e) {
+    if (e && e.target !== e.currentTarget) return;
+    const modal = document.querySelector('.skill-modal-backdrop');
+    if (modal) modal.remove();
+}
+
+function toggleDurationFields() {
+    const durationType = document.querySelector('input[name="durationType"]:checked').value;
+    const numberField = document.getElementById('skillDurationNumber');
+    const diceField = document.getElementById('skillDurationDice');
+    
+    if (durationType === 'instant') {
+        // Habilidade instantânea - não precisa de campos
+        numberField.disabled = true;
+        numberField.required = false;
+        numberField.value = '';
+        diceField.disabled = true;
+        diceField.required = false;
+        diceField.value = '';
+    } else if (durationType === 'number') {
+        numberField.disabled = false;
+        numberField.required = true;
+        diceField.disabled = true;
+        diceField.required = false;
+        diceField.value = '';
+    } else {
+        numberField.disabled = true;
+        numberField.required = false;
+        numberField.value = '';
+        diceField.disabled = false;
+        diceField.required = true;
+    }
+}
+
+function addSkill(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const durationType = formData.get('durationType');
+    
+    let duration;
+    if (durationType === 'instant') {
+        duration = {
+            type: 'number',
+            value: 0  // Habilidade instantânea
+        };
+    } else if (durationType === 'number') {
+        duration = {
+            type: 'number',
+            value: parseInt(formData.get('skillDurationNumber'))
+        };
+    } else {
+        duration = {
+            type: 'dice',
+            value: formData.get('skillDurationDice')
+        };
+    }
+    
+    const newSkill = {
+        id: Date.now(),
+        name: formData.get('skillName'),
+        effect: formData.get('skillEffect'),
+        cost: parseInt(formData.get('skillCost')),
+        target: formData.get('skillTarget'),
+        duration: duration,
+        active: false,
+        remainingTurns: 0
+    };
+    
+    characterSkills.push(newSkill);
+    updateSkillsList();
+    
+    // Sincronizar com a página principal
+    syncSkillsToMain();
+    
+    closeSkillModal();
+    showToast('Habilidade adicionada com sucesso!');
+}
+
+function removeSkill(skillId) {
+    const index = characterSkills.findIndex(s => s.id == skillId);
+    if (index !== -1) {
+        const removedSkill = characterSkills.splice(index, 1)[0];
+        updateSkillsList();
+        
+        // Sincronizar com a página principal
+        syncSkillsToMain();
+        
+        showToast(`"${removedSkill.name}" removida das habilidades`);
+    }
+}
+
+function activateSkill(skillId) {
+    const skill = characterSkills.find(s => s.id == skillId);
+    if (!skill) return;
+    
+    if (skill.duration.type === 'dice') {
+        // Rolar os dados para determinar duração
+        const diceMatch = skill.duration.value.match(/(\d+)d(\d+)/);
+        if (diceMatch) {
+            const numDice = parseInt(diceMatch[1]);
+            const dieSize = parseInt(diceMatch[2]);
+            let total = 0;
+            
+            for (let i = 0; i < numDice; i++) {
+                total += Math.floor(Math.random() * dieSize) + 1;
+            }
+            
+            skill.remainingTurns = total;
+            skill.active = true;
+            
+            showToast(`${skill.name} ativada por ${total} turnos!`);
+        }
+    } else {
+        // Duração fixa
+        skill.remainingTurns = skill.duration.value;
+        skill.active = true;
+        
+        showToast(`${skill.name} ativada por ${skill.duration.value} turnos!`);
+    }
+    
+    updateSkillsList();
+    syncSkillsToMain();
+}
+
+function decrementSkillTurns() {
+    let updated = false;
+    
+    characterSkills.forEach(skill => {
+        if (skill.active && skill.remainingTurns > 0) {
+            skill.remainingTurns--;
+            if (skill.remainingTurns === 0) {
+                skill.active = false;
+                showToast(`${skill.name} expirou!`);
+            }
+            updated = true;
+        }
+    });
+    
+    if (updated) {
+        updateSkillsList();
+        syncSkillsToMain();
+    }
+}
+
+// Sincronizar habilidades com a página principal
+function syncSkillsToMain() {
+    // Obter ID da ficha atual
+    const urlParams = new URLSearchParams(window.location.search);
+    const sheetId = urlParams.get('edit');
+    
+    console.log('🔄 SyncSkillsToMain - sheetId:', sheetId, 'skills:', characterSkills.length);
+    
+    if (sheetId) {
+        // Salvar habilidades específicas da ficha usando seu ID
+        const characterKey = `characterSkills_${sheetId}`;
+        localStorage.setItem(characterKey, JSON.stringify(characterSkills));
+        console.log('💾 Salvou habilidades em:', characterKey);
+        
+        // Salvar também informações da ficha para compatibilidade
+        const characterInfo = {
+            characterId: sheetId,
+            characterName: el('nome')?.value || 'Sem nome',
+            skills: characterSkills
+        };
+        localStorage.setItem('characterSkills', JSON.stringify(characterInfo));
+    } else {
+        // Se não for edição, salvar como habilidades genéricas
+        localStorage.setItem('characterSkills', JSON.stringify(characterSkills));
+    }
+    
+    // Disparar evento para notificar outras páginas
+    localStorage.setItem('skillsUpdated', Date.now().toString());
+    console.log('📢 Evento skillsUpdated disparado');
+}
+
+// Carregar habilidades da página principal
+function loadSkillsFromMain() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sheetId = urlParams.get('edit');
+        
+        console.log('📥 LoadSkillsFromMain - sheetId:', sheetId);
+        
+        if (sheetId) {
+            // Tentar carregar habilidades específicas da ficha
+            const characterKey = `characterSkills_${sheetId}`;
+            const savedSkills = localStorage.getItem(characterKey);
+            
+            if (savedSkills) {
+                const skills = JSON.parse(savedSkills);
+                if (Array.isArray(skills)) {
+                    characterSkills = skills;
+                    updateSkillsList();
+                    console.log('✅ Carregou habilidades específicas da ficha:', skills.length);
+                }
+            } else {
+                // Tentar carregar do characterInfo geral
+                const characterInfo = localStorage.getItem('characterSkills');
+                if (characterInfo) {
+                    const info = JSON.parse(characterInfo);
+                    if (info.characterId === sheetId && Array.isArray(info.skills)) {
+                        characterSkills = info.skills;
+                        updateSkillsList();
+                        console.log('✅ Carregou habilidades do characterInfo:', info.skills.length);
+                    }
+                }
+            }
+        } else {
+            // Se não for edição, carregar habilidades genéricas
+            const savedSkills = localStorage.getItem('characterSkills');
+            if (savedSkills) {
+                const skills = JSON.parse(savedSkills);
+                if (Array.isArray(skills)) {
+                    characterSkills = skills;
+                    updateSkillsList();
+                    console.log('✅ Carregou habilidades genéricas:', skills.length);
+                }
+            }
+        }
+    } catch(e) {
+        console.error('Erro ao carregar habilidades da página principal:', e);
+    }
+}
+
+function updateSkillsList() {
+    const skillsList = el('skills-list');
+    if (!skillsList) return;
+    
+    if (characterSkills.length === 0) {
+        skillsList.innerHTML = '<div class="empty-items">Nenhuma habilidade disponível</div>';
+        return;
+    }
+    
+    skillsList.innerHTML = '';
+    
+    characterSkills.forEach(skill => {
+        const skillCard = document.createElement('div');
+        skillCard.className = 'item-card';
+        
+        let durationText = '';
+        if (skill.duration.type === 'number') {
+            durationText = `${skill.duration.value} turnos`;
+        } else {
+            durationText = `${skill.duration.value} (rolagem)`;
+        }
+        
+        let statusText = '';
+        if (skill.active) {
+            statusText = ` [ATIVA: ${skill.remainingTurns} turnos]`;
+            skillCard.style.borderColor = 'var(--accent-yellow)';
+            skillCard.style.background = 'rgba(255, 229, 0, 0.1)';
+        }
+        
+        const targetText = {
+            'qualquer_criatura': 'Qualquer Criatura',
+            'si_mesmo': 'A Si Mesmo',
+            'nenhum': 'Nenhum'
+        }[skill.target] || skill.target;
+        
+        skillCard.innerHTML = `
+            <div class="item-info">
+                <div class="item-name">${skill.name} (CO: ${skill.cost})${statusText}</div>
+                <div class="item-effect">${skill.effect}</div>
+                <div class="item-details">Duração: ${durationText} | Alvo: ${targetText}</div>
+            </div>
+            <div class="item-controls">
+                ${!skill.active ? `<button class="item-btn" onclick="activateSkill('${skill.id}')" style="background:rgba(0,212,255,0.2);border-color:var(--accent-blue);margin-right:4px;">ATIVAR</button>` : ''}
+                <button class="item-btn" onclick="removeSkill('${skill.id}')" style="background:rgba(255,51,204,0.2);border-color:var(--accent-pink);">REMOVER</button>
+            </div>
+        `;
+        skillsList.appendChild(skillCard);
+    });
+}
+
 // Inicializar sistema de itens
 function initializeItems() {
   // Primeiro tentar carregar itens compartilhados
@@ -287,6 +635,18 @@ function initializeItems() {
   window.addEventListener('storage', (e) => {
     if (e.key === 'itemsUpdated') {
       loadItemsFromMain();
+    }
+  });
+}
+
+function initializeSkills() {
+  // Carregar habilidades compartilhadas
+  loadSkillsFromMain();
+  
+  // Adicionar listener para sincronização entre páginas
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'skillsUpdated') {
+      loadSkillsFromMain();
     }
   });
 }
@@ -494,11 +854,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
               if (key && (prot[key] !== undefined)) i.value = prot[key];
             });
           }catch(e){}
-          
+
           // Carregar itens do inventário se existirem
           if (sheet.inventory && Array.isArray(sheet.inventory)) {
             characterItems = sheet.inventory;
             updateItemsList();
+          }
+          
+          // Carregar habilidades se existirem
+          if (sheet.skills && Array.isArray(sheet.skills)) {
+            characterSkills = sheet.skills;
+            updateSkillsList();
           }
           
           // Inicializar sistema de itens após carregar ficha existente
@@ -574,7 +940,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
           const sheet = {
             sheetId: existingId || 'sheet_' + Date.now(),
             meta, atributos, recursos, outros, protocolos,
-            inventory: characterItems // Adicionar inventário
+            inventory: characterItems, // Adicionar inventário
+            skills: characterSkills // Adicionar habilidades
           };
           return sheet;
         }
@@ -588,7 +955,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
           if (idx !== -1) sheetRepo[idx] = updated; else sheetRepo.push(updated);
           localStorage.setItem('sheetRepo', JSON.stringify(sheetRepo));
           playBeep(); showToast('Ficha atualizada');
-          //alert('Ficha atualizada no repositório H.E.X.A!');
         } else {
           const sheet = buildFullSheetFromForm(formData);
           sheetRepo.push(sheet);
@@ -605,6 +971,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // (Se desejar, a aba pode ser fechada manualmente pelo usuário.)
   });
   
-  // Inicializar itens após carregar ficha
+  // Inicializar itens e habilidades após carregar ficha
   initializeItems();
+  initializeSkills();
 });
