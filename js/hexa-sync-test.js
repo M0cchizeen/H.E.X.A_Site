@@ -253,7 +253,50 @@ async function runSyncTest() {
     }, 1000);
 }
 
-// Função para diagnóstico completo
+// Função para corrigir configuração do repositório
+function fixRepositoryConfig() {
+    console.log('🔧 Corrigindo configuração do repositório...');
+    
+    // Configurar manualmente o owner correto
+    HexaConfig.github.owner = 'M0cchizeen';
+    HexaConfig.github.repo = 'H.E.X.A_Site';
+    
+    console.log('✅ Configuração corrigida:');
+    console.log('  - Owner:', HexaConfig.github.owner);
+    console.log('  - Repo:', HexaConfig.github.repo);
+    
+    // Atualizar sincronização se existir
+    if (typeof hexaSync !== 'undefined' && hexaSync) {
+        hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
+        console.log('🔄 Sincronização atualizada com nova configuração');
+    }
+    
+    // Salvar no localStorage para persistir
+    localStorage.setItem('hexaRepoOwner', 'M0cchizeen');
+    localStorage.setItem('hexaRepoName', 'H.E.X.A_Site');
+    
+    return true;
+}
+
+// Função para verificar configuração atual
+function checkRepositoryConfig() {
+    console.log('📋 Verificando configuração do repositório...');
+    console.log('  - Owner atual:', HexaConfig.github.owner);
+    console.log('  - Repo atual:', HexaConfig.github.repo);
+    console.log('  - URL esperada:', 'M0cchizeen/H.E.X.A_Site');
+    
+    const isCorrect = HexaConfig.github.owner === 'M0cchizeen' && 
+                     HexaConfig.github.repo === 'H.E.X.A_Site';
+    
+    if (isCorrect) {
+        console.log('✅ Configuração do repositório está correta!');
+    } else {
+        console.log('❌ Configuração do repositório está incorreta!');
+        console.log('💡 Execute fixRepositoryConfig() para corrigir');
+    }
+    
+    return isCorrect;
+}
 async function fullDiagnosis() {
     console.log('🔬 Iniciando diagnóstico completo...');
     
@@ -306,11 +349,29 @@ window.checkSystemStatus = checkSystemStatus;
 window.createDemoToken = createDemoToken;
 window.setupRealToken = setupRealToken;
 window.fullDiagnosis = fullDiagnosis;
+window.fixRepositoryConfig = fixRepositoryConfig;
+window.checkRepositoryConfig = checkRepositoryConfig;
 
 // Executar teste automaticamente após 3 segundos
 setTimeout(() => {
     console.log('⏰ Executando teste automático...');
-    runSyncTest();
+    
+    // Primeiro verificar configuração do repositório
+    checkRepositoryConfig();
+    
+    // Se estiver incorreto, corrigir automaticamente
+    if (HexaConfig.github.owner !== 'M0cchizeen' || HexaConfig.github.repo !== 'H.E.X.A_Site') {
+        console.log('🔧 Configuração incorreta detectada, corrigindo automaticamente...');
+        fixRepositoryConfig();
+        
+        // Aguardar um pouco e executar teste
+        setTimeout(() => {
+            runSyncTest();
+        }, 1000);
+    } else {
+        // Se estiver correto, executar teste normal
+        runSyncTest();
+    }
 }, 3000);
 
 console.log('🧪 Script de teste carregado. Use runSyncTest() para testar manualmente.');

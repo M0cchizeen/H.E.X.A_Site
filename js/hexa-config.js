@@ -38,7 +38,9 @@ const HexaConfig = {
             // Extrair owner e repo da URL
             const pathParts = window.location.pathname.split('/').filter(p => p);
             if (pathParts.length >= 1) {
-                this.github.owner = pathParts[0];
+                // CORREÇÃO: Forçar owner correto para este repositório
+                this.github.owner = 'M0cchizeen'; // Username GitHub correto
+                
                 // Para GitHub Pages, o repo geralmente é username.github.io
                 if (window.location.hostname === `${pathParts[0]}.github.io`) {
                     this.github.repo = pathParts[1] || this.github.owner + '.github.io';
