@@ -1,8 +1,8 @@
 // Sistema de Sincronização H.E.X.A via GitHub API
 class HexaSync {
     constructor() {
-        this.repoOwner = 'seu-usuario'; // Alterar para seu username GitHub
-        this.repoName = 'seu-repo'; // Alterar para seu repositório
+        this.repoOwner = 'm0cchizimM0cchizeen'; // Default para testes
+        this.repoName = 'H.E.X.A_Site'; // Default para testes
         this.token = null; // Token opcional para maior limite de rate
         this.lastSync = 0;
         this.syncInterval = 5000; // 5 segundos
@@ -49,7 +49,7 @@ class HexaSync {
         this.repoOwner = owner;
         this.repoName = name;
         this.token = token;
-        console.log(`📁 Repositório configurado: ${owner}/${name}`);
+        console.log(`📁 Repositório configurado: ${owner}/${name} (modo online)`);
     }
 
     // Iniciar sincronização periódica
@@ -69,14 +69,40 @@ class HexaSync {
     // Sincronizar do GitHub
     async syncFromGitHub() {
         try {
+            console.log('🌐 Sincronizando com GitHub API...');
+            
             // Sincronizar estado do combate
             await this.syncCombatState();
             // Sincronizar mensagens do social
             await this.syncSocialMessages();
             
             this.lastSync = Date.now();
+            console.log('✅ Sincronização concluída');
         } catch (error) {
             console.warn('⚠️ Erro na sincronização:', error.message);
+            // Manter dados locais como fallback
+            this.syncFromLocalStorage();
+        }
+    }
+
+    // Sincronização local (apenas como backup)
+    syncFromLocalStorage() {
+        try {
+            // Carregar mensagens do localStorage como backup
+            const savedMessages = localStorage.getItem('hexaSocialMessages');
+            if (savedMessages && this.localState.social.messages.length === 0) {
+                this.localState.social.messages = JSON.parse(savedMessages);
+                console.log('📦 Usando mensagens locais como backup');
+            }
+            
+            // Carregar estado do combate como backup
+            const savedCombat = localStorage.getItem('hexaCombatState');
+            if (savedCombat && !this.localState.combat.isActive) {
+                this.localState.combat = { ...this.localState.combat, ...JSON.parse(savedCombat) };
+                console.log('📦 Usando estado local como backup');
+            }
+        } catch (error) {
+            console.warn('⚠️ Erro no backup local:', error.message);
         }
     }
 
@@ -148,15 +174,37 @@ class HexaSync {
     // Salvar mensagem no social
     async saveSocialMessage(messageData) {
         try {
+            console.log('💾 Salvando mensagem no GitHub...');
+            
             const title = `[HEXA_SOCIAL] ${messageData.username}`;
             const body = JSON.stringify(messageData);
             
             const issue = await this.createIssue(title, body, ['HEXA_SOCIAL_MESSAGE']);
-            console.log('💾 Mensagem social salva no GitHub:', issue.id);
+            console.log('✅ Mensagem social salva no GitHub:', issue.id);
+            
+            // Atualizar cache local imediatamente
+            this.localState.social.messages.unshift({
+                id: issue.id,
+                ...messageData,
+                githubId: issue.id,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+            
+            // Salvar no localStorage como backup
+            localStorage.setItem('hexaSocialMessages', JSON.stringify(this.localState.social.messages));
             
             return issue;
         } catch (error) {
             console.error('❌ Erro ao salvar mensagem social:', error);
+            // Fallback: salvar localmente
+            this.localState.social.messages.unshift({
+                id: Date.now(),
+                ...messageData,
+                timestamp: Date.now()
+            });
+            localStorage.setItem('hexaSocialMessages', JSON.stringify(this.localState.social.messages));
+            console.log('💾 Mensagem salva localmente (fallback)');
             throw error;
         }
     }

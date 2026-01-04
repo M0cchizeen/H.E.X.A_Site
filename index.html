@@ -8,6 +8,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Sistema de Autenticação e Sincronização (carregar primeiro) -->
+    <script src="js/hexa-config.js"></script>
+    <script src="js/hexa-auth.js"></script>
+    <script src="js/hexa-sync.js"></script>
+    
     <style>
         :root {
             --cyber-black: #000000;
@@ -3308,11 +3314,4 @@ function removeCombatCharacter(id) {
         `;
         document.head.appendChild(adminStyles);
     </script>
-
-    <!-- Sistema de Autenticação e Sincronização -->
-    <script src="js/hexa-config.js"></script>
-    <script src="js/hexa-auth.js"></script>
-    <script src="js/hexa-sync.js"></script>
-
-    <!-- duplicata removida: #character-list já está dentro da sidebar -->
 </body>

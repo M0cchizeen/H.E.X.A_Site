@@ -38,10 +38,17 @@ const HexaConfig = {
             const pathParts = window.location.pathname.split('/').filter(p => p);
             if (pathParts.length >= 1) {
                 this.github.owner = pathParts[0];
-                this.github.repo = pathParts[1] || this.github.owner + '.github.io';
+                // Para GitHub Pages, o repo geralmente é username.github.io
+                if (window.location.hostname === `${pathParts[0]}.github.io`) {
+                    this.github.repo = pathParts[1] || this.github.owner + '.github.io';
+                } else {
+                    this.github.repo = pathParts[1] || this.github.owner;
+                }
             }
             
             console.log('🌐 Detectado GitHub Pages:', this.github.owner, '/', this.github.repo);
+        } else {
+            console.log('🏠 Executando localmente, mas usando GitHub API online');
         }
         
         // Configurar sistema de sincronização
@@ -54,7 +61,7 @@ const HexaConfig = {
             hexaAuth.masterPassword = this.auth.masterPassword;
         }
         
-        console.log('⚙️ Configuração H.E.X.A carregada');
+        console.log('⚙️ Configuração H.E.X.A carregada (modo online)');
     }
 };
 
