@@ -94,6 +94,14 @@ class HexaCombatSystem {
         const initiativeList = document.getElementById('initiativeList');
         if (!initiativeList) return;
 
+        // Verificar se Sortable está disponível
+        if (typeof Sortable === 'undefined') {
+            console.warn('⚠️ Sortable não encontrado. Drag and drop de iniciativa não estará disponível.');
+            // Adicionar funcionalidade básica de clique para reordenar
+            this.setupBasicReordering();
+            return;
+        }
+
         // Configurar drag and drop para reordenar iniciativa
         new Sortable(initiativeList, {
             animation: 150,
@@ -102,6 +110,60 @@ class HexaCombatSystem {
                 this.reorderInitiative(evt.oldIndex, evt.newIndex);
             }
         });
+    }
+
+    setupBasicReordering() {
+        const initiativeList = document.getElementById('initiativeList');
+        if (!initiativeList) return;
+
+        // Adicionar botões para mover para cima/baixo
+        initiativeList.addEventListener('click', (e) => {
+            const item = e.target.closest('.initiative-item');
+            if (!item) return;
+
+            const moveUpBtn = item.querySelector('.move-up-btn');
+            const moveDownBtn = item.querySelector('.move-down-btn');
+
+            if (moveUpBtn && e.target === moveUpBtn) {
+                this.moveItemUp(item);
+            } else if (moveDownBtn && e.target === moveDownBtn) {
+                this.moveItemDown(item);
+            }
+        });
+    }
+
+    moveItemUp(itemElement) {
+        const parent = itemElement.parentNode;
+        const prev = itemElement.previousElementSibling;
+        if (prev && prev.classList.contains('initiative-item')) {
+            parent.insertBefore(itemElement, prev);
+            this.updateInitiativeOrder();
+        }
+    }
+
+    moveItemDown(itemElement) {
+        const parent = itemElement.parentNode;
+        const next = itemElement.nextElementSibling;
+        if (next && next.classList.contains('initiative-item')) {
+            parent.insertBefore(next, itemElement);
+            this.updateInitiativeOrder();
+        }
+    }
+
+    updateInitiativeOrder() {
+        const items = document.querySelectorAll('.initiative-item');
+        const newOrder = [];
+        
+        items.forEach((item, index) => {
+            const id = item.dataset.id;
+            const existingItem = this.currentCombatState.initiative.find(i => i.id === id);
+            if (existingItem) {
+                newOrder.push(existingItem);
+            }
+        });
+
+        this.currentCombatState.initiative = newOrder;
+        this.syncInitiative();
     }
 
     // Métodos de sincronização
@@ -297,7 +359,6 @@ class HexaCombatSystem {
             const itemElement = document.createElement('div');
             itemElement.className = `initiative-item ${isActive ? 'active' : ''} ${isNext ? 'next' : ''}`;
             itemElement.dataset.id = item.id;
-            itemElement.draggable = true;
 
             itemElement.innerHTML = `
                 <div class="initiative-avatar">${item.avatar}</div>
@@ -308,7 +369,14 @@ class HexaCombatSystem {
                         <span class="initiative-value">${item.initiative}</span>
                     </div>
                 </div>
-                <button class="remove-initiative-btn" onclick="hexaCombat.removeFromInitiative('${item.id}')">×</button>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <div class="initiative-value">${item.initiative}</div>
+                    <div style="display:flex;gap:2px;">
+                        <button class="move-up-btn" style="background:var(--hexa-blue);border:none;color:#fff;padding:2px 6px;border-radius:3px;cursor:pointer;font-size:0.7rem;" title="Mover para cima">▲</button>
+                        <button class="move-down-btn" style="background:var(--hexa-blue);border:none;color:#fff;padding:2px 6px;border-radius:3px;cursor:pointer;font-size:0.7rem;" title="Mover para baixo">▼</button>
+                    </div>
+                    <button class="remove-initiative-btn" onclick="hexaCombat.removeFromInitiative('${item.id}')" style="background:var(--hexa-red);border:none;color:#fff;padding:4px 8px;border-radius:6px;cursor:pointer;font-family:'Bebas Neue';font-size:0.85rem;">×</button>
+                </div>
             `;
 
             initiativeList.appendChild(itemElement);
@@ -316,17 +384,17 @@ class HexaCombatSystem {
     }
 
     updateTimerUI() {
-        const timerDisplay = document.getElementById('timerDisplay');
-        const turnDisplay = document.getElementById('turnDisplay');
-        const roundDisplay = document.getElementById('roundDisplay');
+        const combatTimer = document.getElementById('combatTimer');
+        const currentTurn = document.getElementById('currentTurn');
+        const roundDisplay = document.getElementById('roundsDisplay');
 
-        if (timerDisplay) {
-            timerDisplay.textContent = this.formatTime(this.currentCombatState.timeRemaining);
+        if (combatTimer) {
+            combatTimer.textContent = this.formatTime(this.currentCombatState.timeRemaining);
         }
 
-        if (turnDisplay) {
+        if (currentTurn) {
             const currentCharacter = this.currentCombatState.initiative[this.currentCombatState.currentTurn];
-            turnDisplay.textContent = currentCharacter ? currentCharacter.name : 'N/A';
+            currentTurn.textContent = currentCharacter ? currentCharacter.name : 'N/A';
         }
 
         if (roundDisplay) {
@@ -335,7 +403,7 @@ class HexaCombatSystem {
     }
 
     updateLogUI() {
-        const logContent = document.getElementById('logContent');
+        const logContent = document.getElementById('actionLog');
         if (!logContent) return;
 
         logContent.innerHTML = '';
@@ -381,8 +449,20 @@ class HexaCombatSystem {
     showSyncStatus(status, type) {
         const syncIndicator = document.getElementById('syncStatus');
         if (syncIndicator) {
-            syncIndicator.textContent = status;
-            syncIndicator.className = `sync-status ${type}`;
+            // Obter nome do usuário atual
+            const currentUser = window.hexaGetCurrentUser ? window.hexaGetCurrentUser() : null;
+            const username = currentUser ? currentUser.username : 'Usuário';
+            
+            if (type === 'success') {
+                syncIndicator.textContent = `Conectado - ${username}`;
+                syncIndicator.className = 'sync-status success';
+            } else if (type === 'warning') {
+                syncIndicator.textContent = 'Desconectado';
+                syncIndicator.className = 'sync-status warning';
+            } else {
+                syncIndicator.textContent = status;
+                syncIndicator.className = `sync-status ${type}`;
+            }
         }
     }
 }
