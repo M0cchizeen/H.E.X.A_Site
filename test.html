@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H.E.X.A - Test</title>
+    <style>
+        :root {
+            --cyber-black: #000000;
+            --primary-1: #FB00C1;
+            --primary-2: #85FFC6;
+            --secondary: #7332FE;
+            --cyber-white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--cyber-black);
+            color: var(--cyber-white);
+            font-family: 'Orbitron', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            border: 3px solid var(--primary-1);
+            background: rgba(0,0,0,0.8);
+        }
+
+        h1 {
+            color: var(--primary-2);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .info {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(133, 255, 198, 0.1);
+            border: 1px solid var(--primary-2);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff3b30, #dc3545);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 59, 48, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>H.E.X.A - SISTEMA ONLINE</h1>
+        <div class="info">
+            <strong>Status:</strong> Autenticado ✅
+        </div>
+        <div class="info">
+            <strong>Usuário:</strong> <span id="userDisplay">Admin</span>
+        </div>
+        <div class="info">
+            <strong>Sistema:</strong> Operacional
+        </div>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> SAIR
+        </button>
+    </div>
+
+    <script>
+        // Verificar autenticação
+        (function() {
+            const isAuthenticated = sessionStorage.getItem('hexa_authenticated');
+            if (isAuthenticated !== 'true') {
+                window.location.href = 'login.html';
+                return;
+            }
+        })();
+
+        // Função de logout
+        function logout() {
+            sessionStorage.removeItem('hexa_authenticated');
+            sessionStorage.removeItem('hexa_username');
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar nome do usuário
+        const username = sessionStorage.getItem('hexa_username') || 'Admin';
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) {
+            userDisplay.textContent = username;
+        }
+
+        console.log('H.E.X.A System loaded successfully');
+        console.log('Authenticated user:', username);
+    </script>
+</body>
+</html>
