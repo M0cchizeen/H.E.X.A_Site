@@ -3314,4 +3314,153 @@ function removeCombatCharacter(id) {
         `;
         document.head.appendChild(adminStyles);
     </script>
+
+    <!-- Sistema de Sincronização em Tempo Real -->
+    <script>
+        // Integrar sincronização com o sistema de combate existente
+        document.addEventListener('DOMContentLoaded', () => {
+            // Esperar sistema de sincronização estar disponível
+            setTimeout(() => {
+                if (typeof hexaSync !== 'undefined' && hexaSync) {
+                    console.log('🔗 Integrando sincronização com sistema de combate...');
+                    
+                    // Callback para atualizar combate
+                    hexaSync.on('combatUpdate', (combatState) => {
+                        console.log('⚔️ Atualizando estado do combate:', combatState);
+                        
+                        // Atualizar iniciativa
+                        if (combatState.initiative && combatState.initiative.length > 0) {
+                            combatData.initiative = combatState.initiative;
+                            updateInitiativeDisplay();
+                        }
+                        
+                        // Atualizar rodada
+                        if (combatState.currentRound !== undefined) {
+                            combatData.currentRound = combatState.currentRound;
+                            document.getElementById('roundCounter').textContent = `Rodada ${combatState.currentRound}`;
+                        }
+                        
+                        // Atualizar turno atual
+                        if (combatState.currentTurn !== undefined) {
+                            combatData.currentTurn = combatState.currentTurn;
+                            updateCurrentTurn();
+                        }
+                        
+                        // Atualizar logs
+                        if (combatState.logs && combatState.logs.length > 0) {
+                            combatData.logs = combatState.logs;
+                            updateCombatLogs();
+                        }
+                        
+                        // Atualizar timer
+                        if (combatState.timer) {
+                            updateTimerDisplay(combatState.timer);
+                        }
+                    });
+                    
+                    // Callback para atualizar timer
+                    hexaSync.on('timerUpdate', (timerData) => {
+                        if (timerData && timerData.isRunning) {
+                            updateTimerDisplay(timerData);
+                        }
+                    });
+                    
+                    // Função para salvar estado do combate
+                    window.saveCombatStateToSync = function() {
+                        if (hexaSync) {
+                            hexaSync.saveCombatState({
+                                isActive: combatData.isActive,
+                                currentRound: combatData.currentRound,
+                                currentTurn: combatData.currentTurn,
+                                initiative: combatData.initiative,
+                                timer: combatData.timer,
+                                logs: combatData.logs,
+                                characters: combatData.characters
+                            });
+                        }
+                    };
+                    
+                    // Função para adicionar log sincronizado
+                    window.addLogEntrySync = function(text, type = 'normal') {
+                        // Adicionar localmente
+                        addLogEntry(text, type);
+                        
+                        // Sincronizar
+                        if (hexaSync) {
+                            hexaSync.addCombatLog(text);
+                        }
+                    };
+                    
+                    // Função para próximo turno sincronizado
+                    window.nextTurnSync = function() {
+                        if (hexaSync) {
+                            hexaSync.nextTurn();
+                        }
+                    };
+                    
+                    // Função para iniciar timer sincronizado
+                    window.startTimerSync = function(duration = 60) {
+                        if (hexaSync) {
+                            hexaSync.startTimer(duration);
+                        }
+                    };
+                    
+                    // Função para parar timer sincronizado
+                    window.stopTimerSync = function() {
+                        if (hexaSync) {
+                            hexaSync.stopTimer();
+                        }
+                    };
+                    
+                    // Sobrescrever funções existentes para usar sincronização
+                    const originalAddLogEntry = window.addLogEntry;
+                    window.addLogEntry = function(text, type = 'normal') {
+                        originalAddLogEntry(text, type);
+                        if (hexaSync) {
+                            hexaSync.addCombatLog(text);
+                        }
+                    };
+                    
+                    // Salvar estado quando houver mudanças
+                    const originalUpdateInitiativeDisplay = window.updateInitiativeDisplay;
+                    window.updateInitiativeDisplay = function() {
+                        originalUpdateInitiativeDisplay();
+                        saveCombatStateToSync();
+                    };
+                    
+                    console.log('✅ Sincronização integrada com sucesso!');
+                }
+            }, 2000);
+        });
+        
+        // Funções auxiliares
+        function updateCurrentTurn() {
+            const turnCounter = document.getElementById('turnCounter');
+            if (turnCounter && combatData.initiative[combatData.currentTurn]) {
+                turnCounter.textContent = `Turno: ${combatData.initiative[combatData.currentTurn].name}`;
+            }
+        }
+        
+        function updateCombatLogs() {
+            const logsContainer = document.getElementById('combatLogs');
+            if (logsContainer && combatData.logs) {
+                logsContainer.innerHTML = combatData.logs.map(log => 
+                    `<div class="log-entry ${log.type || 'normal'}">${log.text}</div>`
+                ).join('');
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+        }
+        
+        function updateTimerDisplay(timerData) {
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) {
+                const minutes = Math.floor(timerData.timeRemaining / 60);
+                const seconds = timerData.timeRemaining % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Atualizar estado local
+                combatData.timer = timerData;
+            }
+        }
+    </script>
 </body>

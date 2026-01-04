@@ -1,20 +1,18 @@
-// Sistema de Sincronização H.E.X.A via GitHub API
+// Sistema de Sincronização H.E.X.A em Tempo Real via GitHub API
 class HexaSync {
     constructor() {
-        this.repoOwner = 'm0cchizimM0cchizeen'; // Default para testes
-        this.repoName = 'H.E.X.A_Site'; // Default para testes
-        this.token = null; // Token opcional para maior limite de rate
+        this.repoOwner = 'm0cchizimM0cchizeen';
+        this.repoName = 'H.E.X.A_Site';
+        this.token = null;
         this.lastSync = 0;
-        this.syncInterval = 5000; // 5 segundos
-        this.onStateUpdate = null;
-        this.onTimerUpdate = null;
-        this.onConnect = null;
-        this.onDisconnect = null;
+        this.syncInterval = 3000; // 3 segundos para mais real-time
         this.isConnected = false;
         this.syncTimer = null;
+        this.retryCount = 0;
+        this.maxRetries = 3;
         
-        // Estado local
-        this.localState = {
+        // Estado completo do site
+        this.siteState = {
             combat: {
                 isActive: false,
                 currentRound: 1,
@@ -23,33 +21,44 @@ class HexaSync {
                 timer: {
                     duration: 60,
                     timeRemaining: 60,
-                    isRunning: false
+                    isRunning: false,
+                    startTime: null
                 },
-                logs: []
+                logs: [],
+                characters: []
             },
             social: {
                 messages: []
+            },
+            system: {
+                lastUpdate: Date.now(),
+                activeUsers: [],
+                globalTimer: null
             }
+        };
+        
+        // Callbacks para atualizar UI
+        this.callbacks = {
+            onCombatUpdate: null,
+            onSocialUpdate: null,
+            onTimerUpdate: null,
+            onUserJoined: null,
+            onUserLeft: null
         };
     }
 
     init() {
-        console.log('🚀 Inicializando sistema de sincronização H.E.X.A...');
-        this.loadFromLocalStorage();
+        console.log('🌐 Iniciando sincronização em tempo real...');
         this.startSync();
-        this.isConnected = true;
-        
-        if (this.onConnect) {
-            this.onConnect();
-        }
+        this.startHeartbeat();
     }
 
-    // Configuração do repositório
+    // Configurar repositório
     setRepo(owner, name, token = null) {
         this.repoOwner = owner;
         this.repoName = name;
         this.token = token;
-        console.log(`📁 Repositório configurado: ${owner}/${name} (modo online)`);
+        console.log(`📁 Repositório: ${owner}/${name}`);
     }
 
     // Iniciar sincronização periódica
@@ -66,43 +75,79 @@ class HexaSync {
         this.syncFromGitHub();
     }
 
-    // Sincronizar do GitHub
-    async syncFromGitHub() {
+    // Heartbeat para detectar usuários ativos
+    startHeartbeat() {
+        setInterval(() => {
+            this.sendHeartbeat();
+        }, 10000); // A cada 10 segundos
+    }
+
+    // Enviar heartbeat
+    async sendHeartbeat() {
         try {
-            console.log('🌐 Sincronizando com GitHub API...');
-            
-            // Sincronizar estado do combate
-            await this.syncCombatState();
-            // Sincronizar mensagens do social
-            await this.syncSocialMessages();
-            
-            this.lastSync = Date.now();
-            console.log('✅ Sincronização concluída');
+            const userId = this.getUserId();
+            const heartbeatData = {
+                userId: userId,
+                timestamp: Date.now(),
+                page: window.location.pathname,
+                userAgent: navigator.userAgent.substring(0, 50)
+            };
+
+            await this.createOrUpdateIssue(
+                `HEXA_HEARTBEAT_${userId}`,
+                `Heartbeat ${userId}`,
+                JSON.stringify(heartbeatData),
+                ['HEXA_HEARTBEAT']
+            );
         } catch (error) {
-            console.warn('⚠️ Erro na sincronização:', error.message);
-            // Manter dados locais como fallback
-            this.syncFromLocalStorage();
+            console.warn('⚠️ Erro no heartbeat:', error.message);
         }
     }
 
-    // Sincronização local (apenas como backup)
-    syncFromLocalStorage() {
+    // Obter ID único do usuário
+    getUserId() {
+        let userId = localStorage.getItem('hexaUserId');
+        if (!userId) {
+            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('hexaUserId', userId);
+        }
+        return userId;
+    }
+
+    // Sincronização principal
+    async syncFromGitHub() {
         try {
-            // Carregar mensagens do localStorage como backup
-            const savedMessages = localStorage.getItem('hexaSocialMessages');
-            if (savedMessages && this.localState.social.messages.length === 0) {
-                this.localState.social.messages = JSON.parse(savedMessages);
-                console.log('📦 Usando mensagens locais como backup');
-            }
+            console.log('🔄 Sincronizando estado completo...');
             
-            // Carregar estado do combate como backup
-            const savedCombat = localStorage.getItem('hexaCombatState');
-            if (savedCombat && !this.localState.combat.isActive) {
-                this.localState.combat = { ...this.localState.combat, ...JSON.parse(savedCombat) };
-                console.log('📦 Usando estado local como backup');
-            }
+            // Sincronizar estado do combate
+            await this.syncCombatState();
+            
+            // Sincronizar mensagens sociais
+            await this.syncSocialMessages();
+            
+            // Sincronizar usuários ativos
+            await this.syncActiveUsers();
+            
+            // Sincronizar timer global
+            await this.syncGlobalTimer();
+            
+            this.lastSync = Date.now();
+            this.isConnected = true;
+            this.retryCount = 0;
+            
+            console.log('✅ Sincronização concluída');
+            
         } catch (error) {
-            console.warn('⚠️ Erro no backup local:', error.message);
+            console.warn('⚠️ Erro na sincronização:', error.message);
+            this.isConnected = false;
+            this.retryCount++;
+            
+            if (this.retryCount < this.maxRetries) {
+                console.log(`🔄 Tentando novamente (${this.retryCount}/${this.maxRetries})`);
+                setTimeout(() => this.syncFromGitHub(), 2000);
+            } else {
+                console.error('❌ Máximo de tentativas atingido');
+            }
         }
     }
 
@@ -113,103 +158,243 @@ class HexaSync {
             if (issue) {
                 const remoteState = JSON.parse(issue.body);
                 
-                // Verificar se o estado remoto é mais recente
-                if (remoteState.timestamp > this.localState.combat.lastUpdate) {
-                    this.localState.combat = { ...remoteState, lastUpdate: remoteState.timestamp };
+                // Verificar se mudou
+                if (JSON.stringify(remoteState) !== JSON.stringify(this.siteState.combat)) {
+                    this.siteState.combat = { ...this.siteState.combat, ...remoteState };
                     
-                    if (this.onStateUpdate) {
-                        this.onStateUpdate(this.localState.combat);
+                    // Atualizar UI
+                    if (this.callbacks.onCombatUpdate) {
+                        this.callbacks.onCombatUpdate(this.siteState.combat);
                     }
+                    
+                    console.log('⚔️ Estado do combate atualizado');
                 }
             }
         } catch (error) {
-            // Se não encontrar issue, usar estado local
-            console.log('📝 Estado local do combate sendo usado');
+            console.warn('⚠️ Erro ao sincronizar combate:', error.message);
         }
     }
 
-    // Sincronizar mensagens do social
+    // Sincronizar mensagens sociais
     async syncSocialMessages() {
         try {
             const issues = await this.getIssuesByLabel('HEXA_SOCIAL_MESSAGE');
-            const messages = issues.map(issue => {
-                const data = JSON.parse(issue.body);
-                return {
-                    id: issue.id,
-                    ...data,
-                    githubId: issue.id,
-                    createdAt: issue.created_at,
-                    updatedAt: issue.updated_at
-                };
-            });
-            
-            // Ordenar por data
-            messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            this.localState.social.messages = messages;
-            
-            // Atualizar localStorage para o H.E.X.A Social
-            localStorage.setItem('hexaSocialMessages', JSON.stringify(messages));
-            
+            const messages = issues.map(issue => ({
+                id: issue.id,
+                githubId: issue.number,
+                username: issue.title.replace('[HEXA_SOCIAL] ', ''),
+                content: JSON.parse(issue.body).content || issue.body,
+                timestamp: new Date(issue.created_at).getTime(),
+                updatedAt: new Date(issue.updated_at).getTime()
+            })).sort((a, b) => b.timestamp - a.timestamp);
+
+            // Verificar se mudou
+            if (JSON.stringify(messages) !== JSON.stringify(this.siteState.social.messages)) {
+                this.siteState.social.messages = messages;
+                
+                // Atualizar UI
+                if (this.callbacks.onSocialUpdate) {
+                    this.callbacks.onSocialUpdate(messages);
+                }
+                
+                console.log('💬 Mensagens sociais atualizadas:', messages.length);
+            }
         } catch (error) {
-            console.log('📝 Mensagens locais sendo usadas');
+            console.warn('⚠️ Erro ao sincronizar mensagens:', error.message);
         }
     }
 
-    // Salvar estado no GitHub
-    async saveCombatState() {
+    // Sincronizar usuários ativos
+    async syncActiveUsers() {
         try {
-            const stateData = {
-                ...this.localState.combat,
+            const issues = await this.getIssuesByLabel('HEXA_HEARTBEAT');
+            const now = Date.now();
+            const activeUsers = [];
+
+            issues.forEach(issue => {
+                try {
+                    const heartbeat = JSON.parse(issue.body);
+                    // Considerar ativo se heartbeat < 30 segundos
+                    if (now - heartbeat.timestamp < 30000) {
+                        activeUsers.push({
+                            userId: heartbeat.userId,
+                            lastSeen: heartbeat.timestamp,
+                            page: heartbeat.page
+                        });
+                    }
+                } catch (e) {
+                    // Ignorar heartbeats inválidos
+                }
+            });
+
+            this.siteState.system.activeUsers = activeUsers;
+            console.log('👥 Usuários ativos:', activeUsers.length);
+            
+        } catch (error) {
+            console.warn('⚠️ Erro ao sincronizar usuários:', error.message);
+        }
+    }
+
+    // Sincronizar timer global
+    async syncGlobalTimer() {
+        try {
+            const issue = await this.getIssue('HEXA_GLOBAL_TIMER');
+            if (issue) {
+                const timerData = JSON.parse(issue.body);
+                
+                // Se timer está rodando, calcular tempo restante
+                if (timerData.isRunning && timerData.startTime) {
+                    const elapsed = Date.now() - timerData.startTime;
+                    timerData.timeRemaining = Math.max(0, timerData.duration - elapsed);
+                }
+                
+                this.siteState.system.globalTimer = timerData;
+                
+                // Atualizar UI
+                if (this.callbacks.onTimerUpdate) {
+                    this.callbacks.onTimerUpdate(timerData);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Erro ao sincronizar timer:', error.message);
+        }
+    }
+
+    // Salvar estado do combate
+    async saveCombatState(combatData) {
+        try {
+            this.siteState.combat = { ...this.siteState.combat, ...combatData };
+            
+            await this.createOrUpdateIssue(
+                'HEXA_COMBAT_STATE',
+                'Estado do Combate H.E.X.A',
+                JSON.stringify(this.siteState.combat),
+                ['HEXA_STATE']
+            );
+            
+            console.log('💾 Estado do combate salvo');
+        } catch (error) {
+            console.error('❌ Erro ao salvar combate:', error);
+        }
+    }
+
+    // Adicionar mensagem social
+    async addSocialMessage(username, content) {
+        try {
+            const messageData = {
+                username: username,
+                content: content,
                 timestamp: Date.now()
             };
-            
-            await this.createOrUpdateIssue('HEXA_COMBAT_STATE', 'Estado do Combate H.E.X.A', JSON.stringify(stateData), ['HEXA_STATE']);
-            console.log('💾 Estado do combate salvo no GitHub');
-        } catch (error) {
-            console.error('❌ Erro ao salvar estado do combate:', error);
-        }
-    }
 
-    // Salvar mensagem no social
-    async saveSocialMessage(messageData) {
-        try {
-            console.log('💾 Salvando mensagem no GitHub...');
+            const issue = await this.createIssue(
+                `[HEXA_SOCIAL] ${username}`,
+                JSON.stringify(messageData),
+                ['HEXA_SOCIAL_MESSAGE']
+            );
+
+            console.log('💾 Mensagem social salva:', issue.id);
             
-            const title = `[HEXA_SOCIAL] ${messageData.username}`;
-            const body = JSON.stringify(messageData);
-            
-            const issue = await this.createIssue(title, body, ['HEXA_SOCIAL_MESSAGE']);
-            console.log('✅ Mensagem social salva no GitHub:', issue.id);
-            
-            // Atualizar cache local imediatamente
-            this.localState.social.messages.unshift({
-                id: issue.id,
-                ...messageData,
-                githubId: issue.id,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            });
-            
-            // Salvar no localStorage como backup
-            localStorage.setItem('hexaSocialMessages', JSON.stringify(this.localState.social.messages));
+            // Sincronizar imediatamente
+            setTimeout(() => this.syncFromGitHub(), 1000);
             
             return issue;
         } catch (error) {
-            console.error('❌ Erro ao salvar mensagem social:', error);
-            // Fallback: salvar localmente
-            this.localState.social.messages.unshift({
-                id: Date.now(),
-                ...messageData,
-                timestamp: Date.now()
-            });
-            localStorage.setItem('hexaSocialMessages', JSON.stringify(this.localState.social.messages));
-            console.log('💾 Mensagem salva localmente (fallback)');
+            console.error('❌ Erro ao salvar mensagem:', error);
             throw error;
         }
     }
 
+    // Atualizar iniciativa
+    async updateInitiative(initiative) {
+        await this.saveCombatState({ initiative: initiative });
+    }
+
+    // Próximo turno
+    async nextTurn() {
+        const combat = this.siteState.combat;
+        combat.currentTurn = (combat.currentTurn + 1) % combat.initiative.length;
+        await this.saveCombatState({ currentTurn: combat.currentTurn });
+    }
+
+    // Iniciar timer
+    async startTimer(duration = 60) {
+        const timerData = {
+            duration: duration,
+            timeRemaining: duration,
+            isRunning: true,
+            startTime: Date.now()
+        };
+
+        await this.createOrUpdateIssue(
+            'HEXA_GLOBAL_TIMER',
+            'Timer Global H.E.X.A',
+            JSON.stringify(timerData),
+            ['HEXA_TIMER']
+        );
+
+        console.log('⏱️ Timer iniciado:', duration, 'segundos');
+    }
+
+    // Parar timer
+    async stopTimer() {
+        const timerData = {
+            ...this.siteState.system.globalTimer,
+            isRunning: false,
+            startTime: null
+        };
+
+        await this.createOrUpdateIssue(
+            'HEXA_GLOBAL_TIMER',
+            'Timer Global H.E.X.A',
+            JSON.stringify(timerData),
+            ['HEXA_TIMER']
+        );
+
+        console.log('⏹️ Timer parado');
+    }
+
+    // Adicionar log de combate
+    async addCombatLog(entry) {
+        const combat = this.siteState.combat;
+        combat.logs.unshift({
+            text: entry,
+            timestamp: Date.now(),
+            type: 'combat'
+        });
+
+        // Manter apenas últimos 50 logs
+        if (combat.logs.length > 50) {
+            combat.logs = combat.logs.slice(0, 50);
+        }
+
+        await this.saveCombatState({ logs: combat.logs });
+    }
+
     // Métodos da API GitHub
+    async fetchWithAuth(url, options = {}) {
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        if (this.token) {
+            headers['Authorization'] = `token ${this.token}`;
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        }
+
+        return response;
+    }
+
     async getIssue(title) {
         const url = `https://api.github.com/search/issues?q=${encodeURIComponent(`repo:${this.repoOwner}/${this.repoName} ${title} in:title`)}`;
         const response = await this.fetchWithAuth(url);
@@ -219,7 +404,7 @@ class HexaSync {
     }
 
     async getIssuesByLabel(label) {
-        const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/issues?labels=${label}&state=open`;
+        const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/issues?labels=${encodeURIComponent(label)}&state=open&sort=created&direction=desc`;
         const response = await this.fetchWithAuth(url);
         return response.json();
     }
@@ -228,215 +413,84 @@ class HexaSync {
         const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/issues`;
         const response = await this.fetchWithAuth(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 title: title,
                 body: body,
                 labels: labels
             })
         });
-        
         return response.json();
     }
 
-    async createOrUpdateIssue(title, body, labels = []) {
-        // Verificar se issue já existe
-        const existing = await this.getIssue(title);
-        
-        if (existing) {
-            // Atualizar issue existente
-            const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/issues/${existing.number}`;
-            const response = await this.fetchWithAuth(url, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    body: body
-                })
-            });
-            
-            return response.json();
-        } else {
-            // Criar nova issue
-            return this.createIssue(title, body, labels);
-        }
-    }
-
-    async fetchWithAuth(url, options = {}) {
-        const headers = {
-            'Accept': 'application/vnd.github.v3+json',
-            ...options.headers
-        };
-        
-        if (this.token) {
-            headers['Authorization'] = `token ${this.token}`;
-        }
-        
-        const response = await fetch(url, {
-            ...options,
-            headers: headers
-        });
-        
-        if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-        }
-        
-        return response;
-    }
-
-    // Métodos de controle do combate
-    updateInitiative(initiative) {
-        this.localState.combat.initiative = initiative;
-        this.saveCombatState();
-    }
-
-    nextTurn() {
-        const initiative = this.localState.combat.initiative;
-        if (initiative.length > 0) {
-            this.localState.combat.currentTurn = (this.localState.combat.currentTurn + 1) % initiative.length;
-            
-            if (this.localState.combat.currentTurn === 0) {
-                this.localState.combat.currentRound++;
-            }
-            
-            this.saveCombatState();
-        }
-    }
-
-    startCombat() {
-        this.localState.combat.isActive = true;
-        this.localState.combat.currentRound = 1;
-        this.localState.combat.currentTurn = 0;
-        this.saveCombatState();
-    }
-
-    endCombat() {
-        this.localState.combat.isActive = false;
-        this.saveCombatState();
-    }
-
-    updateTimer(duration, timeRemaining) {
-        this.localState.combat.timer = {
-            duration: duration,
-            timeRemaining: timeRemaining,
-            isRunning: timeRemaining > 0
-        };
-        this.saveCombatState();
-    }
-
-    addLogEntry(logType, message) {
-        this.localState.combat.logs.push({
-            type: logType,
-            message: message,
-            timestamp: Date.now()
-        });
-        this.saveCombatState();
-    }
-
-    // Métodos do social
-    async addSocialMessage(username, content) {
-        const messageData = {
-            username: username,
-            content: content,
-            timestamp: Date.now()
-        };
-        
-        const issue = await this.saveSocialMessage(messageData);
-        
-        // Forçar sincronização imediata
-        setTimeout(() => this.syncSocialMessages(), 1000);
-        
-        return issue;
-    }
-
-    async deleteSocialMessage(messageId) {
+    async createOrUpdateIssue(title, defaultTitle, body, labels = []) {
         try {
-            // Encontrar a issue correspondente
-            const issues = await this.getIssuesByLabel('HEXA_SOCIAL_MESSAGE');
-            const issue = issues.find(i => i.id == messageId);
+            // Tentar encontrar issue existente
+            const existingIssue = await this.getIssue(title);
             
-            if (issue) {
-                // Fechar a issue (equivalente a deletar)
-                const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/issues/${issue.number}`;
-                await this.fetchWithAuth(url, {
+            if (existingIssue) {
+                // Atualizar issue existente
+                const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/issues/${existingIssue.number}`;
+                const response = await this.fetchWithAuth(url, {
                     method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
                     body: JSON.stringify({
-                        state: 'closed'
+                        body: body
                     })
                 });
-                
-                console.log('🗑️ Mensagem social deletada:', messageId);
-                
-                // Forçar sincronização
-                setTimeout(() => this.syncSocialMessages(), 1000);
+                return response.json();
+            } else {
+                // Criar nova issue
+                return this.createIssue(defaultTitle, body, labels);
             }
         } catch (error) {
-            console.error('❌ Erro ao deletar mensagem social:', error);
+            console.error('❌ Erro ao criar/atualizar issue:', error);
             throw error;
         }
     }
 
-    // Métodos utilitários
-    loadFromLocalStorage() {
-        try {
-            const savedState = localStorage.getItem('hexaCombatState');
-            if (savedState) {
-                this.localState.combat = { ...this.localState.combat, ...JSON.parse(savedState) };
-            }
-        } catch (error) {
-            console.warn('⚠️ Erro ao carregar estado do localStorage:', error);
-        }
-    }
-
-    saveToLocalStorage() {
-        try {
-            localStorage.setItem('hexaCombatState', JSON.stringify(this.localState.combat));
-        } catch (error) {
-            console.warn('⚠️ Erro ao salvar estado no localStorage:', error);
-        }
-    }
-
+    // Getters para acesso ao estado
     getCombatState() {
-        return this.localState.combat;
+        return this.siteState.combat;
     }
 
     getSocialMessages() {
-        return this.localState.social.messages;
+        return this.siteState.social.messages;
     }
 
+    getActiveUsers() {
+        return this.siteState.system.activeUsers;
+    }
+
+    getGlobalTimer() {
+        return this.siteState.system.globalTimer;
+    }
+
+    // Configurar callbacks
+    on(event, callback) {
+        if (this.callbacks.hasOwnProperty(`on${event.charAt(0).toUpperCase() + event.slice(1)}`)) {
+            this.callbacks[`on${event.charAt(0).toUpperCase() + event.slice(1)}`] = callback;
+        }
+    }
+
+    // Desconectar
     disconnect() {
         if (this.syncTimer) {
             clearInterval(this.syncTimer);
-            this.syncTimer = null;
         }
-        
         this.isConnected = false;
-        
-        if (this.onDisconnect) {
-            this.onDisconnect();
-        }
-        
-        console.log('🔌 Sistema de sincronização desconectado');
+        console.log('🔌 Sincronização desconectada');
     }
 }
 
-// Instância global do sistema de sincronização
+// Criar instância global
 let hexaSync = null;
 
-// Inicializar quando autenticado
+// Inicializar após autenticação
 document.addEventListener('DOMContentLoaded', () => {
-    // Aguardar autenticação
     setTimeout(() => {
-        if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated()) {
+        if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated) {
             hexaSync = new HexaSync();
             window.hexaSync = hexaSync;
-            console.log('🚀 Sistema de sincronização H.E.X.A inicializado');
+            console.log('🌐 Sistema de sincronização H.E.X.A pronto');
         }
     }, 100);
 });
