@@ -86,8 +86,13 @@ class HexaSync {
     async sendHeartbeat() {
         try {
             const userId = this.getUserId();
+            const username = this.getUsername();
+            const userColor = typeof hexaUser !== 'undefined' ? hexaUser.getUserColor() : '#007bff';
+            
             const heartbeatData = {
                 userId: userId,
+                username: username,
+                color: userColor,
                 timestamp: Date.now(),
                 page: window.location.pathname,
                 userAgent: navigator.userAgent.substring(0, 50)
@@ -95,7 +100,7 @@ class HexaSync {
 
             await this.createOrUpdateIssue(
                 `HEXA_HEARTBEAT_${userId}`,
-                `Heartbeat ${userId}`,
+                `Heartbeat ${username}`,
                 JSON.stringify(heartbeatData),
                 ['HEXA_HEARTBEAT']
             );
@@ -106,12 +111,25 @@ class HexaSync {
 
     // Obter ID único do usuário
     getUserId() {
+        if (typeof hexaUser !== 'undefined' && hexaUser.getUserId()) {
+            return hexaUser.getUserId();
+        }
+        
+        // Fallback para ID local
         let userId = localStorage.getItem('hexaUserId');
         if (!userId) {
             userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('hexaUserId', userId);
         }
         return userId;
+    }
+
+    // Obter nome do usuário
+    getUsername() {
+        if (typeof hexaUser !== 'undefined' && hexaUser.getUsername()) {
+            return hexaUser.getUsername();
+        }
+        return 'Jogador Anônimo';
     }
 
     // Sincronização principal
@@ -488,9 +506,22 @@ let hexaSync = null;
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated) {
-            hexaSync = new HexaSync();
-            window.hexaSync = hexaSync;
-            console.log('🌐 Sistema de sincronização H.E.X.A pronto');
+            // Esperar identificação do usuário
+            setTimeout(() => {
+                if (typeof hexaUser !== 'undefined' && hexaUser.isIdentified) {
+                    hexaSync = new HexaSync();
+                    window.hexaSync = hexaSync;
+                    
+                    // Configurar repositório
+                    if (typeof HexaConfig !== 'undefined') {
+                        hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
+                    }
+                    
+                    console.log('🌐 Sistema de sincronização H.E.X.A pronto');
+                } else {
+                    console.log('⏳ Aguardando identificação do usuário...');
+                }
+            }, 1000);
         }
     }, 100);
 });
