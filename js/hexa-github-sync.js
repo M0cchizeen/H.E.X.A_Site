@@ -1,6 +1,8 @@
 // Sistema de Sincronização H.E.X.A via GitHub API
 // Usa Issues do GitHub para sincronizar estado entre múltiplos clientes
 
+console.log('🔥 HEXA GITHUB SYNC FILE LOADED - TOP OF FILE!');
+
 class HexaGitHubSync {
     constructor() {
         this.isPolling = false;
@@ -12,6 +14,9 @@ class HexaGitHubSync {
         this.onDisconnect = null;
         this.pollingDelay = 3000; // 3 segundos entre polls
         this.isConnected = false;
+        
+        console.log('🔥 HEXA GITHUB SYNC - CONSTRUCTOR CHANGED!');
+        console.log('🔥 This should appear in console if file is updated on GitHub Pages');
         
         this.init();
     }
