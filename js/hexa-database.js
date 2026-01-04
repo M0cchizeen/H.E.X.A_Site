@@ -3,12 +3,11 @@
 
 class HexaDatabase {
     constructor() {
-        // Configuração - ATENÇÃO: Substitua com seus dados reais
         this.config = {
-            owner: 'SEU_USERNAME', // Seu username do GitHub
-            repo: 'SEU_REPOSITORIO', // Nome do seu repositório
-            token: 'SEU_TOKEN', // Token de acesso pessoal (opcional, para mais requests)
-            label: 'HEXA_SOCIAL_MESSAGE' // Label para identificar as mensagens
+            owner: 'M0cchizeen',
+            repo: 'H.E.X.A_Site',
+            token: 'TOKEN', 
+            label: 'HEXA_SOCIAL_MESSAGE'
         };
         
         this.apiBase = 'https://api.github.com';
