@@ -4,8 +4,8 @@
 const HexaConfig = {
     // Configurações do repositório GitHub
     github: {
-        owner: 'm0cchizimM0cchizeen', // Altere para seu username GitHub
-        repo: 'H.E.X.A_Site',     // Altere para o nome do seu repositório
+        owner: 'M0cchizeen', // Username GitHub correto
+        repo: 'H.E.X.A_Site',     // Nome do repositório
         token: null           // Opcional: token para maior limite de API
     },
     

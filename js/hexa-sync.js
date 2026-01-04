@@ -1,8 +1,8 @@
 // Sistema de Sincronização H.E.X.A em Tempo Real via GitHub API
 class HexaSync {
     constructor() {
-        this.repoOwner = 'm0cchizimM0cchizeen';
-        this.repoName = 'H.E.X.A_Site';
+        this.repoOwner = 'M0cchizeen'; // Username GitHub correto
+        this.repoName = 'H.E.X.A_Site'; // Nome do repositório
         this.token = null;
         this.lastSync = 0;
         this.syncInterval = 3000; // 3 segundos para mais real-time
