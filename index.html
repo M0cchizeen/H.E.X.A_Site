@@ -8,16 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        // Verificar autenticação antes de carregar a página
-        (function() {
-            const isAuthenticated = sessionStorage.getItem('hexa_authenticated');
-            if (isAuthenticated !== 'true') {
-                window.location.href = 'login.html';
-                return;
-            }
-        })();
-    </script>
+    
+    <!-- Sistema de Autenticação H.E.X.A -->
+    <script src="js/hexa-auth.js"></script>
+    
     <style>
         :root {
             --cyber-black: #000000;
@@ -334,60 +328,6 @@
         @keyframes time-pulse {
             0%, 100% { border-color: var(--secondary); }
             50% { border-color: var(--primary-1); }
-        }
-
-        /* Header Controls */
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary-2);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--primary-2);
-            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-        }
-
-        .user-info i {
-            color: var(--primary-2);
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, var(--hexa-red), #dc3545);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 0;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 5px 15px rgba(255, 59, 48, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .logout-btn:active {
-            transform: translateY(0);
         }
 
         /* ÁREA PRINCIPAL */
@@ -1426,6 +1366,33 @@
 
         #character-list button:hover {
             background: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="combat-container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-hexa glitch" data-text="H.E.X.A">H.E.X.A</span> 
+                <span class="logo-supernova"></span>
+            </div>
+            
+            <div class="turn-display">
+                <div class="turn-label">RODADAS</div>
+                <div class="turn-number" id="roundsDisplay" style="font-size:1.2rem;">00</div>
+                <div class="turn-label" style="font-size:0.9rem; margin-left:10px;">TURNO</div>
+                <div class="turn-number" id="currentTurn" style="font-size:0.9rem; margin-left:5px;">00</div>
+            </div>
+            
+            <div class="combat-time">
+                <i class="fas fa-clock"></i> <span id="combatTimer">00:00</span>
+            </div>
+        </header>
+        
+        <!-- ÁREA PRINCIPAL -->
+        <main class="main-area">
+            <!-- CARTÃO DO PERSONAGEM ATIVO -->
             <section class="active-character">
                 <div class="character-header">
                     <div class="character-avatar">
@@ -3296,20 +3263,6 @@ function removeCombatCharacter(id) {
                     showNotification(`+${amount} EXP adicionado!`, 'success');
                 }
             };
-            
-            // Função de logout
-            window.logout = function() {
-                sessionStorage.removeItem('hexa_authenticated');
-                sessionStorage.removeItem('hexa_username');
-                window.location.href = 'login.html';
-            };
-            
-            // Mostrar nome do usuário
-            const username = sessionStorage.getItem('hexa_username') || 'Admin';
-            const userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) {
-                userDisplay.textContent = username;
-            }
             
             window.unlockAll = function() {
                 showNotification('Todos os itens destravados!', 'success');

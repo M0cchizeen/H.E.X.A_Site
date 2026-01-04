@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>H.E.X.A Social</title>
-    <script src="js/hexa-database.js"></script>
+    
+    <!-- Sistema de Autenticação H.E.X.A -->
+    <script src="js/hexa-auth.js"></script>
+    
+    <!-- GitHub API Database -->
+    <script src="js/hexa-github-api.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 
@@ -935,14 +941,35 @@
     </div>
 
     <script>
-        // Sistema de mensagens
+        // Sistema de mensagens com GitHub API
         let messages = [];
         let currentIndex = 0;
         let isPaused = false;
         let rotationInterval;
 
-        // Carregar mensagens do localStorage
-        function loadMessages() {
+        // Carregar mensagens do GitHub API
+        async function loadMessages() {
+            try {
+                const result = await hexaDatabase.loadMessages();
+                if (result.success) {
+                    messages = result.messages;
+                    updateMessagesList();
+                    startRotation();
+                    console.log('Mensagens carregadas do GitHub:', messages.length);
+                } else {
+                    console.error('Erro ao carregar mensagens:', result.error);
+                    // Fallback para localStorage
+                    loadFromLocalStorage();
+                }
+            } catch (error) {
+                console.error('Erro na conexão com GitHub API:', error);
+                // Fallback para localStorage
+                loadFromLocalStorage();
+            }
+        }
+
+        // Fallback para localStorage
+        function loadFromLocalStorage() {
             const saved = localStorage.getItem('hexa-social-messages');
             if (saved) {
                 messages = JSON.parse(saved);
@@ -951,24 +978,30 @@
             }
         }
 
-        // Carregar mensagens do banco de dados
-        async function loadMessages() {
+        // Salvar mensagens no GitHub API
+        async function saveMessageToGitHub(text, username) {
             try {
-                const loadedMessages = await window.HexaDB.loadMessages();
-                messages = loadedMessages;
-                updateMessagesList();
-                
-                if (!isPaused && messages.length > 0) {
-                    startRotation();
+                const result = await hexaDatabase.saveMessage(text, username);
+                if (result.success) {
+                    console.log('Mensagem salva no GitHub:', result.issue.html_url);
+                    return true;
+                } else {
+                    console.error('Erro ao salvar no GitHub:', result.error);
+                    // Fallback para localStorage
+                    saveToLocalStorage();
+                    return false;
                 }
             } catch (error) {
-                console.error('Erro ao carregar mensagens:', error);
+                console.error('Erro ao salvar no GitHub:', error);
+                // Fallback para localStorage
+                saveToLocalStorage();
+                return false;
             }
         }
 
-        // Salvar mensagens no banco de dados
-        async function saveMessages() {
-            // As mensagens são salvas individualmente via addMessage
+        // Fallback localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('hexa-social-messages', JSON.stringify(messages));
         }
 
         // Adicionar nova mensagem
@@ -979,73 +1012,104 @@
             let username = presetUsername || customUsername || `HEXA_User${Math.floor(Math.random() * 1000)}`;
             
             const message = {
-                content: text,
-                username: username,
-                timestamp: new Date().toISOString()
+                id: Date.now(),
+                text: text,
+                timestamp: new Date().toISOString(),
+                username: username
             };
             
-            try {
-                const result = await window.HexaDB.saveMessage(message);
-                
-                if (result.success) {
-                    // Recarregar mensagens do banco de dados
-                    await loadMessages();
-                    
-                    if (!isPaused && messages.length === 1) {
-                        startRotation();
-                    }
-                    
-                    return message;
-                } else {
-                    console.error('Erro ao salvar mensagem:', result.error);
-                    showNotification('Erro ao salvar mensagem', 'error');
-                    return null;
-                }
-            } catch (error) {
-                console.error('Erro ao adicionar mensagem:', error);
-                showNotification('Erro ao adicionar mensagem', 'error');
-                return null;
+            // Tentar salvar no GitHub primeiro
+            const githubSuccess = await saveMessageToGitHub(text, username);
+            
+            // Adicionar à lista local
+            messages.push(message);
+            
+            // Salvar fallback no localStorage
+            saveToLocalStorage();
+            
+            updateMessagesList();
+            
+            if (!isPaused && messages.length === 1) {
+                startRotation();
             }
+            
+            // Mostrar notificação
+            if (githubSuccess) {
+                showNotification('💾 Mensagem salva na nuvem!', 'success');
+            } else {
+                showNotification('⚠️ Mensagem salva localmente (GitHub API indisponível)', 'warning');
+            }
+            
+            return message;
         }
 
         // Remover mensagem
         async function removeMessage(id) {
-            try {
-                // Encontrar a mensagem para obter o issueNumber
-                const message = messages.find(msg => msg.id === id);
-                if (message && message.issueNumber) {
-                    const result = await window.HexaDB.deleteMessage(id, message.issueNumber);
-                    
-                    if (result.success) {
-                        await loadMessages();
-                        
-                        if (messages.length === 0) {
-                            stopRotation();
-                            showEmptyState();
-                        } else if (currentIndex >= messages.length) {
-                            currentIndex = 0;
-                        }
-                    } else {
-                        console.error('Erro ao remover mensagem:', result.error);
-                        showNotification('Erro ao remover mensagem', 'error');
-                    }
-                } else {
-                    // Fallback para localStorage
-                    messages = messages.filter(msg => msg.id !== id);
-                    updateMessagesList();
-                    
-                    if (messages.length === 0) {
-                        stopRotation();
-                        showEmptyState();
-                    } else if (currentIndex >= messages.length) {
-                        currentIndex = 0;
-                    }
+            const message = messages.find(msg => msg.id === id);
+            
+            // Tentar deletar do GitHub se tiver issue_number
+            if (message && message.issue_number) {
+                try {
+                    await hexaDatabase.deleteMessage(message.issue_number);
+                    console.log('Mensagem deletada do GitHub');
+                } catch (error) {
+                    console.error('Erro ao deletar do GitHub:', error);
                 }
-            } catch (error) {
-                console.error('Erro ao remover mensagem:', error);
-                showNotification('Erro ao remover mensagem', 'error');
+            }
+            
+            // Remover da lista local
+            messages = messages.filter(msg => msg.id !== id);
+            saveToLocalStorage();
+            updateMessagesList();
+            
+            if (messages.length === 0) {
+                stopRotation();
+                showEmptyState();
+            } else if (currentIndex >= messages.length) {
+                currentIndex = 0;
             }
         }
+
+        // Sistema de notificações
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#667eea' : type === 'warning' ? '#ffd700' : '#007bff'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                font-family: 'Share Tech Mono', monospace;
+                font-size: 14px;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Adicionar CSS para animações
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Atualizar lista de mensagens salvas
         function updateMessagesList() {
@@ -1061,8 +1125,8 @@
             
             list.innerHTML = messages.map(msg => `
                 <div class="message-item">
-                    <button class="delete-btn" onclick="deleteMessage('${msg.id}', ${msg.issueNumber || 'null'})">✕</button>
-                    <div style="margin-right: 30px;">${msg.content}</div>
+                    <button class="delete-btn" onclick="deleteMessage(${msg.id})">✕</button>
+                    <div style="margin-right: 30px;">${msg.text}</div>
                     <small style="opacity: 0.7;">${new Date(msg.timestamp).toLocaleString('pt-BR')}</small>
                 </div>
             `).reverse().join('');
@@ -1084,7 +1148,7 @@
                             <div class="post-time">${formatTime(message.timestamp)}</div>
                         </div>
                     </div>
-                    <div class="post-content">${message.content}</div>
+                    <div class="post-content">${message.text}</div>
                 </div>
             `;
         }
@@ -1140,12 +1204,12 @@
         }
 
         // Deletar mensagem
-        async function deleteMessage(id, issueNumber) {
-            await removeMessage(id, issueNumber);
+        function deleteMessage(id) {
+            removeMessage(id);
         }
 
         // Event Listeners
-        document.getElementById('saveBtn').addEventListener('click', async () => {
+        document.getElementById('saveBtn').addEventListener('click', () => {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             
@@ -1154,11 +1218,8 @@
                 return;
             }
             
-            const message = await addMessage(text);
-            if (message) {
-                input.value = '';
-                showNotification('Mensagem salva com sucesso!', 'success');
-            }
+            addMessage(text);
+            input.value = '';
             document.getElementById('presetUsername').value = '';
             document.getElementById('customUsername').value = '';
             input.focus();
@@ -1225,62 +1286,8 @@
             }
         });
 
-        // Sistema de notificações
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 0;
-                color: white;
-                font-family: 'Share Tech Mono', monospace;
-                font-size: 14px;
-                z-index: 10000;
-                border: 2px solid;
-                backdrop-filter: blur(10px);
-                animation: slideIn 0.3s ease;
-            `;
-            
-            if (type === 'success') {
-                notification.style.background = 'rgba(0, 255, 136, 0.9)';
-                notification.style.borderColor = '#00ff88';
-            } else if (type === 'error') {
-                notification.style.background = 'rgba(255, 0, 0, 0.9)';
-                notification.style.borderColor = '#ff0000';
-            } else {
-                notification.style.background = 'rgba(102, 126, 234, 0.9)';
-                notification.style.borderColor = '#667eea';
-            }
-            
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Adicionar animações de notificação
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
         // Inicialização
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadMessages();
-        });
+        loadMessages();
     </script>
 </body>
 </html>
