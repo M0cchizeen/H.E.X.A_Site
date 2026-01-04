@@ -2,8 +2,8 @@
 class HexaGitHubDatabase {
     constructor() {
         this.config = {
-            owner: 'M0cchizim',
-            repo: 'HEXA_Site',
+            owner: 'M0cchizeen',
+            repo: 'H.E.X.A_Site',
             token: null, // Token opcional para mais requests
         };
         
