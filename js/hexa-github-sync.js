@@ -28,8 +28,60 @@ class HexaGitHubSync {
             
             console.log('🔗 Conectado à sincronização via GitHub API');
         } else {
-            console.error('❌ GitHub API não encontrada');
-            this.enableOfflineMode();
+            console.error('❌ GitHub API não encontrada - sistema desativado');
+            this.disableSystem();
+        }
+    }
+
+    disableSystem() {
+        console.log('❌ Sistema desativado - GitHub API não disponível');
+        this.isConnected = false;
+        
+        if (this.onDisconnect) {
+            this.onDisconnect();
+        }
+        
+        this.showNotification('❌ Sistema desativado - GitHub API não disponível', 'error');
+    }
+
+    enableOfflineMode() {
+        console.log('📴 Ativando modo offline...');
+        this.isConnected = false;
+        
+        // Configurar sincronização local como fallback
+        if (window.hexaLocalSync) {
+            console.log('🔄 Configurando sincronização local como fallback...');
+            
+            // Redirecionar callbacks para o sistema local
+            window.hexaLocalSync.onStateUpdate = this.onStateUpdate;
+            window.hexaLocalSync.onLogUpdate = this.onLogUpdate;
+            
+            // Carregar dados existentes do localStorage
+            const localState = window.hexaLocalSync.loadState();
+            if (localState && this.onStateUpdate) {
+                console.log('📥 Carregando estado do localStorage...');
+                this.onStateUpdate(localState);
+            }
+            
+            const localLog = window.hexaLocalSync.loadLog();
+            if (localLog.length > 0 && this.onLogUpdate) {
+                console.log('📥 Carregando log do localStorage...');
+                this.onLogUpdate(localLog);
+            }
+        }
+        
+        if (this.onDisconnect) {
+            this.onDisconnect();
+        }
+        
+        this.showNotification('📴 Modo offline ativado - usando sincronização local', 'warning');
+    }
+
+    showNotification(message, type = 'info') {
+        if (window.showNotification) {
+            window.showNotification(message, type);
+        } else {
+            console.log(`[${type.toUpperCase()}] ${message}`);
         }
     }
 
@@ -99,11 +151,22 @@ class HexaGitHubSync {
 
         } catch (error) {
             console.error('❌ Erro ao verificar atualizações:', error);
+            
+            // Se for erro de autenticação, desativar sistema completamente
+            if (error.message && (error.message.includes('401') || error.message.includes('403'))) {
+                console.error('🔒 Erro de autenticação detectado - desativando sistema...');
+                this.disableSystem();
+            }
         }
     }
 
     // Métodos de sincronização
     async updateInitiative(initiative) {
+        if (!this.isConnected || !window.hexaDatabase) {
+            console.error('❌ Sistema não conectado - impossível sincronizar iniciativa');
+            return;
+        }
+
         try {
             console.log('🔄 Sincronizando iniciativa:', initiative);
             const currentState = await this.getCurrentState();
@@ -115,9 +178,9 @@ class HexaGitHubSync {
                 const result = await window.hexaDatabase.saveCombatState(currentState);
                 if (result.success) {
                     this.lastUpdate = Date.now();
-                    console.log('✅ Iniciativa sincronizada com sucesso');
+                    console.log('✅ Iniciativa sincronizada com sucesso via GitHub');
                 } else {
-                    console.error('❌ Falha ao sincronizar iniciativa:', result.error);
+                    console.error('❌ Falha ao sincronizar iniciativa via GitHub:', result.error);
                 }
             }
         } catch (error) {
@@ -226,13 +289,18 @@ class HexaGitHubSync {
     }
 
     async addLogEntry(logType, message) {
+        if (!this.isConnected || !window.hexaDatabase) {
+            console.error('❌ Sistema não conectado - impossível adicionar entrada de log');
+            return;
+        }
+
         try {
             console.log('📝 Adicionando entrada ao log...');
             const result = await window.hexaDatabase.addCombatLogEntry(logType, message);
             if (result.success) {
-                console.log('✅ Entrada de log sincronizada com sucesso');
+                console.log('✅ Entrada de log sincronizada com sucesso via GitHub');
             } else {
-                console.error('❌ Falha ao adicionar entrada de log:', result.error);
+                console.error('❌ Falha ao adicionar entrada de log via GitHub:', result.error);
             }
         } catch (error) {
             console.error('❌ Erro ao adicionar entrada de log:', error);

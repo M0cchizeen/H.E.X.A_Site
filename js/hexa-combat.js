@@ -475,6 +475,33 @@ class HexaCombatSystem {
             }
         }
     }
+
+    // Rolar iniciativa para todos os personagens
+    async rollInitiative() {
+        console.log('🎲 Rolando iniciativa para todos os personagens...');
+        
+        if (this.currentCombatState.initiative.length === 0) {
+            this.showNotification('⚠️ Nenhum personagem na iniciativa para rolar dados!', 'warning');
+            return;
+        }
+
+        // Rolar d20 para cada personagem
+        this.currentCombatState.initiative.forEach(character => {
+            const roll = Math.floor(Math.random() * 20) + 1;
+            const bonus = character.initiative || 0;
+            character.initiative = roll + bonus;
+            console.log(`🎲 ${character.name}: d20(${roll}) + ${bonus} = ${character.initiative}`);
+        });
+
+        // Reordenar por iniciativa
+        this.currentCombatState.initiative.sort((a, b) => b.initiative - a.initiative);
+        
+        await this.syncInitiative();
+        this.updateInitiativeUI();
+        
+        await this.addLogEntry('turn', 'Iniciativa rolada para todos os personagens');
+        this.showNotification('🎲 Iniciativa rolada com sucesso!', 'success');
+    }
 }
 
 // Instância global do sistema de combate
