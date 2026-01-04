@@ -9,9 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Sistema de Autenticação H.E.X.A -->
-    <script src="js/hexa-auth.js"></script>
-    
     <style>
         :root {
             --cyber-black: #000000;
@@ -2870,10 +2867,46 @@
 
         // REMOVER PERSONAGEM DO LOCAL STORAGE
         function removeCharacter(index) {
+            // Verificar permissões
+            const currentUser = window.hexaGetCurrentUser ? window.hexaGetCurrentUser() : {};
+            const isAdmin = window.hexaIsAdmin ? window.hexaIsAdmin() : false;
+            
             const characters = JSON.parse(localStorage.getItem('characters')) || [];
+            const characterToRemove = characters[index];
+            
+            // Se não for admin, verificar se o personagem pertence ao usuário
+            if (!isAdmin) {
+                // Verificar se o personagem tem um campo de usuário ou se pertence ao usuário atual
+                const characterOwner = characterToRemove.owner || characterToRemove.createdBy || characterToRemove.username;
+                
+                if (characterOwner && characterOwner !== currentUser.username) {
+                    alert('❌ Você só pode remover seus próprios personagens!');
+                    return;
+                }
+                
+                // Se não houver informação de dono, assumir que não pode remover
+                if (!characterOwner) {
+                    alert('❌ Apenas administradores podem remover personagens sem dono definido!');
+                    return;
+                }
+            }
+            
+            // Confirmar remoção
+            const confirmMessage = isAdmin 
+                ? `Tem certeza que deseja remover o personagem "${characterToRemove.name}"?`
+                : `Tem certeza que deseja remover seu personagem "${characterToRemove.name}"?`;
+                
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            // Remover personagem
             characters.splice(index, 1);
             localStorage.setItem('characters', JSON.stringify(characters));
             loadCharacters();
+            
+            // Mostrar notificação
+            showNotification(`Personagem "${characterToRemove.name}" removido com sucesso!`, 'success');
         }
 
         document.addEventListener('DOMContentLoaded', loadCharacters);
@@ -3159,7 +3192,6 @@ function removeCombatCharacter(id) {
         // Sistema de Admin - Detecção de sequência de teclas
         let keySequence = '';
         const adminSequence = '1337'; // Sequência para ativar admin
-        const adminPassword = 'adm1818'; // Senha do modo admin
         let isAdminMode = false;
 
         document.addEventListener('keydown', function(event) {
@@ -3177,10 +3209,10 @@ function removeCombatCharacter(id) {
                     keySequence = keySequence.slice(-adminSequence.length);
                 }
 
-                // Verificar se a sequência corresponde
-                if (keySequence === adminSequence && !isAdminMode) {
+                // Verificar se a sequência corresponde E se for admin
+                if (keySequence === adminSequence && !isAdminMode && window.hexaIsAdmin && window.hexaIsAdmin()) {
                     keySequence = ''; // Resetar sequência
-                    showAdminPasswordPrompt();
+                    activateAdminMode();
                 }
             }
         });
@@ -3217,10 +3249,15 @@ function removeCombatCharacter(id) {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             `;
             
+            const currentUser = window.hexaGetCurrentUser ? window.hexaGetCurrentUser() : {};
+            
             adminPanel.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <strong>🔧 MODO ADMIN</strong>
                     <button onclick="exitAdminMode()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✕</button>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 8px; margin: 10px 0; border-radius: 5px; font-size: 12px; text-align: center;">
+                    👤 Usuário: <strong>${currentUser.username || 'Desconhecido'}</strong> (ADMIN)
                 </div>
                 <div style="font-size: 12px; opacity: 0.9;">
                     <div>• Debug ativo</div>
@@ -3312,6 +3349,9 @@ function removeCombatCharacter(id) {
         `;
         document.head.appendChild(adminStyles);
     </script>
+
+    <!-- Script de Inicialização H.E.X.A (LOGIN) -->
+    <script src="js/hexa-init.js"></script>
 
     <!-- duplicata removida: #character-list já está dentro da sidebar -->
 </body>

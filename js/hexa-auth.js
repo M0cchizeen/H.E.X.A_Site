@@ -3,18 +3,34 @@ class HexaAuth {
     constructor() {
         this.masterPassword = 'adm1818'; // Senha master (pode ser alterada)
         this.sessionKey = 'hexa_authenticated';
-        this.init();
-    }
-
-    init() {
-        // Verificar se já está autenticado
+        
+        // Verificar autenticação imediatamente
         if (!this.isAuthenticated()) {
+            // Esconder conteúdo principal imediatamente
+            this.hideMainContent();
             this.showLoginScreen();
         }
     }
 
+    init() {
+        // Método mantido para compatibilidade
+    }
+
     isAuthenticated() {
         return sessionStorage.getItem(this.sessionKey) === 'true';
+    }
+
+    hideMainContent() {
+        // Esconder todo o conteúdo existente imediatamente
+        if (document.body) {
+            document.body.style.visibility = 'hidden';
+            const existingElements = document.body.children;
+            for (let element of existingElements) {
+                if (element.id !== 'hexa-login') {
+                    element.style.display = 'none';
+                }
+            }
+        }
     }
 
     showLoginScreen() {
@@ -113,13 +129,20 @@ class HexaAuth {
         // Adicionar tela de login ao body
         document.body.insertAdjacentHTML('beforeend', loginHTML);
         
+        // Garantir que a tela de login esteja visível
+        const loginScreen = document.getElementById('hexa-login');
+        if (loginScreen) {
+            loginScreen.style.visibility = 'visible';
+            loginScreen.style.display = 'flex';
+        }
+        
         // Configurar eventos
         this.setupLoginEvents();
         
         // Esconder conteúdo principal
         document.body.style.overflow = 'hidden';
         
-        // Esconder todos os elementos existentes
+        // Esconder todos os elementos existentes (exceto login)
         const existingElements = document.body.children;
         for (let element of existingElements) {
             if (element.id !== 'hexa-login') {
@@ -194,19 +217,24 @@ class HexaAuth {
             loginScreen.remove();
             
             // Mostrar conteúdo principal
-            document.body.style.overflow = 'auto';
-            
-            // Mostrar todos os elementos existentes
-            const existingElements = document.body.children;
-            for (let element of existingElements) {
-                element.style.display = '';
-            }
-            
-            // Inicializar o site normalmente
-            if (typeof initializeSite === 'function') {
-                initializeSite();
-            }
+            this.showMainContent();
         }, 500);
+    }
+
+    showMainContent() {
+        // Mostrar todos os elementos existentes
+        document.body.style.visibility = 'visible';
+        document.body.style.overflow = 'auto';
+        
+        const existingElements = document.body.children;
+        for (let element of existingElements) {
+            element.style.display = '';
+        }
+        
+        // Inicializar o site normalmente se existir a função
+        if (typeof initializeSite === 'function') {
+            initializeSite();
+        }
     }
 
     // Método para logout (opcional)
