@@ -406,6 +406,19 @@ class HexaSync {
             headers
         });
 
+        // Tratar diferentes tipos de erro
+        if (response.status === 403) {
+            const errorData = await response.json().catch(() => ({}));
+            if (errorData.message && errorData.message.includes('rate limit')) {
+                throw new Error(`Rate limit excedido. Aguarde o reset ou configure um token GitHub.`);
+            }
+            throw new Error(`Acesso negado: ${response.statusText}`);
+        } else if (response.status === 404) {
+            throw new Error(`Recurso não encontrado: ${url}`);
+        } else if (response.status === 401) {
+            throw new Error(`Token inválido ou expirado`);
+        }
+
         if (!response.ok) {
             throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
         }
@@ -502,9 +515,10 @@ class HexaSync {
 // Criar instância global
 let hexaSync = null;
 
-// Inicializar após autenticação
+// Inicializar quando carregar
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
+        // Inicializar sincronização se autenticado
         if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated) {
             // Esperar identificação do usuário
             setTimeout(() => {
@@ -517,11 +531,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
                     }
                     
+                    hexaSync.init();
                     console.log('🌐 Sistema de sincronização H.E.X.A pronto');
                 } else {
                     console.log('⏳ Aguardando identificação do usuário...');
+                    // Tentar novamente em 2 segundos
+                    setTimeout(() => {
+                        if (typeof hexaUser !== 'undefined' && hexaUser.isIdentified) {
+                            hexaSync = new HexaSync();
+                            window.hexaSync = hexaSync;
+                            
+                            if (typeof HexaConfig !== 'undefined') {
+                                hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
+                            }
+                            
+                            hexaSync.init();
+                            console.log('🌐 Sistema de sincronização H.E.X.A pronto (delayed)');
+                        }
+                    }, 2000);
                 }
             }, 1000);
+        } else {
+            console.log('🔒 Aguardando autenticação para iniciar sincronização...');
         }
     }, 100);
 });

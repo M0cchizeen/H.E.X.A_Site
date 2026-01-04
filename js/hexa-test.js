@@ -41,7 +41,7 @@ class HexaTest {
 
     async testRepositoryAccess() {
         try {
-            const owner = 'm0cchizimM0cchizeen';
+            const owner = 'M0cchizeen'; // Username GitHub correto
             const repo = 'H.E.X.A_Site';
             const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
             const data = await response.json();
@@ -57,7 +57,7 @@ class HexaTest {
 
     async testIssueCreation() {
         try {
-            const owner = 'm0cchizimM0cchizeen';
+            const owner = 'M0cchizeen'; // Username GitHub correto
             const repo = 'H.E.X.A_Site';
             
             const testData = {
@@ -99,7 +99,7 @@ class HexaTest {
 
     async testIssueRetrieval() {
         try {
-            const owner = 'm0cchizimM0cchizeen';
+            const owner = 'M0cchizeen'; // Username GitHub correto
             const repo = 'H.E.X.A_Site';
             
             // Buscar issues com label HEXA_TEST
@@ -173,7 +173,7 @@ class HexaTest {
         if (!this.testIssueNumber) return;
         
         try {
-            const owner = 'm0cchizimM0cchizeen';
+            const owner = 'M0cchizeen'; // Username GitHub correto
             const repo = 'H.E.X.A_Site';
             
             // Tentar fechar a issue de teste

@@ -6,7 +6,8 @@ const HexaConfig = {
     github: {
         owner: 'M0cchizeen', // Username GitHub correto
         repo: 'H.E.X.A_Site',     // Nome do repositório
-        token: null           // Opcional: token para maior limite de API
+        token: null,           // Token de API GitHub (opcional, mas recomendado)
+        useToken: false        // Habilitar uso de token quando disponível
     },
     
     // Configurações de autenticação
@@ -51,6 +52,14 @@ const HexaConfig = {
             console.log('🏠 Executando localmente, mas usando GitHub API online');
         }
         
+        // Tentar carregar token salvo
+        const savedToken = localStorage.getItem('hexaGitHubToken');
+        if (savedToken) {
+            this.github.token = savedToken;
+            this.github.useToken = true;
+            console.log('🔑 Token GitHub carregado do localStorage');
+        }
+        
         // Configurar sistema de sincronização
         if (typeof hexaSync !== 'undefined' && hexaSync) {
             hexaSync.setRepo(this.github.owner, this.github.repo, this.github.token);
@@ -62,6 +71,37 @@ const HexaConfig = {
         }
         
         console.log('⚙️ Configuração H.E.X.A carregada (modo online)');
+    },
+    
+    // Salvar token GitHub
+    saveGitHubToken(token) {
+        if (token && token.trim()) {
+            this.github.token = token.trim();
+            this.github.useToken = true;
+            localStorage.setItem('hexaGitHubToken', token.trim());
+            console.log('🔑 Token GitHub salvo');
+            
+            // Atualizar sincronização se já estiver ativa
+            if (typeof hexaSync !== 'undefined' && hexaSync) {
+                hexaSync.setRepo(this.github.owner, this.github.repo, this.github.token);
+            }
+            
+            return true;
+        }
+        return false;
+    },
+    
+    // Remover token GitHub
+    removeGitHubToken() {
+        this.github.token = null;
+        this.github.useToken = false;
+        localStorage.removeItem('hexaGitHubToken');
+        console.log('🗑️ Token GitHub removido');
+        
+        // Atualizar sincronização se já estiver ativa
+        if (typeof hexaSync !== 'undefined' && hexaSync) {
+            hexaSync.setRepo(this.github.owner, this.github.repo, null);
+        }
     }
 };
 

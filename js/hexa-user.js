@@ -387,10 +387,11 @@ window.hexaUser = hexaUser;
 
 // Auto-inicializar quando carregar
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar após login
-    setTimeout(() => {
-        if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated) {
-            hexaUser.init();
-        }
-    }, 500);
+    // Inicializar sistema de usuário imediatamente
+    hexaUser.init();
+    
+    // Disponibilizar globalmente
+    window.hexaUser = hexaUser;
+    
+    console.log('👤 Sistema de identificação H.E.X.A carregado');
 });
