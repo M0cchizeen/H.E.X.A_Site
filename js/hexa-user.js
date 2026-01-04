@@ -275,9 +275,24 @@ class HexaUser {
         // Disponibilizar globalmente
         window.hexaCurrentUser = this.currentUser;
         
-        // Iniciar sincronização se existir
-        if (typeof hexaSync !== 'undefined' && hexaSync) {
-            hexaSync.init();
+        // Iniciar sincronização se existir e autenticado
+        if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated) {
+            if (typeof hexaSync === 'undefined' || !hexaSync) {
+                // Forçar inicialização da sincronização
+                setTimeout(() => {
+                    if (typeof HexaSync !== 'undefined') {
+                        hexaSync = new HexaSync();
+                        window.hexaSync = hexaSync;
+                        
+                        if (typeof HexaConfig !== 'undefined') {
+                            hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
+                        }
+                        
+                        hexaSync.init();
+                        console.log('🌐 Sistema de sincronização H.E.X.A iniciado pelo usuário');
+                    }
+                }, 100);
+            }
         }
     }
 

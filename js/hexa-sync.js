@@ -518,39 +518,42 @@ let hexaSync = null;
 // Inicializar quando carregar
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        // Inicializar sincronização se autenticado
-        if (typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated) {
-            // Esperar identificação do usuário
+        // Verificar se usuário está autenticado E identificado
+        const isAuthenticated = typeof hexaAuth !== 'undefined' && hexaAuth.isAuthenticated;
+        const isIdentified = typeof hexaUser !== 'undefined' && hexaUser.isIdentified;
+        
+        console.log('🔍 Status inicialização:', { isAuthenticated, isIdentified });
+        
+        if (isAuthenticated && isIdentified) {
+            // Inicializar sincronização imediatamente
+            hexaSync = new HexaSync();
+            window.hexaSync = hexaSync;
+            
+            // Configurar repositório
+            if (typeof HexaConfig !== 'undefined') {
+                hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
+            }
+            
+            hexaSync.init();
+            console.log('🌐 Sistema de sincronização H.E.X.A pronto');
+        } else if (isAuthenticated && !isIdentified) {
+            console.log('⏳ Aguardando identificação do usuário...');
+            // Tentar novamente em 2 segundos
             setTimeout(() => {
                 if (typeof hexaUser !== 'undefined' && hexaUser.isIdentified) {
                     hexaSync = new HexaSync();
                     window.hexaSync = hexaSync;
                     
-                    // Configurar repositório
                     if (typeof HexaConfig !== 'undefined') {
                         hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
                     }
                     
                     hexaSync.init();
-                    console.log('🌐 Sistema de sincronização H.E.X.A pronto');
+                    console.log('🌐 Sistema de sincronização H.E.X.A pronto (delayed)');
                 } else {
-                    console.log('⏳ Aguardando identificação do usuário...');
-                    // Tentar novamente em 2 segundos
-                    setTimeout(() => {
-                        if (typeof hexaUser !== 'undefined' && hexaUser.isIdentified) {
-                            hexaSync = new HexaSync();
-                            window.hexaSync = hexaSync;
-                            
-                            if (typeof HexaConfig !== 'undefined') {
-                                hexaSync.setRepo(HexaConfig.github.owner, HexaConfig.github.repo, HexaConfig.github.token);
-                            }
-                            
-                            hexaSync.init();
-                            console.log('🌐 Sistema de sincronização H.E.X.A pronto (delayed)');
-                        }
-                    }, 2000);
+                    console.log('❌ Usuário não identificado após timeout');
                 }
-            }, 1000);
+            }, 2000);
         } else {
             console.log('🔒 Aguardando autenticação para iniciar sincronização...');
         }
