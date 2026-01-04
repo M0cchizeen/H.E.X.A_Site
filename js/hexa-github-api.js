@@ -20,6 +20,44 @@ class HexaGitHubDatabase {
         }
     }
 
+    // Testar conexão com GitHub API
+    async testConnection() {
+        try {
+            console.log('🔍 Testando acesso ao repositório...');
+            
+            const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}`;
+            const headers = {
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            };
+
+            if (this.config.token) {
+                headers['Authorization'] = `token ${this.config.token}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: headers
+            });
+
+            if (response.ok) {
+                const repo = await response.json();
+                console.log('✅ Repositório acessível:', repo.full_name);
+                return { success: true, repo: repo };
+            } else {
+                console.error('❌ Erro ao acessar repositório:', response.status, response.statusText);
+                return { 
+                    success: false, 
+                    error: `HTTP ${response.status}: ${response.statusText}`,
+                    status: response.status
+                };
+            }
+        } catch (error) {
+            console.error('❌ Erro na conexão com GitHub API:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
     // Salvar mensagem como Issue
     async saveMessage(message, username = 'Hexa_User') {
         try {

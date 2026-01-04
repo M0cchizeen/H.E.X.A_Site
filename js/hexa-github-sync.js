@@ -17,19 +17,50 @@ class HexaGitHubSync {
     }
 
     init() {
-        // Verificar se a API GitHub está disponível
+        // Verificar se a API GitHub está disponível E testar conexão
         if (window.hexaDatabase) {
-            this.isConnected = true;
-            this.startPolling();
-            
-            if (this.onConnect) {
-                this.onConnect();
-            }
-            
-            console.log('🔗 Conectado à sincronização via GitHub API');
+            console.log('🔍 GitHub API encontrada, testando conexão...');
+            this.testConnection();
         } else {
             console.error('❌ GitHub API não encontrada');
             this.enableOfflineMode();
+        }
+    }
+
+    async testConnection() {
+        try {
+            console.log('🔍 Testando conexão com GitHub API...');
+            
+            // Fazer uma requisição simples para testar
+            const response = await window.hexaDatabase.testConnection();
+            
+            if (response && response.success) {
+                console.log('✅ Conexão com GitHub API bem-sucedida!');
+                this.isConnected = true;
+                this.startPolling();
+                
+                if (this.onConnect) {
+                    this.onConnect();
+                }
+                
+                console.log('🔗 Conectado à sincronização via GitHub API');
+            } else {
+                console.error('❌ Falha no teste de conexão:', response?.error || 'Erro desconhecido');
+                
+                // Se for erro de autenticação ou acesso, bloquear imediatamente
+                if (response?.status === 401 || response?.status === 403 || response?.error?.includes('401') || response?.error?.includes('403')) {
+                    console.error('🔒 Erro de autenticação detectado - BLOQUEANDO SITE...');
+                    this.blockSite();
+                } else {
+                    console.error('🔒 Outro erro de conexão - BLOQUEANDO SITE...');
+                    this.blockSite();
+                }
+            }
+            
+        } catch (error) {
+            console.error('❌ Erro ao testar conexão com GitHub API:', error);
+            console.error('🔒 Falha na conexão - BLOQUEANDO SITE...');
+            this.blockSite();
         }
     }
 
