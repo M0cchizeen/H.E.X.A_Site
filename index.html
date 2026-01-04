@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --cyber-black: #000000;
@@ -1384,7 +1383,6 @@
             
             <div class="combat-time">
                 <i class="fas fa-clock"></i> <span id="combatTimer">00:00</span>
-                <span id="syncStatus" class="sync-status" style="margin-left: 10px; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Desconectado</span>
             </div>
         </header>
         
@@ -1516,21 +1514,15 @@
             </div>
             
             <div class="control-buttons">
-                <button class="control-btn" id="startCombatBtn" onclick="hexaCombat.startCombat()">
-                    <i class="fas fa-play"></i> INICIAR COMBATE
-                </button>
-                <button class="control-btn" id="endCombatBtn" onclick="hexaCombat.endCombat()">
-                    <i class="fas fa-stop"></i> FINALIZAR COMBATE
-                </button>
-                <button class="control-btn" id="nextTurnBtn" onclick="hexaCombat.nextTurn()">
+                <button class="control-btn" onclick="nextTurn()">
                     <i class="fas fa-forward"></i> PRÓXIMO TURNO
                 </button>
                 <button class="control-btn blue" onclick="rollInitiative()">
                     <i class="fas fa-dice-d20"></i> ROLAR INICIATIVA
                 </button>
-                <button class="control-btn blue" onclick="window.open('pages/create_character.html','_blank')">
-                    <i class="fas fa-file-circle-plus"></i> CRIAR FICHA
-                </button>
+                    <button class="control-btn blue" onclick="window.open('pages/create_character.html','_blank')">
+                        <i class="fas fa-file-circle-plus"></i> CRIAR FICHA
+                    </button>
                 <button class="control-btn" onclick="openAddModal()">
                     <i class="fas fa-user-plus"></i> ADICIONAR
                 </button>
@@ -2874,46 +2866,10 @@
 
         // REMOVER PERSONAGEM DO LOCAL STORAGE
         function removeCharacter(index) {
-            // Verificar permissões
-            const currentUser = window.hexaGetCurrentUser ? window.hexaGetCurrentUser() : {};
-            const isAdmin = window.hexaIsAdmin ? window.hexaIsAdmin() : false;
-            
             const characters = JSON.parse(localStorage.getItem('characters')) || [];
-            const characterToRemove = characters[index];
-            
-            // Se não for admin, verificar se o personagem pertence ao usuário
-            if (!isAdmin) {
-                // Verificar se o personagem tem um campo de usuário ou se pertence ao usuário atual
-                const characterOwner = characterToRemove.owner || characterToRemove.createdBy || characterToRemove.username;
-                
-                if (characterOwner && characterOwner !== currentUser.username) {
-                    alert('❌ Você só pode remover seus próprios personagens!');
-                    return;
-                }
-                
-                // Se não houver informação de dono, assumir que não pode remover
-                if (!characterOwner) {
-                    alert('❌ Apenas administradores podem remover personagens sem dono definido!');
-                    return;
-                }
-            }
-            
-            // Confirmar remoção
-            const confirmMessage = isAdmin 
-                ? `Tem certeza que deseja remover o personagem "${characterToRemove.name}"?`
-                : `Tem certeza que deseja remover seu personagem "${characterToRemove.name}"?`;
-                
-            if (!confirm(confirmMessage)) {
-                return;
-            }
-            
-            // Remover personagem
             characters.splice(index, 1);
             localStorage.setItem('characters', JSON.stringify(characters));
             loadCharacters();
-            
-            // Mostrar notificação
-            showNotification(`Personagem "${characterToRemove.name}" removido com sucesso!`, 'success');
         }
 
         document.addEventListener('DOMContentLoaded', loadCharacters);
@@ -3199,6 +3155,7 @@ function removeCombatCharacter(id) {
         // Sistema de Admin - Detecção de sequência de teclas
         let keySequence = '';
         const adminSequence = '1337'; // Sequência para ativar admin
+        const adminPassword = 'adm1818'; // Senha do modo admin
         let isAdminMode = false;
 
         document.addEventListener('keydown', function(event) {
@@ -3216,10 +3173,10 @@ function removeCombatCharacter(id) {
                     keySequence = keySequence.slice(-adminSequence.length);
                 }
 
-                // Verificar se a sequência corresponde E se for admin
-                if (keySequence === adminSequence && !isAdminMode && window.hexaIsAdmin && window.hexaIsAdmin()) {
+                // Verificar se a sequência corresponde
+                if (keySequence === adminSequence && !isAdminMode) {
                     keySequence = ''; // Resetar sequência
-                    activateAdminMode();
+                    showAdminPasswordPrompt();
                 }
             }
         });
@@ -3256,15 +3213,10 @@ function removeCombatCharacter(id) {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             `;
             
-            const currentUser = window.hexaGetCurrentUser ? window.hexaGetCurrentUser() : {};
-            
             adminPanel.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <strong>🔧 MODO ADMIN</strong>
                     <button onclick="exitAdminMode()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✕</button>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); padding: 8px; margin: 10px 0; border-radius: 5px; font-size: 12px; text-align: center;">
-                    👤 Usuário: <strong>${currentUser.username || 'Desconhecido'}</strong> (ADMIN)
                 </div>
                 <div style="font-size: 12px; opacity: 0.9;">
                     <div>• Debug ativo</div>
@@ -3357,20 +3309,10 @@ function removeCombatCharacter(id) {
         document.head.appendChild(adminStyles);
     </script>
 
-    <!-- Script GitHub API -->
-    <script src="js/hexa-github-api.js?v=202501041230"></script>
-    
-    <!-- Script de Sincronização GitHub API -->
-    <script src="js/hexa-github-sync.js?v=202501041230"></script>
-    
-    <!-- Biblioteca Sortable para drag and drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    
-    <!-- Script de Combate Sincronizado -->
-    <script src="js/hexa-combat.js?v=202501041230"></script>
-
-    <!-- Script de Inicialização H.E.X.A (LOGIN) -->
-    <script src="js/hexa-init.js?v=202501041230"></script>
+    <!-- Sistema de Autenticação e Sincronização -->
+    <script src="js/hexa-config.js"></script>
+    <script src="js/hexa-auth.js"></script>
+    <script src="js/hexa-sync.js"></script>
 
     <!-- duplicata removida: #character-list já está dentro da sidebar -->
 </body>

@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>H.E.X.A Social</title>
-    
-    <!-- GitHub API Database -->
-    <script src="js/hexa-github-api.js"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 
@@ -938,125 +934,90 @@
     </div>
 
     <script>
-        // Sistema de mensagens com GitHub API
+        // Sistema de mensagens
         let messages = [];
         let currentIndex = 0;
         let isPaused = false;
         let rotationInterval;
 
-        // Carregar mensagens do GitHub API
-        async function loadMessages() {
-            try {
-                const result = await hexaDatabase.loadMessages();
-                if (result.success) {
-                    messages = result.messages;
-                    updateMessagesList();
-                    startRotation();
-                    console.log('Mensagens carregadas do GitHub:', messages.length);
-                } else {
-                    console.error('Erro ao carregar mensagens:', result.error);
-                    // Fallback para localStorage
-                    loadFromLocalStorage();
-                }
-            } catch (error) {
-                console.error('Erro na conexão com GitHub API:', error);
+        // Carregar mensagens do sistema de sincronização
+        function loadMessages() {
+            // Tentar carregar do sistema de sincronização primeiro
+            if (typeof hexaSync !== 'undefined' && hexaSync) {
+                messages = hexaSync.getSocialMessages() || [];
+            } else {
                 // Fallback para localStorage
-                loadFromLocalStorage();
-            }
-        }
-
-        // Fallback para localStorage
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('hexa-social-messages');
-            if (saved) {
-                messages = JSON.parse(saved);
-                updateMessagesList();
-                startRotation();
-            }
-        }
-
-        // Salvar mensagens no GitHub API
-        async function saveMessageToGitHub(text, username) {
-            try {
-                const result = await hexaDatabase.saveMessage(text, username);
-                if (result.success) {
-                    console.log('Mensagem salva no GitHub:', result.issue.html_url);
-                    return true;
-                } else {
-                    console.error('Erro ao salvar no GitHub:', result.error);
-                    // Fallback para localStorage
-                    saveToLocalStorage();
-                    return false;
+                const saved = localStorage.getItem('hexaSocialMessages');
+                if (saved) {
+                    messages = JSON.parse(saved);
                 }
-            } catch (error) {
-                console.error('Erro ao salvar no GitHub:', error);
-                // Fallback para localStorage
-                saveToLocalStorage();
-                return false;
             }
-        }
-
-        // Fallback localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('hexa-social-messages', JSON.stringify(messages));
-        }
-
-        // Adicionar nova mensagem
-        async function addMessage(text) {
-            const presetUsername = document.getElementById('presetUsername').value;
-            const customUsername = document.getElementById('customUsername').value.trim();
-            
-            let username = presetUsername || customUsername || `HEXA_User${Math.floor(Math.random() * 1000)}`;
-            
-            const message = {
-                id: Date.now(),
-                text: text,
-                timestamp: new Date().toISOString(),
-                username: username
-            };
-            
-            // Tentar salvar no GitHub primeiro
-            const githubSuccess = await saveMessageToGitHub(text, username);
-            
-            // Adicionar à lista local
-            messages.push(message);
-            
-            // Salvar fallback no localStorage
-            saveToLocalStorage();
             
             updateMessagesList();
+            startRotation();
+        }
+
+        // Salvar mensagens (usando sistema de sincronização)
+        async function saveMessages() {
+            // Salvar localmente como backup
+            localStorage.setItem('hexaSocialMessages', JSON.stringify(messages));
             
-            if (!isPaused && messages.length === 1) {
-                startRotation();
+            // Se tiver sistema de sincronização, já é salvo automaticamente
+            if (typeof hexaSync !== 'undefined' && hexaSync) {
+                // O sistema de sincronização já salva as mensagens
+                console.log('💾 Mensagens sincronizadas via GitHub API');
+            }
+        }
+
+        // Adicionar nova mensagem (com sincronização)
+        async function addMessage(text) {
+            const presetUsername = document.getElementById('presetUsername').value;
+            const customUsername = document.getElementById('customUsername').value;
+            
+            let username = 'Hexa_User';
+            
+            if (customUsername.trim()) {
+                username = customUsername.trim();
+            } else if (presetUsername) {
+                username = presetUsername;
             }
             
-            // Mostrar notificação
-            if (githubSuccess) {
-                showNotification('💾 Mensagem salva na nuvem!', 'success');
+            const message = {
+                username: username,
+                content: text,
+                timestamp: Date.now()
+            };
+            
+            // Tentar salvar via sistema de sincronização
+            if (typeof hexaSync !== 'undefined' && hexaSync) {
+                try {
+                    await hexaSync.addSocialMessage(username, text);
+                    console.log('💾 Mensagem salva no GitHub');
+                } catch (error) {
+                    console.warn('⚠️ Erro ao salvar no GitHub, usando fallback:', error);
+                    // Fallback: adicionar localmente
+                    messages.unshift(message);
+                    saveMessages();
+                }
             } else {
-                showNotification('⚠️ Mensagem salva localmente (GitHub API indisponível)', 'warning');
+                // Fallback: salvar localmente
+                messages.unshift(message);
+                saveMessages();
             }
             
-            return message;
+            updateMessagesList();
+            startRotation();
+            
+            // Limpar campos
+            document.getElementById('messageInput').value = '';
+            document.getElementById('customUsername').value = '';
+            document.getElementById('presetUsername').selectedIndex = 0;
         }
 
         // Remover mensagem
-        async function removeMessage(id) {
-            const message = messages.find(msg => msg.id === id);
-            
-            // Tentar deletar do GitHub se tiver issue_number
-            if (message && message.issue_number) {
-                try {
-                    await hexaDatabase.deleteMessage(message.issue_number);
-                    console.log('Mensagem deletada do GitHub');
-                } catch (error) {
-                    console.error('Erro ao deletar do GitHub:', error);
-                }
-            }
-            
-            // Remover da lista local
+        function removeMessage(id) {
             messages = messages.filter(msg => msg.id !== id);
-            saveToLocalStorage();
+            saveMessages();
             updateMessagesList();
             
             if (messages.length === 0) {
@@ -1066,47 +1027,6 @@
                 currentIndex = 0;
             }
         }
-
-        // Sistema de notificações
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#667eea' : type === 'warning' ? '#ffd700' : '#007bff'};
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                font-family: 'Share Tech Mono', monospace;
-                font-size: 14px;
-                z-index: 10000;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                animation: slideIn 0.3s ease;
-            `;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Adicionar CSS para animações
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
 
         // Atualizar lista de mensagens salvas
         function updateMessagesList() {
@@ -1287,7 +1207,9 @@
         loadMessages();
     </script>
 
-    <!-- Script de Inicialização H.E.X.A (LOGIN) -->
-    <script src="js/hexa-init.js"></script>
+    <!-- Sistema de Autenticação e Sincronização -->
+    <script src="js/hexa-config.js"></script>
+    <script src="js/hexa-auth.js"></script>
+    <script src="js/hexa-sync.js"></script>
 </body>
 </html>
