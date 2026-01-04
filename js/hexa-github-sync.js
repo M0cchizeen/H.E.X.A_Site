@@ -62,24 +62,35 @@ class HexaGitHubSync {
     // Verificar atualizações no GitHub
     async checkForUpdates() {
         try {
+            console.log('🔍 Verificando atualizações no GitHub...');
+            
             // Carregar estado atual do combate
             const stateResult = await window.hexaDatabase.loadCombatState();
+            console.log('📊 Resultado do estado:', stateResult);
+            
             if (stateResult.success && stateResult.combatState) {
                 const serverTimestamp = new Date(stateResult.combatState.lastUpdate).getTime();
+                const localTimestamp = this.lastUpdate;
+                
+                console.log('⏰ Timestamps - Servidor:', serverTimestamp, 'Local:', localTimestamp);
                 
                 // Se o estado no servidor for mais recente, atualizar
-                if (serverTimestamp > this.lastUpdate) {
-                    console.log('📥 Estado atualizado do GitHub');
+                if (serverTimestamp > localTimestamp) {
+                    console.log('📥 Estado mais recente encontrado no GitHub, atualizando...');
                     this.lastUpdate = serverTimestamp;
                     
                     if (this.onStateUpdate) {
                         this.onStateUpdate(stateResult.combatState);
                     }
+                } else {
+                    console.log('📥 Estado local está atualizado');
                 }
             }
 
             // Carregar log de combate
             const logResult = await window.hexaDatabase.loadCombatLog();
+            console.log('📊 Resultado do log:', logResult);
+            
             if (logResult.success && logResult.logEntries) {
                 if (this.onLogUpdate) {
                     this.onLogUpdate(logResult.logEntries);
@@ -94,15 +105,19 @@ class HexaGitHubSync {
     // Métodos de sincronização
     async updateInitiative(initiative) {
         try {
+            console.log('🔄 Sincronizando iniciativa:', initiative);
             const currentState = await this.getCurrentState();
             if (currentState) {
                 currentState.initiative = initiative;
                 currentState.lastUpdate = new Date().toISOString();
                 
+                console.log('💾 Salvando estado no GitHub...');
                 const result = await window.hexaDatabase.saveCombatState(currentState);
                 if (result.success) {
                     this.lastUpdate = Date.now();
-                    console.log('📤 Iniciativa sincronizada');
+                    console.log('✅ Iniciativa sincronizada com sucesso');
+                } else {
+                    console.error('❌ Falha ao sincronizar iniciativa:', result.error);
                 }
             }
         } catch (error) {
@@ -112,6 +127,7 @@ class HexaGitHubSync {
 
     async nextTurn() {
         try {
+            console.log('⏭️ Avançando turno...');
             const currentState = await this.getCurrentState();
             if (currentState && currentState.initiative.length > 0) {
                 currentState.currentTurn = (currentState.currentTurn + 1) % currentState.initiative.length;
@@ -120,6 +136,7 @@ class HexaGitHubSync {
                 }
                 currentState.lastUpdate = new Date().toISOString();
                 
+                console.log('💾 Salvando estado no GitHub...');
                 const result = await window.hexaDatabase.saveCombatState(currentState);
                 if (result.success) {
                     this.lastUpdate = Date.now();
@@ -128,7 +145,9 @@ class HexaGitHubSync {
                     const currentCharacter = currentState.initiative[currentState.currentTurn];
                     await this.addLogEntry('turn', `Rodada ${currentState.round} - Vez de ${currentCharacter.name}`);
                     
-                    console.log('📤 Próximo turno sincronizado');
+                    console.log('✅ Próximo turno sincronizado com sucesso');
+                } else {
+                    console.error('❌ Falha ao sincronizar próximo turno:', result.error);
                 }
             }
         } catch (error) {
@@ -138,17 +157,21 @@ class HexaGitHubSync {
 
     async startCombat() {
         try {
+            console.log('⚔️ Iniciando combate...');
             const currentState = await this.getCurrentState() || {};
             currentState.isActive = true;
             currentState.round = 1;
             currentState.currentTurn = 0;
             currentState.lastUpdate = new Date().toISOString();
             
+            console.log('💾 Salvando estado no GitHub...');
             const result = await window.hexaDatabase.saveCombatState(currentState);
             if (result.success) {
                 this.lastUpdate = Date.now();
                 await this.addLogEntry('turn', 'Combate iniciado!');
-                console.log('📤 Combate iniciado e sincronizado');
+                console.log('✅ Combate iniciado e sincronizado com sucesso');
+            } else {
+                console.error('❌ Falha ao iniciar combate:', result.error);
             }
         } catch (error) {
             console.error('❌ Erro ao iniciar combate:', error);
@@ -157,6 +180,7 @@ class HexaGitHubSync {
 
     async endCombat() {
         try {
+            console.log('🏁 Finalizando combate...');
             const currentState = await this.getCurrentState() || {};
             currentState.isActive = false;
             currentState.initiative = [];
@@ -164,11 +188,14 @@ class HexaGitHubSync {
             currentState.round = 1;
             currentState.lastUpdate = new Date().toISOString();
             
+            console.log('💾 Salvando estado no GitHub...');
             const result = await window.hexaDatabase.saveCombatState(currentState);
             if (result.success) {
                 this.lastUpdate = Date.now();
                 await this.addLogEntry('turn', 'Combate finalizado!');
-                console.log('📤 Combate finalizado e sincronizado');
+                console.log('✅ Combate finalizado e sincronizado com sucesso');
+            } else {
+                console.error('❌ Falha ao finalizar combate:', result.error);
             }
         } catch (error) {
             console.error('❌ Erro ao finalizar combate:', error);
@@ -177,16 +204,20 @@ class HexaGitHubSync {
 
     async updateTimer(duration, timeRemaining) {
         try {
+            console.log('⏱️ Sincronizando timer...');
             const currentState = await this.getCurrentState();
             if (currentState) {
                 currentState.timerDuration = duration;
                 currentState.timeRemaining = timeRemaining;
                 currentState.lastUpdate = new Date().toISOString();
                 
+                console.log('💾 Salvando estado no GitHub...');
                 const result = await window.hexaDatabase.saveCombatState(currentState);
                 if (result.success) {
                     this.lastUpdate = Date.now();
-                    console.log('📤 Timer sincronizado');
+                    console.log('✅ Timer sincronizado com sucesso');
+                } else {
+                    console.error('❌ Falha ao sincronizar timer:', result.error);
                 }
             }
         } catch (error) {
@@ -196,9 +227,12 @@ class HexaGitHubSync {
 
     async addLogEntry(logType, message) {
         try {
+            console.log('📝 Adicionando entrada ao log...');
             const result = await window.hexaDatabase.addCombatLogEntry(logType, message);
             if (result.success) {
-                console.log('📤 Entrada de log sincronizada');
+                console.log('✅ Entrada de log sincronizada com sucesso');
+            } else {
+                console.error('❌ Falha ao adicionar entrada de log:', result.error);
             }
         } catch (error) {
             console.error('❌ Erro ao adicionar entrada de log:', error);
@@ -206,6 +240,7 @@ class HexaGitHubSync {
     }
 
     async requestState() {
+        console.log('🔄 Solicitando estado atual...');
         await this.checkForUpdates();
     }
 

@@ -196,6 +196,7 @@ class HexaCombatSystem {
 
     // Métodos de controle de combate
     async startCombat() {
+        console.log('🚀 Iniciando combate...');
         this.currentCombatState.isActive = true;
         this.currentCombatState.round = 1;
         this.currentCombatState.currentTurn = 0;
@@ -214,6 +215,7 @@ class HexaCombatSystem {
     }
 
     async endCombat() {
+        console.log('🏁 Finalizando combate...');
         this.currentCombatState.isActive = false;
         this.currentCombatState.initiative = [];
         this.currentCombatState.currentTurn = 0;
@@ -232,6 +234,7 @@ class HexaCombatSystem {
     }
 
     async nextTurn() {
+        console.log('⏭️ Avançando turno...');
         if (this.currentCombatState.initiative.length === 0) {
             this.showNotification('⚠️ Nenhum personagem na iniciativa!', 'warning');
             return;
@@ -248,13 +251,15 @@ class HexaCombatSystem {
             this.currentCombatState.timeRemaining = this.currentCombatState.timerDuration;
             
             const currentCharacter = this.currentCombatState.initiative[this.currentCombatState.currentTurn];
-            this.addLogEntry('turn', `Rodada ${this.currentCombatState.round} - Vez de ${currentCharacter.name}`);
+            await this.addLogEntry('turn', `Rodada ${this.currentCombatState.round} - Vez de ${currentCharacter.name}`);
             this.updateUI();
         }
     }
 
     // Métodos de iniciativa
-    addToInitiative(character) {
+    async addToInitiative(character) {
+        console.log('➕ Adicionando personagem à iniciativa:', character.name);
+        
         const initiativeItem = {
             id: Date.now().toString(),
             name: character.name,
@@ -267,29 +272,34 @@ class HexaCombatSystem {
         this.currentCombatState.initiative.push(initiativeItem);
         this.currentCombatState.initiative.sort((a, b) => b.initiative - a.initiative);
         
-        this.syncInitiative();
+        await this.syncInitiative();
         this.updateInitiativeUI();
         
-        this.addLogEntry('turn', `${character.name} entrou na ordem de iniciativa`);
+        await this.addLogEntry('turn', `${character.name} entrou na ordem de iniciativa`);
         this.showNotification(`${character.name} adicionado à iniciativa!`, 'success');
     }
 
-    removeFromInitiative(id) {
+    async removeFromInitiative(id) {
+        console.log('➖ Removendo personagem da iniciativa:', id);
+        
         const index = this.currentCombatState.initiative.findIndex(item => item.id === id);
         if (index !== -1) {
             const removed = this.currentCombatState.initiative.splice(index, 1)[0];
-            this.syncInitiative();
+            await this.syncInitiative();
             this.updateInitiativeUI();
             
-            this.addLogEntry('turn', `${removed.name} saiu da ordem de iniciativa`);
+            await this.addLogEntry('turn', `${removed.name} saiu da ordem de iniciativa`);
             this.showNotification(`${removed.name} removido da iniciativa!`, 'info');
         }
     }
 
-    reorderInitiative(oldIndex, newIndex) {
+    async reorderInitiative(oldIndex, newIndex) {
+        console.log('🔄 Reordenando iniciativa:', oldIndex, '->', newIndex);
+        
         const item = this.currentCombatState.initiative.splice(oldIndex, 1)[0];
         this.currentCombatState.initiative.splice(newIndex, 0, item);
-        this.syncInitiative();
+        
+        await this.syncInitiative();
         this.updateInitiativeUI();
     }
 
