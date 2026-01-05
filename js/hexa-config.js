@@ -35,34 +35,26 @@ const HexaConfig = {
         const isGitHubPages = window.location.hostname.includes('github.io');
         
         if (isGitHubPages) {
-            // Extrair owner e repo da URL
-            const pathParts = window.location.pathname.split('/').filter(p => p);
-            if (pathParts.length >= 1) {
-                // CORREÇÃO: Forçar owner correto para este repositório
-                this.github.owner = 'M0cchizeen'; // Username GitHub correto
-                
-                // Para GitHub Pages, o repo geralmente é username.github.io
-                if (window.location.hostname === `${pathParts[0]}.github.io`) {
-                    this.github.repo = pathParts[1] || this.github.owner + '.github.io';
-                } else {
-                    this.github.repo = pathParts[1] || this.github.owner;
-                }
-            }
+            // CORREÇÃO CRÍTICA: Forçar repositório correto
+            this.github.owner = 'M0cchizeen';
+            this.github.repo = 'H.E.X.A_Site';
             
-            console.log('🌐 Detectado GitHub Pages:', this.github.owner, '/', this.github.repo);
+            console.log('🌐 Detectado GitHub Pages - Forçando repo correto:', this.github.owner, '/', this.github.repo);
         } else {
             console.log('🏠 Executando localmente, mas usando GitHub API online');
         }
         
         // Tentar carregar token salvo
         const savedToken = localStorage.getItem('hexaGitHubToken');
-        if (savedToken) {
-            this.github.token = savedToken;
+        if (savedToken && savedToken.trim()) {
+            this.github.token = savedToken.trim();
             this.github.useToken = true;
             console.log('🔑 Token GitHub carregado do localStorage');
+        } else {
+            this.github.useToken = false;
+            console.log('⚠️ Nenhum token GitHub encontrado');
         }
         
-        // Configurar sistema de sincronização
         if (typeof hexaSync !== 'undefined' && hexaSync) {
             hexaSync.setRepo(this.github.owner, this.github.repo, this.github.token);
         }

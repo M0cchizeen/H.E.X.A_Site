@@ -114,6 +114,44 @@ class HexaAuth {
                     >
                 </div>
                 
+                <div style="margin-bottom: 20px;">
+                    <label style="
+                        display: block;
+                        color: #667eea;
+                        margin-bottom: 10px;
+                        font-size: 0.7rem;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    ">Token GitHub (Opcional - Melhora sincronização)</label>
+                    <input 
+                        type="password" 
+                        id="hexaTokenInput"
+                        placeholder="ghp_xxxxxxxxxxxx..."
+                        style="
+                            width: 100%;
+                            padding: 12px;
+                            background: rgba(102, 126, 234, 0.05);
+                            border: 1px solid #444;
+                            border-radius: 8px;
+                            color: #ffffff;
+                            font-size: 0.9rem;
+                            font-family: 'Courier New', monospace;
+                            outline: none;
+                            transition: all 0.3s;
+                        "
+                        onfocus="this.style.borderColor='#007bff'; this.style.boxShadow='0 0 10px rgba(0, 123, 255, 0.3)'"
+                        onblur="this.style.borderColor='#444'; this.style.boxShadow='none'"
+                    >
+                    <div style="
+                        color: rgba(255, 255, 255, 0.5);
+                        font-size: 0.6rem;
+                        margin-top: 5px;
+                        text-align: left;
+                    ">
+                        💡 Crie um token em: github.com/settings/tokens (repo scope)
+                    </div>
+                </div>
+                
                 <button 
                     id="hexaLoginBtn"
                     style="
@@ -167,55 +205,46 @@ class HexaAuth {
                     if (e.key === 'Enter') {
                         this.login();
                     }
-                });
-            }
-        }, 100);
-    }
 
-    login() {
-        const input = document.getElementById('hexaPasswordInput');
-        const password = input ? input.value.trim() : '';
+login() {
+const input = document.getElementById('hexaPasswordInput');
+const tokenInput = document.getElementById('hexaTokenInput');
+const password = input ? input.value.trim() : '';
+const token = tokenInput ? tokenInput.value.trim() : '';
         
-        if (password === this.masterPassword) {
-            // Salvar sessão
-            const sessionData = {
-                timestamp: Date.now(),
-                authenticated: true
-            };
-            sessionStorage.setItem('hexaAuth', JSON.stringify(sessionData));
+if (password === this.masterPassword) {
+// Salvar sessão
+const sessionData = {
+timestamp: Date.now(),
+authenticated: true
+};
+sessionStorage.setItem('hexaAuth', JSON.stringify(sessionData));
             
-            this.isAuthenticated = true;
+// Salvar token GitHub se fornecido
+if (token && typeof HexaConfig !== 'undefined') {
+HexaConfig.saveGitHubToken(token);
+console.log('🔑 Token GitHub configurado');
+}
             
-            // Remover tela de login
-            if (this.loginScreen) {
-                this.loginScreen.style.opacity = '0';
-                this.loginScreen.style.transition = 'opacity 0.5s';
-                setTimeout(() => {
-                    if (this.loginScreen && this.loginScreen.parentNode) {
-                        this.loginScreen.parentNode.removeChild(this.loginScreen);
-                    }
-                }, 500);
-            }
+this.isAuthenticated = true;
             
-            console.log('🔓 Login bem-sucedido');
+// Remover tela de login
+if (this.loginScreen) {
+this.loginScreen.style.opacity = '0';
+this.loginScreen.style.transition = 'opacity 0.5s';
+setTimeout(() => {
+if (this.loginScreen && this.loginScreen.parentNode) {
+this.loginScreen.parentNode.removeChild(this.loginScreen);
+}
+}, 500);
+}
             
-            // Iniciar sincronização
-            if (typeof hexaSync !== 'undefined' && hexaSync) {
-                hexaSync.init();
-            }
+console.log('🔓 Login bem-sucedido');
             
-            return true;
-        } else {
-            // Senha incorreta
-            this.showError();
-            return false;
-        }
-    }
-
-    showError() {
-        const input = document.getElementById('hexaPasswordInput');
-        const btn = document.getElementById('hexaLoginBtn');
-        
+// Iniciar sincronização
+if (typeof hexaSync !== 'undefined' && hexaSync) {
+hexaSync.init();
+}
         if (input) {
             input.style.borderColor = '#ff0000';
             input.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.5)';
