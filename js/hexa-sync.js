@@ -61,25 +61,32 @@ class HexaSync {
         console.log(`📁 Repositório: ${owner}/${name}`);
     }
 
-    // Iniciar sincronização periódica
+    // Iniciar sincronização
     startSync() {
         if (this.syncTimer) {
             clearInterval(this.syncTimer);
         }
+
+        // OTIMIZAÇÃO EXTREMA: Aumentar ainda mais para múltiplas páginas
+        this.syncInterval = 20000; // 20 segundos (era 15 segundos)
         
+        console.log(`⏱️ Iniciando sincronização a cada ${this.syncInterval/1000} segundos...`);
+        
+        // Sincronização inicial
+        this.syncFromGitHub();
+        
+        // Configurar sincronização periódica
         this.syncTimer = setInterval(() => {
             this.syncFromGitHub();
         }, this.syncInterval);
-        
-        // Sincronizar imediatamente
-        this.syncFromGitHub();
     }
 
     // Heartbeat para detectar usuários ativos
     startHeartbeat() {
+        // OTIMIZAÇÃO EXTREMA: Aumentar ainda mais para múltiplos usuários
         setInterval(() => {
             this.sendHeartbeat();
-        }, 10000); // A cada 10 segundos
+        }, 45000); // 45 segundos (era 30 segundos)
     }
 
     // Enviar heartbeat
@@ -132,28 +139,35 @@ class HexaSync {
         return 'Jogador Anônimo';
     }
 
-    // Sincronização principal
+    // Sincronização principal com otimização
     async syncFromGitHub() {
         try {
             console.log('🔄 Sincronizando estado completo...');
             
-            // Sincronizar estado do combate
-            await this.syncCombatState();
+            // OTIMIZAÇÃO: Verificar se há mudanças antes de buscar
+            const hasChanges = await this.checkForChanges();
             
-            // Sincronizar mensagens sociais
-            await this.syncSocialMessages();
-            
-            // Sincronizar usuários ativos
-            await this.syncActiveUsers();
-            
-            // Sincronizar timer global
-            await this.syncGlobalTimer();
-            
-            this.lastSync = Date.now();
-            this.isConnected = true;
-            this.retryCount = 0;
-            
-            console.log('✅ Sincronização concluída');
+            if (hasChanges || !this.lastSync) {
+                // Sincronizar estado do combate
+                await this.syncCombatState();
+                
+                // Sincronizar mensagens sociais
+                await this.syncSocialMessages();
+                
+                // Sincronizar usuários ativos
+                await this.syncActiveUsers();
+                
+                // Sincronizar timer global
+                await this.syncGlobalTimer();
+                
+                this.lastSync = Date.now();
+                this.isConnected = true;
+                this.retryCount = 0;
+                
+                console.log('✅ Sincronização concluída com mudanças');
+            } else {
+                console.log('⏭️ Sem mudanças, pulando sincronização');
+            }
             
         } catch (error) {
             console.warn('⚠️ Erro na sincronização:', error.message);
@@ -166,6 +180,27 @@ class HexaSync {
             } else {
                 console.error('❌ Máximo de tentativas atingido');
             }
+        }
+    }
+
+    // Verificar se há mudanças sem fazer requisições completas
+    async checkForChanges() {
+        try {
+            // Buscar apenas as issues mais recentes para verificar timestamps
+            const recentIssues = await this.getIssuesByLabel('HEXA_HEARTBEAT', 1);
+            
+            if (recentIssues.length > 0) {
+                const latestUpdate = new Date(recentIssues[0].updated_at).getTime();
+                // Se houver atualização mais recente que nossa última sincronização
+                return latestUpdate > this.lastSync;
+            }
+            
+            // Se não houver issues, considerar que há mudanças na primeira vez
+            return !this.lastSync;
+            
+        } catch (error) {
+            // Se falhar, assumir que há mudanças para não perder nada
+            return true;
         }
     }
 
